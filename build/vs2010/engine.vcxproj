@@ -1,0 +1,645 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{ADDB20B6-BCA6-F14A-8BB8-F7F3504279E3}</ProjectGuid>
+    <RootNamespace>engine</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Binaries\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\out\obj\JAMP\engine\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">engine</TargetName>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Binaries\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\out\obj\JAMP\engine\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">engine</TargetName>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\code\SDL12\include;..\..\code\libcurl;..\..\code\AL;..\..\code\libspeex\include;..\..\code\zlib;..\..\code\jpeg-8c;..\..\code\mad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_DEBUG;BOTLIB;STANDALONE;USE_ICON;USE_CURL;USE_CURL_DLOPEN;USE_OPENAL;USE_OPENAL_DLOPEN;USE_VOIP;HAVE_CONFIG_H;USE_LOCAL_HEADERS;USE_INTERNAL_JPEG;_JK2MP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_DEBUG;BOTLIB;STANDALONE;USE_ICON;USE_CURL;USE_CURL_DLOPEN;USE_OPENAL;USE_OPENAL_DLOPEN;USE_VOIP;HAVE_CONFIG_H;USE_LOCAL_HEADERS;USE_INTERNAL_JPEG;_JK2MP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\code\SDL12\include;..\..\code\libcurl;..\..\code\AL;..\..\code\libspeex\include;..\..\code\zlib;..\..\code\jpeg-8c;..\..\code\mad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;user32.lib;advapi32.lib;wsock32.lib;msvcrt.lib;psapi.lib;SDLmain.lib;SDL.lib;dxguid.lib;OpenGL32.lib;libmad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)engine.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\code\libs\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDataBaseFileName>$(OutDir)engine.pdb</ProgramDataBaseFileName>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>..\..\code\SDL12\include;..\..\code\libcurl;..\..\code\AL;..\..\code\libspeex\include;..\..\code\zlib;..\..\code\jpeg-8c;..\..\code\mad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;NDEBUG;BOTLIB;STANDALONE;USE_ICON;USE_CURL;USE_CURL_DLOPEN;USE_OPENAL;USE_OPENAL_DLOPEN;USE_VOIP;HAVE_CONFIG_H;USE_LOCAL_HEADERS;USE_INTERNAL_JPEG;_JK2MP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;NDEBUG;BOTLIB;STANDALONE;USE_ICON;USE_CURL;USE_CURL_DLOPEN;USE_OPENAL;USE_OPENAL_DLOPEN;USE_VOIP;HAVE_CONFIG_H;USE_LOCAL_HEADERS;USE_INTERNAL_JPEG;_JK2MP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\code\SDL12\include;..\..\code\libcurl;..\..\code\AL;..\..\code\libspeex\include;..\..\code\zlib;..\..\code\jpeg-8c;..\..\code\mad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;user32.lib;advapi32.lib;wsock32.lib;msvcrt.lib;psapi.lib;SDLmain.lib;SDL.lib;dxguid.lib;OpenGL32.lib;libmad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)engine.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\code\libs\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\code\renderer\iqm.h" />
+    <ClInclude Include="..\..\code\renderer\qgl.h" />
+    <ClInclude Include="..\..\code\renderer\tr_local.h" />
+    <ClInclude Include="..\..\code\renderer\tr_public.h" />
+    <ClInclude Include="..\..\code\renderer\tr_types.h" />
+    <ClInclude Include="..\..\code\client\client.h" />
+    <ClInclude Include="..\..\code\client\cl_curl.h" />
+    <ClInclude Include="..\..\code\client\keycodes.h" />
+    <ClInclude Include="..\..\code\client\keys.h" />
+    <ClInclude Include="..\..\code\client\qal.h" />
+    <ClInclude Include="..\..\code\client\snd_codec.h" />
+    <ClInclude Include="..\..\code\client\snd_local.h" />
+    <ClInclude Include="..\..\code\client\snd_public.h" />
+    <ClInclude Include="..\..\code\sdl\sdl_icon.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jconfig.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jdct.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jerror.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jinclude.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jmemsys.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jmorecfg.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jpegint.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jpeglib.h" />
+    <ClInclude Include="..\..\code\jpeg-8c\jversion.h" />
+    <ClInclude Include="..\..\code\libspeex\config.h" />
+    <ClInclude Include="..\..\code\sys\sys_loadlib.h" />
+    <ClInclude Include="..\..\code\sys\sys_local.h" />
+    <ClInclude Include="..\..\code\botlib\aasfile.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_bsp.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_cluster.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_debug.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_def.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_entity.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_file.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_funcs.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_main.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_move.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_optimize.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_reach.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_route.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_routealt.h" />
+    <ClInclude Include="..\..\code\botlib\be_aas_sample.h" />
+    <ClInclude Include="..\..\code\botlib\be_ai_char.h" />
+    <ClInclude Include="..\..\code\botlib\be_ai_chat.h" />
+    <ClInclude Include="..\..\code\botlib\be_ai_gen.h" />
+    <ClInclude Include="..\..\code\botlib\be_ai_goal.h" />
+    <ClInclude Include="..\..\code\botlib\be_ai_move.h" />
+    <ClInclude Include="..\..\code\botlib\be_ai_weap.h" />
+    <ClInclude Include="..\..\code\botlib\be_ai_weight.h" />
+    <ClInclude Include="..\..\code\botlib\be_ea.h" />
+    <ClInclude Include="..\..\code\botlib\be_interface.h" />
+    <ClInclude Include="..\..\code\botlib\botlib.h" />
+    <ClInclude Include="..\..\code\botlib\l_crc.h" />
+    <ClInclude Include="..\..\code\botlib\l_libvar.h" />
+    <ClInclude Include="..\..\code\botlib\l_log.h" />
+    <ClInclude Include="..\..\code\botlib\l_memory.h" />
+    <ClInclude Include="..\..\code\botlib\l_precomp.h" />
+    <ClInclude Include="..\..\code\botlib\l_script.h" />
+    <ClInclude Include="..\..\code\botlib\l_struct.h" />
+    <ClInclude Include="..\..\code\botlib\l_utils.h" />
+    <ClInclude Include="..\..\code\qcommon\cm_local.h" />
+    <ClInclude Include="..\..\code\qcommon\cm_patch.h" />
+    <ClInclude Include="..\..\code\qcommon\cm_polylib.h" />
+    <ClInclude Include="..\..\code\qcommon\cm_public.h" />
+    <ClInclude Include="..\..\code\qcommon\ioapi.h" />
+    <ClInclude Include="..\..\code\qcommon\puff.h" />
+    <ClInclude Include="..\..\code\qcommon\qcommon.h" />
+    <ClInclude Include="..\..\code\qcommon\qfiles.h" />
+    <ClInclude Include="..\..\code\qcommon\q_platform.h" />
+    <ClInclude Include="..\..\code\qcommon\q_shared.h" />
+    <ClInclude Include="..\..\code\qcommon\surfaceflags.h" />
+    <ClInclude Include="..\..\code\qcommon\unzip.h" />
+    <ClInclude Include="..\..\code\qcommon\vm_local.h" />
+    <ClInclude Include="..\..\code\server\server.h" />
+    <ClInclude Include="..\..\code\zlib\crc32.h" />
+    <ClInclude Include="..\..\code\zlib\inffast.h" />
+    <ClInclude Include="..\..\code\zlib\inffixed.h" />
+    <ClInclude Include="..\..\code\zlib\inflate.h" />
+    <ClInclude Include="..\..\code\zlib\inftrees.h" />
+    <ClInclude Include="..\..\code\zlib\zconf.h" />
+    <ClInclude Include="..\..\code\zlib\zlib.h" />
+    <ClInclude Include="..\..\code\zlib\zutil.h" />
+    <ClInclude Include="..\..\code\sys\win_resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\code\libspeex\modes_wb.c" />
+    <ClCompile Include="..\..\code\renderer\tr_animation.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_backend.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_bsp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_cmds.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_curve.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_flares.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_font.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_image.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_image_bmp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_image_jpg.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_image_pcx.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_image_png.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_image_tga.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_init.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_light.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_main.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_marks.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_mesh.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_model.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_model_iqm.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_noise.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_scene.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_shade.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_shader.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_shade_calc.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_shadows.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_sky.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_surface.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_world.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_avi.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_cgame.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_cin.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_console.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_curl.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_input.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_keys.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_main.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_net_chan.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_parse.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_scrn.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\cl_ui.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\qal.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_adpcm.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_codec.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_codec_mp3.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_codec_ogg.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_codec_wav.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_dma.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_main.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_mem.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_mix.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_openal.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_wavelet.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sdl\sdl_gamma.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sdl\sdl_glimp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sdl\sdl_input.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sdl\sdl_snd.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jaricom.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcapimin.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcapistd.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcarith.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jccoefct.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jccolor.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcdctmgr.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jchuff.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcinit.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcmainct.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcmarker.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcmaster.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcomapi.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcparam.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcprepct.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jcsample.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jctrans.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdapimin.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdapistd.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdarith.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdatadst.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdatasrc.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdcoefct.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdcolor.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jddctmgr.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdhuff.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdinput.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdmainct.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdmarker.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdmaster.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdmerge.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdpostct.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdsample.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jdtrans.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jerror.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jfdctflt.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jfdctfst.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jfdctint.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jidctflt.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jidctfst.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jidctint.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jmemmgr.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jmemnobs.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jquant1.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jquant2.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\jpeg-8c\jutils.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\bits.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\buffer.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\cb_search.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\exc_10_16_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\exc_10_32_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\exc_20_32_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\exc_5_256_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\exc_5_64_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\exc_8_128_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\fftwrap.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\filterbank.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\filters.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\gain_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\gain_table_lbr.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\hexc_10_32_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\hexc_table.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\high_lsp_tables.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\jitter.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\kiss_fft.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\kiss_fftr.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\lpc.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\lsp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\lsp_tables_nb.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\ltp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\mdf.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\modes.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\nb_celp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\preprocess.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\quant_lsp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\resample.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\sb_celp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\smallft.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\speex.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\speex_callbacks.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\speex_header.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\stereo.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\vbr.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\vq.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\libspeex\window.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sys\con_log.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sys\con_passive.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sys\sys_main.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\sys\sys_win32.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_bspq3.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_cluster.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_debug.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_entity.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_file.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_main.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_move.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_optimize.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_reach.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_route.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_routealt.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_aas_sample.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ai_char.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ai_chat.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ai_gen.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ai_goal.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ai_move.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ai_weap.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ai_weight.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_ea.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\be_interface.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\l_crc.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\l_libvar.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\l_log.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\l_memory.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\l_precomp.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\l_script.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\botlib\l_struct.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\cmd.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\cm_load.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\cm_patch.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\cm_polylib.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\cm_test.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\cm_trace.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\common.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\cvar.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\files.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\huffman.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\ioapi.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\md4.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\md5.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\msg.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\net_chan.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\net_ip.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\puff.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\q_math.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\q_shared.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\unzip.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\vm.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\vm_interpreted.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\vm_x86.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_bot.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_ccmds.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_client.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_game.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_init.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_main.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_net_chan.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_snapshot.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\server\sv_world.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\adler32.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\crc32.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\inffast.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\inflate.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\inftrees.c">
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\zutil.c">
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\code\sys\win_resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\code\asm\ftola.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml  -c -Zi "-Fl$(IntDir)%(FileName).lst" "-Fo$(IntDir)%(FileName).obj" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Assembling...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(FileName).obj;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\code\asm\snapvector.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml  -c -Zi "-Fl$(IntDir)%(FileName).lst" "-Fo$(IntDir)%(FileName).obj" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Assembling...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(FileName).obj;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="code">
+			<UniqueIdentifier>{C3A345A2-3689-CD44-B931-B2DA3D517B19}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="code\ui">
+			<UniqueIdentifier>{35A07DE2-3AE2-B744-B006-914A5C38A38D}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="code\qcommon">
+			<UniqueIdentifier>{BC9D5681-8F6E-EA46-95A0-3D887F205D7F}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="code\game">
+			<UniqueIdentifier>{E799BFEE-1B8B-594C-81C3-E947C40AF558}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\code\ui\keycodes.h">
+			<Filter>code\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\ui\ui_force.h">
+			<Filter>code\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\ui\ui_local.h">
+			<Filter>code\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\ui\ui_public.h">
+			<Filter>code\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\ui\ui_shared.h">
+			<Filter>code\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\qcommon\q_platform.h">
+			<Filter>code\qcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\qcommon\q_shared.h">
+			<Filter>code\qcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\game\bg_public.h">
+			<Filter>code\game</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\game\bg_local.h">
+			<Filter>code\game</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\game\bg_saga.h">
+			<Filter>code\game</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\game\bg_weapons.h">
+			<Filter>code\game</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\code\game\bg_straph.h">
+			<Filter>code\game</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\code\ui\ui_atoms.c">
+			<Filter>code\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\ui\ui_force.c">
+			<Filter>code\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\ui\ui_gameinfo.c">
+			<Filter>code\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\ui\ui_main.c">
+			<Filter>code\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\ui\ui_saber.c">
+			<Filter>code\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\ui\ui_shared.c">
+			<Filter>code\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\ui\ui_syscalls.c">
+			<Filter>code\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\qcommon\q_math.c">
+			<Filter>code\qcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\qcommon\q_shared.c">
+			<Filter>code\qcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\game\bg_misc.c">
+			<Filter>code\game</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\game\bg_saga.c">
+			<Filter>code\game</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\game\bg_vehicleLoad.c">
+			<Filter>code\game</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\code\game\bg_weapons.c">
+			<Filter>code\game</Filter>
+		</ClCompile>
+	</ItemGroup>
+</Project>
