@@ -1,0 +1,156 @@
+Microsoft (R) Macro Assembler Version 10.00.30319.01	    08/27/11 00:49:08
+C:\Users\dan\Desktop\jkaq3\code\asm\snapvector.asm	     Page 1 - 1
+
+
+				; ===========================================================================
+				; Copyright (C) 2011 Thilo Schulz <thilo@tjps.eu>
+				; 
+				; This file is part of Quake III Arena source code.
+				; 
+				; Quake III Arena source code is free software; you can redistribute it
+				; and/or modify it under the terms of the GNU General Public License as
+				; published by the Free Software Foundation; either version 2 of the License,
+				; or (at your option) any later version.
+				; 
+				; Quake III Arena source code is distributed in the hope that it will be
+				; useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+				; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+				; GNU General Public License for more details.
+				; 
+				; You should have received a copy of the GNU General Public License
+				; along with Quake III Arena source code; if not, write to the Free Software
+				; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+				; ===========================================================================
+				
+				; MASM version of snapvector conversion function using SSE or FPU
+				; assume __cdecl calling convention is being used for x86, __fastcall for x64
+				;
+				; function prototype:
+				; void qsnapvector(vec3_t vec)
+				
+				IFNDEF idx64
+				.model flat, c
+				ENDIF
+				
+ 00000000			.data
+				
+				  ALIGN 16
+ 00000000 FFFFFFFF		  ssemask DWORD 0FFFFFFFFh, 0FFFFFFFFh, 0FFFFFFFFh, 00000000h
+	   FFFFFFFF
+	   FFFFFFFF
+	   00000000
+ 00000010 00001F80		  ssecw DWORD 00001F80h
+				
+				IFNDEF idx64
+ 00000014 037F			  fpucw WORD 037Fh
+				ENDIF
+				
+ 00000000			.code
+				
+				IFDEF idx64
+				ELSE
+				
+ 00000000			  qsnapvectorsse PROC
+ 00000000  83 EC 08			sub esp, 8
+ 00000003  0F AE 1C 24			stmxcsr [esp]				; save SSE control word
+ 00000007  0F AE 15			ldmxcsr ssecw				; set to round nearest
+	   00000010 R
+				
+ 0000000E  57			    push edi
+ 0000000F  8B 7C 24 10			mov edi, dword ptr 16[esp]	; maskmovdqu uses edi as implicit memory operand
+ 00000013  0F 28 0D			movaps xmm1, ssemask		; initialize the mask register for maskmovdqu
+	   00000000 R
+ 0000001A  0F 10 07		    movups xmm0, [edi]			; here is stored our vector. Read 4 values in one go
+ 0000001D  66| 0F 5B C0			cvtps2dq xmm0, xmm0			; convert 4 single fp to int
+ 00000021  0F 5B C0			cvtdq2ps xmm0, xmm0			; convert 4 int to single fp
+ 00000024  66| 0F F7 C1			maskmovdqu xmm0, xmm1		; write 3 values back to memory
+ 00000028  5F				pop edi
+				
+ 00000029  0F AE 14 24			ldmxcsr [esp]				; restore sse control word to old value
+ 0000002D  83 C4 08			add esp, 8
+ 00000030  C3				ret
+ 00000031			  qsnapvectorsse ENDP
+				
+				  qroundx87 macro src
+					fld dword ptr src
+					fistp dword ptr src
+					fild dword ptr src
+					fstp dword ptr src
+				  endm    
+				
+ 00000031			  qsnapvectorx87 PROC
+ 00000031  8B 44 24 04			mov eax, dword ptr 4[esp]
+ 00000035  83 EC 02			sub esp, 2
+ 00000038  D9 3C 24			fnstcw word ptr [esp]
+ 0000003B  D9 2D 00000014 R		fldcw fpucw
+					qroundx87 [eax]
+ 00000041  D9 00	     1		fld dword ptr [eax]
+ 00000043  DB 18	     1		fistp dword ptr [eax]
+ 00000045  DB 00	     1		fild dword ptr [eax]
+ 00000047  D9 18	     1		fstp dword ptr [eax]
+					qroundx87 4[eax]
+ 00000049  D9 40 04	     1		fld dword ptr 4[eax]
+ 0000004C  DB 58 04	     1		fistp dword ptr 4[eax]
+ 0000004F  DB 40 04	     1		fild dword ptr 4[eax]
+ 00000052  D9 58 04	     1		fstp dword ptr 4[eax]
+					qroundx87 8[eax]
+ 00000055  D9 40 08	     1		fld dword ptr 8[eax]
+ 00000058  DB 58 08	     1		fistp dword ptr 8[eax]
+ 0000005B  DB 40 08	     1		fild dword ptr 8[eax]
+ 0000005E  D9 58 08	     1		fstp dword ptr 8[eax]
+ 00000061  D9 2C 24			fldcw [esp]
+ 00000064  83 C4 02			add esp, 2
+ 00000067			  qsnapvectorx87 ENDP
+				
+				ENDIF
+				
+				end
+Microsoft (R) Macro Assembler Version 10.00.30319.01	    08/27/11 00:49:08
+C:\Users\dan\Desktop\jkaq3\code\asm\snapvector.asm	     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+qroundx87  . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000016 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000067 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+qsnapvectorsse . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000031 Public C
+qsnapvectorx87 . . . . . . . . .	P Near	 00000031 _TEXT	Length= 00000036 Public C
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000001h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+fpucw  . . . . . . . . . . . . .	Word	 00000014 _DATA	
+ssecw  . . . . . . . . . . . . .	DWord	 00000010 _DATA	
+ssemask  . . . . . . . . . . . .	DWord	 00000000 _DATA	
+
+	   0 Warnings
+	   0 Errors

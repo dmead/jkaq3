@@ -1,0 +1,210 @@
+﻿Build started 8/26/2011 11:28:52 PM.
+     1>Project "C:\Users\dan\Desktop\jkaq3\misc\msvc10\game.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "..\..\build\game_debug\game.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D BUILDING_REF_GL /D DEBUG /D GLOBALRANK /D _JK2MP /D QAGAME /D _CRT_SECURE_NO_DEPRECATE /D _WINDLL /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"..\..\build\game_debug\\" /Fd"..\..\build\game_debug\vc100.pdb" /FR"..\..\build\game_debug\\" /Gd /TC /analyze- /errorReport:prompt ..\..\..\JEDI_Academy_SDK\codemp\game\tri_coll_test.c ..\..\code\game\ai_main.c ..\..\code\game\ai_util.c ..\..\code\game\ai_wpnav.c ..\..\code\game\AnimalNPC.c ..\..\code\game\bg_g2_utils.c ..\..\code\game\bg_misc.c ..\..\code\game\bg_panimate.c ..\..\code\game\bg_pmove.c ..\..\code\game\bg_saber.c ..\..\code\game\bg_saberLoad.c ..\..\code\game\bg_saga.c ..\..\code\game\bg_slidemove.c ..\..\code\game\bg_vehicleLoad.c ..\..\code\game\bg_weapons.c ..\..\code\game\FighterNPC.c ..\..\code\game\g_active.c ..\..\code\game\g_arenas.c ..\..\code\game\g_bot.c ..\..\code\game\g_client.c ..\..\code\game\g_cmds.c ..\..\code\game\g_combat.c ..\..\code\game\g_exphysics.c ..\..\code\game\g_ICARUScb.c ..\..\code\game\g_items.c ..\..\code\game\g_log.c ..\..\code\game\g_main.c ..\..\code\game\g_mem.c ..\..\code\game\g_misc.c ..\..\code\game\g_missile.c ..\..\code\game\g_mover.c ..\..\code\game\g_nav.c ..\..\code\game\g_navnew.c ..\..\code\game\g_object.c ..\..\code\game\g_saga.c ..\..\code\game\g_session.c ..\..\code\game\g_spawn.c ..\..\code\game\g_strap.c ..\..\code\game\g_svcmds.c ..\..\code\game\g_syscalls.c ..\..\code\game\g_target.c ..\..\code\game\g_team.c ..\..\code\game\g_timer.c ..\..\code\game\g_trigger.c ..\..\code\game\g_turret.c ..\..\code\game\g_turret_G2.c ..\..\code\game\g_utils.c ..\..\code\game\g_vehicles.c ..\..\code\game\g_vehicleTurret.c ..\..\code\game\g_weapon.c ..\..\code\game\NPC.c ..\..\code\game\NPC_AI_Atst.c ..\..\code\game\NPC_AI_Default.c ..\..\code\game\NPC_AI_Droid.c ..\..\code\game\NPC_AI_GalakMech.c ..\..\code\game\NPC_AI_Grenadier.c ..\..\code\game\NPC_AI_Howler.c ..\..\code\game\NPC_AI_ImperialProbe.c ..\..\code\game\NPC_AI_Interrogator.c ..\..\code\game\NPC_AI_Jedi.c ..\..\code\game\NPC_AI_Mark1.c ..\..\code\game\NPC_AI_Mark2.c ..\..\code\game\NPC_AI_MineMonster.c ..\..\code\game\NPC_AI_Rancor.c ..\..\code\game\NPC_AI_Remote.c ..\..\code\game\NPC_AI_Seeker.c ..\..\code\game\NPC_AI_Sentry.c ..\..\code\game\NPC_AI_Sniper.c ..\..\code\game\NPC_AI_Stormtrooper.c ..\..\code\game\NPC_AI_Utils.c ..\..\code\game\NPC_AI_Wampa.c ..\..\code\game\NPC_behavior.c ..\..\code\game\NPC_combat.c ..\..\code\game\NPC_goal.c ..\..\code\game\NPC_misc.c ..\..\code\game\NPC_move.c ..\..\code\game\NPC_reactions.c ..\..\code\game\NPC_senses.c ..\..\code\game\NPC_sounds.c ..\..\code\game\NPC_spawn.c ..\..\code\game\NPC_stats.c ..\..\code\game\NPC_utils.c ..\..\code\game\SpeederNPC.c ..\..\code\game\WalkerNPC.c ..\..\code\game\w_force.c ..\..\code\game\w_saber.c
+         tri_coll_test.c
+     1>c1 : fatal error C1083: Cannot open source file: '..\..\..\JEDI_Academy_SDK\codemp\game\tri_coll_test.c': No such file or directory
+         ai_main.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         ai_util.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         ai_wpnav.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         AnimalNPC.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         bg_g2_utils.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         bg_misc.c
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(300): error C2061: syntax error : identifier 'material_t'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(360): error C2059: syntax error : '}'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(681): error C2061: syntax error : identifier 'npcteam_t'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(682): error C2061: syntax error : identifier 'enemyTeam'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(682): error C2059: syntax error : ';'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(690): error C2061: syntax error : identifier 'NPC_class'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(690): error C2059: syntax error : ';'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(740): error C2059: syntax error : '}'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1715): error C2143: syntax error : missing ')' before '*'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1715): error C2143: syntax error : missing '{' before '*'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1715): error C2059: syntax error : ')'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1716): error C2143: syntax error : missing ')' before '*'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1716): error C2143: syntax error : missing '{' before '*'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1716): error C2059: syntax error : ')'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1973): error C2143: syntax error : missing ')' before '*'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1973): error C2081: 'wpobject_t' : name in formal parameter list illegal
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1973): error C2143: syntax error : missing '{' before '*'
+     1>c:\users\dan\desktop\jkaq3\code\game\g_local.h(1973): error C2059: syntax error : ')'
+     1>c:\users\dan\desktop\jkaq3\code\game\bg_misc.c(413): error C2037: left of 's' specifies undefined struct/union 'gentity_s'
+     1>c:\users\dan\desktop\jkaq3\code\game\bg_misc.c(413): warning C4047: 'function' : 'int' differs in levels of indirection from 'char *'
+     1>c:\users\dan\desktop\jkaq3\code\game\bg_misc.c(413): warning C4024: 'Q3_SetParm' : different types for formal and actual parameter 2
+     1>c:\users\dan\desktop\jkaq3\code\game\bg_misc.c(413): error C2198: 'Q3_SetParm' : too few arguments for call
+         bg_panimate.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         bg_pmove.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         bg_saber.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         bg_saberLoad.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         bg_saga.c
+         bg_slidemove.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         bg_vehicleLoad.c
+         bg_weapons.c
+         FighterNPC.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_active.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_arenas.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_bot.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_client.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         Generating Code...
+         Compiling...
+         g_cmds.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_combat.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_exphysics.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_ICARUScb.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_items.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_log.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_main.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_mem.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_misc.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_missile.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_mover.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_nav.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_navnew.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_object.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_saga.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_session.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_spawn.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_strap.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_svcmds.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_syscalls.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         Generating Code...
+         Compiling...
+         g_target.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_team.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_timer.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_trigger.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_turret.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_turret_G2.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_utils.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_vehicles.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_vehicleTurret.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         g_weapon.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Atst.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Default.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Droid.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_GalakMech.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Grenadier.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Howler.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_ImperialProbe.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Interrogator.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Jedi.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         Generating Code...
+         Compiling...
+         NPC_AI_Mark1.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Mark2.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_MineMonster.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Rancor.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Remote.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Seeker.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Sentry.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Sniper.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Stormtrooper.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Utils.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_AI_Wampa.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_behavior.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_combat.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_goal.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_misc.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_move.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_reactions.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_senses.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_sounds.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_spawn.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         Generating Code...
+         Compiling...
+         NPC_stats.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         NPC_utils.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         SpeederNPC.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         WalkerNPC.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         w_force.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         w_saber.c
+     1>c:\users\dan\desktop\jkaq3\code\game\q_shared.h(14): fatal error C1083: Cannot open include file: '../qcommon/disablewarnings.h': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\Users\dan\Desktop\jkaq3\misc\msvc10\game.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:01.63
