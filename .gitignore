@@ -23,6 +23,7 @@ S junk files
 *.sbr
 *.sdf
 *.opensdf
+*.user
 ipch/
 obj/
 [Bb]in
@@ -36,7 +37,7 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 
 #Project files
-[Bb]uild/
+[Bb]uild/out
 [Bb]inaries
 
 #Subversion files
