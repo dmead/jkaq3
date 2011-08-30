@@ -122,7 +122,8 @@ void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader
 static void SCR_DrawChar( int x, int y, float size, int ch ) {
 	int row, col;
 	float frow, fcol;
-	float	ax, ay, aw, ah;
+	float ax, ay, aw, ah;
+	float size2;
 
 	ch &= 255;
 
@@ -145,11 +146,12 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 
 	frow = row*0.0625;
 	fcol = col*0.0625;
-	size = 0.0625;
+	size = 0.03125;
+	size2 = 0.0625;
 
 	re.DrawStretchPic( ax, ay, aw, ah,
 					   fcol, frow, 
-					   fcol + size, frow + size, 
+					   fcol + size, frow + size2, 
 					   cls.charSetShader );
 }
 
@@ -160,7 +162,7 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 void SCR_DrawSmallChar( int x, int y, int ch ) {
 	int row, col;
 	float frow, fcol;
-	float size;
+	float size, size2;
 
 	ch &= 255;
 
@@ -177,11 +179,12 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 
 	frow = row*0.0625;
 	fcol = col*0.0625;
-	size = 0.0625;
+	size = 0.03125;
+	size2 = 0.0625;
 
 	re.DrawStretchPic( x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT,
 					   fcol, frow, 
-					   fcol + size, frow + size, 
+					   fcol + size, frow + size2, 
 					   cls.charSetShader );
 }
 

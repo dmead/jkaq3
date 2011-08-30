@@ -10,9 +10,7 @@
 
 #include "bg_weapons.h"
 #include "anims.h"
-#ifdef JKA
 #include "bg_vehicles.h"
-#endif
 
 //these two defs are shared now because we do clientside ent parsing
 #define	MAX_SPAWN_VARS			64
@@ -426,9 +424,7 @@ typedef struct bgEntity_s
 {
 	entityState_t	s;
 	playerState_t	*playerState;
-#ifdef JKA
 	Vehicle_t		*m_pVehicle; //vehicle data
-#endif
 	void			*ghoul2; //g2 instance
 	int				localAnimIndex; //index locally (game/cgame) to anim data for this skel
 	vec3_t			modelScale; //needed for g2 collision

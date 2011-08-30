@@ -1329,40 +1329,38 @@ infoParm_t	infoParms[] = {
 	{"lava",		1,	0,	CONTENTS_LAVA },		// very damaging
 	{"playerclip",	1,	0,	CONTENTS_PLAYERCLIP },
 	{"monsterclip",	1,	0,	CONTENTS_MONSTERCLIP },
+	{"botclip",	1,	0,	CONTENTS_BOTCLIP },
+	{"shotclip",	1,	0,	CONTENTS_SHOTCLIP },
 	{"nodrop",		1,	0,	CONTENTS_NODROP },		// don't drop items or leave bodies (death fog, lava, etc)
-	{"nonsolid",	1,	SURF_NONSOLID,	0},						// clears the solid flag
+	{"nonsolid",	1,	0,	0},						// clears the solid flag
+	{"ladder",		0,	0,	CONTENTS_LADDER },
+	{"abseil",		0,	0,	CONTENTS_ABSEIL },
 
 	// utility relevant attributes
-	{"origin",		1,	0,	CONTENTS_ORIGIN },		// center of rotating brushes
+	//{"origin",		1,	0,	CONTENTS_ORIGIN },		// center of rotating brushes
 	{"trans",		0,	0,	CONTENTS_TRANSLUCENT },	// don't eat contained surfaces
+	{"nonopaque",		0,	0,	CONTENTS_TRANSLUCENT },	// don't eat contained surfaces
 	{"detail",		0,	0,	CONTENTS_DETAIL },		// don't include in structural bsp
-	{"structural",	0,	0,	CONTENTS_STRUCTURAL },	// force into structural bsp even if trnas
-	{"areaportal",	1,	0,	CONTENTS_AREAPORTAL },	// divides areas
-	{"clusterportal", 1,0,  CONTENTS_CLUSTERPORTAL },	// for bots
-	{"donotenter",  1,  0,  CONTENTS_DONOTENTER },		// for bots
+	{"inside",		0,	0,	CONTENTS_INSIDE },
+	{"outside",		0,	0,	CONTENTS_OUTSIDE },
 
 	{"fog",			1,	0,	CONTENTS_FOG},			// carves surfaces entering
 	{"sky",			0,	SURF_SKY,		0 },		// emit light from an environment map
-	{"lightfilter",	0,	SURF_LIGHTFILTER, 0 },		// filter light going through it
-	{"alphashadow",	0,	SURF_ALPHASHADOW, 0 },		// test light on a per-pixel basis
-	{"hint",		0,	SURF_HINT,		0 },		// use as a primary splitter
 
 	// server attributes
 	{"slick",		0,	SURF_SLICK,		0 },
 	{"noimpact",	0,	SURF_NOIMPACT,	0 },		// don't make impact explosions or marks
 	{"nomarks",		0,	SURF_NOMARKS,	0 },		// don't make impact marks, but still explode
-	{"ladder",		0,	SURF_LADDER,	0 },
 	{"nodamage",	0,	SURF_NODAMAGE,	0 },
 	{"metalsteps",	0,	SURF_METALSTEPS,0 },
-	{"flesh",		0,	SURF_FLESH,		0 },
+	//{"flesh",		0,	SURF_FLESH,		0 },
 	{"nosteps",		0,	SURF_NOSTEPS,	0 },
 
 	// drawsurf attributes
 	{"nodraw",		0,	SURF_NODRAW,	0 },	// don't generate a drawsurface (or a lightmap)
-	{"pointlight",	0,	SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
-	{"nolightmap",	0,	SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
+	//{"pointlight",	0,	SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
+	//{"nolightmap",	0,	SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
 	{"nodlight",	0,	SURF_NODLIGHT, 0 },		// don't ever add dynamic lights
-	{"dust",		0,	SURF_DUST, 0}			// leave a dust trail when walking on this surface
 };
 
 
@@ -1409,6 +1407,9 @@ static qboolean ParseShader( char **text )
 
 	s = 0;
 
+	// JKA: Compression is implied as allowed if not otherwise specified
+	tr.allowCompression = qtrue;
+
 	token = COM_ParseExt( text, qtrue );
 	if ( token[0] != '{' )
 	{
@@ -1428,6 +1429,8 @@ static qboolean ParseShader( char **text )
 		// end of shader definition
 		if ( token[0] == '}' )
 		{
+			// JKA: Compression is implied as allowed if not otherwise specified
+			tr.allowCompression = qtrue;
 			break;
 		}
 		// stage definition
@@ -1500,11 +1503,6 @@ static qboolean ParseShader( char **text )
 			SkipRestOfLine( text );
 			continue;
 		}
-		else if( !Q_stricmp( token, "notc" ) ) {
-			// should be able to borrow code from ET to be like noCompress or something
-			SkipRestOfLine( text );
-			continue;
-		}
 		// skip stuff that only q3map or the server needs
 		else if ( !Q_stricmp( token, "surfaceParm" ) ) {
 			ParseSurfaceParm( text );
@@ -1567,6 +1565,11 @@ static qboolean ParseShader( char **text )
 		else if ( !Q_stricmp( token, "skyparms" ) )
 		{
 			ParseSkyParms( text );
+			continue;
+		}
+		else if( !Q_stricmp( token, "notc" ) )
+		{
+			tr.allowCompression = qfalse;
 			continue;
 		}
 		// light <value> determines flaring in q3map, not needed here

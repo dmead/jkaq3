@@ -138,7 +138,8 @@ NET
 
 #define	PORT_ANY			-1
 
-#define	MAX_RELIABLE_COMMANDS	128			// max string commands buffered for restransmit
+#define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
+// jka wants this to be 128, but i think it breaks things right now
 
 typedef enum {
 	NA_BAD = 0,					// an address lookup failed

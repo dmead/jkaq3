@@ -28,11 +28,11 @@ cvar_t		*cvar_vars = NULL;
 cvar_t		*cvar_cheats;
 int			cvar_modifiedFlags;
 
-#define	MAX_CVARS	1024
+#define	MAX_CVARS	2048
 cvar_t		cvar_indexes[MAX_CVARS];
 int			cvar_numIndexes;
 
-#define FILE_HASH_SIZE		256
+#define FILE_HASH_SIZE		512
 static	cvar_t	*hashTable[FILE_HASH_SIZE];
 
 /*
@@ -190,6 +190,9 @@ void Cvar_CommandCompletion(void (*callback)(const char *s))
 	
 	for(cvar = cvar_vars; cvar; cvar = cvar->next)
 	{
+		// JKA: Don't complete internal cvars
+		if(cvar->flags & CVAR_INTERNAL)
+			continue;
 		if(cvar->name)
 			callback(cvar->name);
 	}
@@ -690,6 +693,22 @@ void Cvar_SetValueSafe( const char *var_name, float value )
 
 /*
 ============
+Cvar_SetValue
+============
+*/
+void Cvar_SetValue2( const char *var_name, float value) {
+	char	val[32];
+
+	if ( value == (int)value ) {
+		Com_sprintf (val, sizeof(val), "%i",(int)value);
+	} else {
+		Com_sprintf (val, sizeof(val), "%f",value);
+	}
+	Cvar_Set2 (var_name, val, qfalse);
+}
+
+/*
+============
 Cvar_Reset
 ============
 */
@@ -752,9 +771,20 @@ qboolean Cvar_Command( void ) {
 		return qfalse;
 	}
 
+	// JKA: Don't allow command line changing internal cvars
+	if (v->flags & CVAR_INTERNAL) {
+		return qfalse;
+	}
+
 	// perform a variable print or set
 	if ( Cmd_Argc() == 1 ) {
 		Cvar_Print( v );
+		return qtrue;
+	}
+
+	if( !strcmp( Cmd_Argv(1), "!" ) ) {
+		// Swap the value if our command has ! in it (bind p "cg_thirdPeson !")
+		Cvar_SetValue2( v->name, !v->value );
 		return qtrue;
 	}
 
@@ -960,7 +990,8 @@ void Cvar_List_f( void ) {
 	i = 0;
 	for (var = cvar_vars ; var ; var = var->next, i++)
 	{
-		if(!var->name || (match && !Com_Filter(match, var->name, qfalse)))
+		// JKA: Don't list internal cvars
+		if(!var->name || (match && !Com_Filter(match, var->name, qfalse)) || var->flags & CVAR_INTERNAL)
 			continue;
 
 		if (var->flags & CVAR_SERVERINFO) {

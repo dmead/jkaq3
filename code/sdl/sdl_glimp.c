@@ -580,6 +580,10 @@ static void GLimp_InitExtensions( void )
 		ri.Printf( PRINT_ALL, "...GL_EXT_texture_env_add not found\n" );
 	}
 
+	// GL_EXT_texture_edge_clamp
+	glConfig.clampToEdgeAvailable = qtrue;
+	ri.Printf( PRINT_ALL, "...using GL_EXT_clamp_to_edge\n" );
+
 	// GL_ARB_multitexture
 	qglMultiTexCoord2fARB = NULL;
 	qglActiveTextureARB = NULL;
@@ -596,8 +600,8 @@ static void GLimp_InitExtensions( void )
 			{
 				GLint glint = 0;
 				qglGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &glint );
-				glConfig.numTextureUnits = (int) glint;
-				if ( glConfig.numTextureUnits > 1 )
+				glConfig.maxActiveTextures = (int) glint;
+				if ( glConfig.maxActiveTextures > 1 )
 				{
 					ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
 				}
@@ -647,14 +651,15 @@ static void GLimp_InitExtensions( void )
 	if ( GLimp_HaveExtension( "GL_EXT_texture_filter_anisotropic" ) )
 	{
 		if ( r_ext_texture_filter_anisotropic->integer ) {
-			qglGetIntegerv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, (GLint *)&maxAnisotropy );
-			if ( maxAnisotropy <= 0 ) {
+			qglGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat *)&glConfig.maxTextureFilterAnisotropy );
+			//qglGetIntegerv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, (GLint *)&maxAnisotropy );
+			if ( glConfig.maxTextureFilterAnisotropy <= 0 ) {
 				ri.Printf( PRINT_ALL, "...GL_EXT_texture_filter_anisotropic not properly supported!\n" );
-				maxAnisotropy = 0;
+				glConfig.maxTextureFilterAnisotropy = 0;
 			}
 			else
 			{
-				ri.Printf( PRINT_ALL, "...using GL_EXT_texture_filter_anisotropic (max: %i)\n", maxAnisotropy );
+				ri.Printf( PRINT_ALL, "...using GL_EXT_texture_filter_anisotropic (max: %i)\n", glConfig.maxTextureFilterAnisotropy );
 				textureFilterAnisotropic = qtrue;
 			}
 		}
@@ -734,12 +739,25 @@ success:
 	glConfig.deviceSupportsGamma = SDL_SetGamma( 1.0f, 1.0f, 1.0f ) >= 0;
 
 	// get our config strings
-	Q_strncpyz( glConfig.vendor_string, (char *) qglGetString (GL_VENDOR), sizeof( glConfig.vendor_string ) );
+	Q_strncpyz( vendor_string, (char *) qglGetString (GL_VENDOR), sizeof( vendor_string ) );
+	Q_strncpyz( renderer_string, (char *) qglGetString (GL_RENDERER), sizeof( renderer_string ) );
+	if (*renderer_string && renderer_string[strlen(renderer_string) - 1] == '\n')
+		renderer_string[strlen(renderer_string) - 1] = 0;
+	Q_strncpyz( version_string, (char *) qglGetString (GL_VERSION), sizeof( version_string ) );
+	Q_strncpyz( extensions_string, (char *) qglGetString (GL_EXTENSIONS), sizeof( extensions_string ) );
+
+	glConfig.vendor_string = vendor_string;
+	glConfig.renderer_string = renderer_string;
+	glConfig.version_string = version_string;
+	glConfig.extensions_string = extensions_string;
+
+/*	Q_strncpyz( glConfig.vendor_string, (char *) qglGetString (GL_VENDOR), sizeof( glConfig.vendor_string ) );
 	Q_strncpyz( glConfig.renderer_string, (char *) qglGetString (GL_RENDERER), sizeof( glConfig.renderer_string ) );
 	if (*glConfig.renderer_string && glConfig.renderer_string[strlen(glConfig.renderer_string) - 1] == '\n')
 		glConfig.renderer_string[strlen(glConfig.renderer_string) - 1] = 0;
 	Q_strncpyz( glConfig.version_string, (char *) qglGetString (GL_VERSION), sizeof( glConfig.version_string ) );
 	Q_strncpyz( glConfig.extensions_string, (char *) qglGetString (GL_EXTENSIONS), sizeof( glConfig.extensions_string ) );
+	*/
 
 	// initialize extensions
 	GLimp_InitExtensions( );

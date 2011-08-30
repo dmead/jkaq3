@@ -29,9 +29,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef STANDALONE
   #define PRODUCT_NAME			"jamp"
   #define BASEGAME			"base"
-  #define CLIENT_WINDOW_TITLE     	"Jedi Knight®: Jedi Academy (MP)"
+  #define CLIENT_WINDOW_TITLE     	"Jedi Knight(r): Jedi Academy (MP)"
   #define CLIENT_WINDOW_MIN_TITLE 	"jamp"
-  #define HOMEPATH_NAME_UNIX		".jka"
+  #define HOMEPATH_NAME_UNIX		".jkamp"
   #define HOMEPATH_NAME_WIN		"JediAcademyMP"
   #define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
   #define GAMENAME_FOR_MASTER		"JediAcademy"	// must NOT contain whitespace
@@ -760,6 +760,7 @@ int Com_HexStrToInt( const char *str );
 
 int QDECL Com_sprintf (char *dest, int size, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
+qboolean Com_CharIsOneOfCharset( char c, char *set );
 char *Com_SkipTokens( char *s, int numTokens, char *sep );
 char *Com_SkipCharset( char *s, char *sep );
 
@@ -1018,6 +1019,17 @@ Ghoul2 Insert End
 
 // a trace is returned when a box is swept through the world
 typedef struct {
+#ifdef _JK2MP
+	byte		allsolid;	// if true, plane is not valid
+	byte		startsolid;	// if true, the initial point was in a solid area
+	short		entityNum;	// entity the contacted sirface is a part of
+
+	float		fraction;	// time completed, 1.0 = didn't hit anything
+	vec3_t		endpos;		// final position
+	cplane_t	plane;		// surface normal at impact, transformed to world space
+	int			surfaceFlags;	// surface hit
+	int			contents;	// contents on other side of surface hit
+#else
 	qboolean	allsolid;	// if true, plane is not valid
 	qboolean	startsolid;	// if true, the initial point was in a solid area
 	float		fraction;	// time completed, 1.0 = didn't hit anything
@@ -1026,6 +1038,7 @@ typedef struct {
 	int			surfaceFlags;	// surface hit
 	int			contents;	// contents on other side of surface hit
 	int			entityNum;	// entity the contacted sirface is a part of
+#endif
 } trace_t;
 
 // trace->entityNum can also be 0 to (MAX_GENTITIES-1)
@@ -1095,7 +1108,10 @@ typedef enum {
 //
 // per-level limits
 //
-#define	MAX_CLIENTS			64		// absolute limit
+// JKA Dropped MAX_CLIENTS to 32 from 64
+#define	MAX_CLIENTS			32		// absolute limit
+#define MAX_RADAR_ENTITIES	MAX_GENTITIES
+#define MAX_TERRAINS		1//32 //rwwRMG: inserted
 #define MAX_LOCATIONS		64
 
 #define	GENTITYNUM_BITS		10		// don't need to send any more

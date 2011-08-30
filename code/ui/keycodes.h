@@ -337,7 +337,7 @@ typedef enum
 	A_AUX30,
 	A_AUX31,
 
-	MAX_KEYS
+	A_MAX_KEYS
 } fakeAscii_t;
 
 

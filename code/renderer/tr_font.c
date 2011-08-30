@@ -144,6 +144,7 @@ void R_InitFont( const int index, const char *fontName ) {
 	int i, len;
 	char name[64], nametga[64];
 	qhandle_t hnd;
+	short dummy;
 
 	if( !fontName ) {
 		ri.Printf( PRINT_ALL, "RE_InitFont: called with empty name\n" );
@@ -202,7 +203,7 @@ void R_InitFont( const int index, const char *fontName ) {
 		}
 
 		/* Looks like something missing from the spec */
-		readShort();
+		dummy             = readShort();
 		font->mPointSize  = readShort();
 		font->mHeight     = readShort();
 		font->mAscender   = readShort();
@@ -220,10 +221,18 @@ void R_InitFont( const int index, const char *fontName ) {
 	registeredFontHandles[index-1] = hnd;
 }
 void R_InitFonts( void ) {
-	R_InitFont( FONT_SMALL, "ergoec" );
-	R_InitFont( FONT_MEDIUM, "aurabesh" );
+	/* Basejka stuffs:
+	register font returns 1 for medium
+	register font returns 2 for small
+	register font returns 3 for big
+	register font returns 4 for small2
+	*/
+
+	R_InitFont( FONT_MEDIUM, "ergoec" );
+	R_InitFont( FONT_SMALL, "aurabesh" );
 	R_InitFont( FONT_LARGE, "anewhope" );
 	R_InitFont( FONT_SMALL2, "arialnb" );
+
 }
 qhandle_t RE_RegisterFont( const char *fontName ) {
 	int i;
@@ -312,15 +321,22 @@ void RE_Font_PaintChar( float x, float y, float width, float height, float scale
 	RE_StretchPic( x, y, w, h, s, t, s2, t2, hShader );
 }
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale ) {
-#if 0
-	qhandle_t fontIndex = (setIndex & ~SET_MASK);
-	dfontdat_t *font = FontFromHandle( fontIndex );
+	qhandle_t fontIndex = setIndex;
+	dfontdat_t *font;
 	glyphInfo_t *glyph;
 	int len, count;
 	vec4_t newColor;
 
+	if( fontIndex & STYLE_DROPSHADOW )
+		fontIndex -= STYLE_DROPSHADOW;
+
+	fontIndex &= ~STYLE_BLINK;
+	font = FontFromHandle( fontIndex );
+
 	if( !font || scale <= 0 )
 		return;
+
+	RE_Font_PaintChar( 312, 20, 11, 14, scale, font->mGlyphs[65].s, font->mGlyphs[65].t, font->mGlyphs[65].s2, font->mGlyphs[65].t2, fontIndex );
 
 	if( text ) {
 		const char *s = text;
@@ -343,7 +359,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 			}
 			else {
 				float yadj = scale * glyph->baseline;
-				RE_Font_PaintChar( ox, oy - yadj, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, fontIndex );
+				RE_Font_PaintChar( ox + glyph->horizOffset, oy - yadj, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, fontIndex );
 				ox += ( glyph->horizAdvance * scale );
 				s++;
 				count++;
@@ -351,5 +367,4 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 		}
 		RE_SetColor( NULL );
 	}
-#endif
 }

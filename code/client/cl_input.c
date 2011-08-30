@@ -558,6 +558,8 @@ void CL_FinishMove( usercmd_t *cmd ) {
 
 	// copy the state that the cgame is currently sending
 	cmd->weapon = cl.cgameUserCmdValue;
+	cmd->forcesel = cl.cgameUserCmdForce;
+	cmd->invensel = cl.cgameUserCmdInv;
 
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
@@ -964,8 +966,12 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("-button4", IN_Button4Up);
 	Cmd_AddCommand ("+button5", IN_Button5Down);
 	Cmd_AddCommand ("-button5", IN_Button5Up);
+	Cmd_AddCommand ("+use", IN_Button5Down);
+	Cmd_AddCommand ("-use", IN_Button5Up);
 	Cmd_AddCommand ("+button6", IN_Button6Down);
 	Cmd_AddCommand ("-button6", IN_Button6Up);
+	Cmd_AddCommand ("+altattack", IN_Button7Down);
+	Cmd_AddCommand ("-altattack", IN_Button7Up);
 	Cmd_AddCommand ("+button7", IN_Button7Down);
 	Cmd_AddCommand ("-button7", IN_Button7Up);
 	Cmd_AddCommand ("+button8", IN_Button8Down);

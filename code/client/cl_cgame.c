@@ -170,8 +170,10 @@ qboolean	CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
 CL_SetUserCmdValue
 =====================
 */
-void CL_SetUserCmdValue( int userCmdValue, float sensitivityScale ) {
+void CL_SetUserCmdValue( int userCmdValue, float sensitivityScale, float pitchOverride, float yawOverride, float sensitivityOverride, int forceSelect, int inventorySelect, qboolean useFighterPitch ) {
 	cl.cgameUserCmdValue = userCmdValue;
+	cl.cgameUserCmdForce = forceSelect;
+	cl.cgameUserCmdInv = inventorySelect;
 	cl.cgameSensitivity = sensitivityScale;
 }
 
@@ -407,6 +409,16 @@ static int	FloatAsInt( float f ) {
 	return fi.i;
 }
 
+static unsigned int AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation ) {
+	if( !piAdvanceCount )
+		return 0;
+	*piAdvanceCount = 1;
+	if( pbIsTrailingPunctuation ) {
+		*pbIsTrailingPunctuation = (qboolean) ( isspace( *psText ) || ispunct( *psText ) );
+	}
+	return *psText;
+}
+
 /*
 ====================
 CL_CgameSystemCalls
@@ -547,8 +559,37 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_R_REGISTERSHADERNOMIP:
 		return re.RegisterShaderNoMip( VMA(1) );
 	case CG_R_REGISTERFONT:
-		re.RegisterFont( VMA(1) );
+		return re.RegisterFont( VMA(1) );
+
+	case CG_R_FONT_STRLENPIXELS:
+		return re.Font_StrLenPixels( VMA(1), args[2], VMF(3) );
+
+	case CG_R_FONT_STRLENCHARS:
+		return re.Font_StrLenChars( VMA(1) );
+
+	case CG_R_FONT_STRHEIGHTPIXELS:
+		return re.Font_HeightPixels( args[1], VMF(2) );
+
+	case CG_R_FONT_DRAWSTRING:
+		re.Font_DrawString( args[1], args[2], VMA(3), VMA(4), args[5], args[6], VMF(7) );
 		return 0;
+
+	case CG_LANGUAGE_ISASIAN:
+		return 0;
+
+	case CG_LANGUAGE_USESSPACES:
+		return 1;
+
+	case CG_ANYLANGUAGE_READCHARFROMSTRING:
+		{
+			return AnyLanguage_ReadCharFromString( VMA(1), VMA(2), VMA(3) );
+		}
+		return 0;// AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation )
+
+	case CG_SP_GETSTRINGTEXTSTRING:
+		Q_strncpyz( VMA(2), VMA(1), args[3] );
+		return strlen( VMA(1) );
+
 	case CG_R_CLEARSCENE:
 		re.ClearScene();
 		return 0;
@@ -601,7 +642,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_GETUSERCMD:
 		return CL_GetUserCmd( args[1], VMA(2) );
 	case CG_SETUSERCMDVALUE:
-		CL_SetUserCmdValue( args[1], VMF(2) );
+		CL_SetUserCmdValue( args[1], VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7], args[8] );
 		return 0;
 	case CG_MEMORY_REMAINING:
 		return Hunk_MemoryRemaining();
@@ -703,8 +744,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return re.inPVS( VMA(1), VMA(2) );
 
 	default:
-	        assert(0);
-		Com_Error( ERR_DROP, "Bad cgame system trap: %ld", (long int) args[0] );
+		return 0;
+//	        assert(0);
+//		Com_Error( ERR_DROP, "Bad cgame system trap: %ld", (long int) args[0] );
 	}
 	return 0;
 }
@@ -776,6 +818,17 @@ void CL_InitCGame( void ) {
 	// clear anything that got printed
 	Con_ClearNotify ();
 }
+
+/*
+qboolean CL_InterceptCommand( void ) {
+	TCGIncomingConsoleCommand tcc;
+
+	Q_strncpyz(tcc.conCommand, Cmd_Cmd(), 1024);
+	// stick a pointer to a tcc object into the client shared buffer
+
+	return VM_Call( cgvm, CG_INCOMING_CONSOLE_COMMAND );
+}
+*/
 
 
 /*

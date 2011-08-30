@@ -1645,7 +1645,7 @@ R_LoadLightGrid
 
 ================
 */
-void R_LoadLightGrid( lump_t *l ) {
+void R_LoadLightGrid( lump_t *l, lump_t *larray ) {
 	int		i;
 	vec3_t	maxs;
 	int		numGridPoints;
@@ -1773,6 +1773,14 @@ R_GetEntityToken
 qboolean R_GetEntityToken( char *buffer, int size ) {
 	const char	*s;
 
+	/* JKA:
+	CGame calls this when it should restart its entry point; CG_SpawnCGameOnlyEnts
+	*/
+	if( buffer == NULL && size == -1 ) {
+		s_worldData.entityParsePoint = s_worldData.entityString;
+		return qfalse;
+	}
+
 	s = COM_Parse( &s_worldData.entityParsePoint );
 	Q_strncpyz( buffer, s, size );
 	if ( !s_worldData.entityParsePoint || !s[0] ) {
@@ -1857,7 +1865,7 @@ void RE_LoadWorldMap( const char *name ) {
 	R_LoadSubmodels (&header->lumps[LUMP_MODELS]);
 	R_LoadVisibility( &header->lumps[LUMP_VISIBILITY] );
 	R_LoadEntities( &header->lumps[LUMP_ENTITIES] );
-	R_LoadLightGrid( &header->lumps[LUMP_LIGHTGRID] );
+	R_LoadLightGrid( &header->lumps[LUMP_LIGHTGRID], &header->lumps[LUMP_LIGHTARRAY] );
 
 	s_worldData.dataSize = (byte *)ri.Hunk_Alloc(0, h_low) - startMarker;
 

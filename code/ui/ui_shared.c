@@ -922,7 +922,7 @@ void Item_SetScreenCoords(itemDef_t *item, float x, float y)
 				scrollPtr->endPos = 0;
 			}
 
-			//Item_TextScroll_BuildLines ( item );
+			Item_TextScroll_BuildLines ( item );
 
 			break;
 		}
@@ -2294,7 +2294,7 @@ void Menu_SetItemText(const menuDef_t *menu,const char *itemName, const char *te
 						scrollPtr->endPos = 0;
 					}
 
-					//Item_TextScroll_BuildLines ( item );
+					Item_TextScroll_BuildLines ( item );
 				}
 			}
 		}
@@ -5308,7 +5308,7 @@ static void Controls_GetKeyAssignment (char *command, int *twokeys)
 	twokeys[0] = twokeys[1] = -1;
 	count = 0;
 
-	for ( j = 0; j < MAX_KEYS; j++ )
+	for ( j = 0; j < A_MAX_KEYS; j++ )
 	{
 		DC->getBindingBuf( j, b, 256 );
 		if ( *b == 0 ) {
@@ -5941,7 +5941,7 @@ void Item_TextScroll_Paint(itemDef_t *item)
 	{
 		DC->getCVarString(item->cvar, cvartext, sizeof(cvartext));
 		item->text = cvartext;
-		//Item_TextScroll_BuildLines ( item );
+		Item_TextScroll_BuildLines ( item );
 	}
 
 	// adjust size for item painting

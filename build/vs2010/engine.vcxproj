@@ -197,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\code\libspeex\modes_wb.c" />
+    <ClCompile Include="..\..\code\qcommon\stringed.c" />
     <ClCompile Include="..\..\code\renderer\tr_animation.c">
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_backend.c">

@@ -702,6 +702,16 @@ static int FloatAsInt( float f ) {
 	return fi.i;
 }
 
+static unsigned int AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation ) {
+	if( !piAdvanceCount )
+		return 0;
+	*piAdvanceCount = 1;
+	if( pbIsTrailingPunctuation ) {
+		*pbIsTrailingPunctuation = (qboolean) ( isspace( *psText ) || ispunct( *psText ) );
+	}
+	return *psText;
+}
+
 /*
 ====================
 CL_UISystemCalls
@@ -984,8 +994,7 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 //		return 0;	
 
 	case UI_R_REGISTERFONT:
-		re.RegisterFont( VMA(1) );
-		return 0;
+		return re.RegisterFont( VMA(1) );
 
 	case UI_R_FONT_STRLENPIXELS:
 		return re.Font_StrLenPixels( VMA(1), args[2], VMF(3) );
@@ -1007,6 +1016,9 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 		return 1;
 
 	case UI_ANYLANGUAGE_READCHARFROMSTRING:
+		{
+			return AnyLanguage_ReadCharFromString( VMA(1), VMA(2), VMA(3) );
+		}
 		return 0;// AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation )
 
 	case UI_SP_GETNUMLANGUAGES:

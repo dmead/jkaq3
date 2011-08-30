@@ -1000,6 +1000,9 @@ typedef struct {
 	float					sawToothTable[FUNCTABLE_SIZE];
 	float					inverseSawToothTable[FUNCTABLE_SIZE];
 	float					fogTable[FOG_TABLE_SIZE];
+
+	// JKA: variable to determine if current shader uses 'notc'
+	qboolean				allowCompression;
 } trGlobals_t;
 
 extern backEndState_t	backEnd;
@@ -1011,8 +1014,14 @@ extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during
 // If you release a stand-alone game and your mod uses tr_types.h from this build you can safely move them to
 // the glconfig_t struct.
 extern qboolean  textureFilterAnisotropic;
-extern int       maxAnisotropy;
+//extern int       maxAnisotropy;
 extern float     displayAspect;
+
+// JKA: hack to keep these strings limited but have the pointer versions in the struct like jka
+char		renderer_string[MAX_STRING_CHARS];
+char		vendor_string[MAX_STRING_CHARS];
+char		version_string[MAX_STRING_CHARS];
+char		extensions_string[BIG_INFO_STRING];
 
 
 //
@@ -1636,6 +1645,8 @@ typedef struct {
 	float	w, h;
 	float	s1, t1;
 	float	s2, t2;
+	float	angle;
+	qboolean	isRot2;
 } stretchPicCommand_t;
 
 typedef struct {
@@ -1681,6 +1692,8 @@ typedef enum {
 	RC_END_OF_LIST,
 	RC_SET_COLOR,
 	RC_STRETCH_PIC,
+	RC_ROTATED_PIC,
+	RC_ROTATED_PIC2,
 	RC_DRAW_SURFS,
 	RC_DRAW_BUFFER,
 	RC_SWAP_BUFFERS,

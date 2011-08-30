@@ -929,6 +929,9 @@
     <ClCompile Include="..\..\code\libspeex\modes_wb.c">
       <Filter>code\libspeex</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\stringed.c">
+      <Filter>code\qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\code\sys\win_resource.rc">

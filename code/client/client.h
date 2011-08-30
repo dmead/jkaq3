@@ -119,7 +119,6 @@ typedef struct {
 	int			cgameUserCmdValue;	// current weapon to add to usercmd_t
 	int			cgameUserCmdForce;	// current force to add to usercmd_t
 	int			cgameUserCmdInv;	// current inv to add to usercmd_t
-	int			cgameUserCmdGenCmd;	// current gencmd to add to usercmd_t
 	float		cgameSensitivity;
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last

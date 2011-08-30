@@ -490,7 +490,7 @@ static void Upload32( unsigned *data,
 						  qboolean picmip, 
 							qboolean lightMap,
 						  int *format, 
-						  int *pUploadWidth, int *pUploadHeight )
+						  int *pUploadWidth, int *pUploadHeight, qboolean noTC )
 {
 	int			samples;
 	unsigned	*scaledBuffer = NULL;
@@ -624,11 +624,11 @@ static void Upload32( unsigned *data,
 			}
 			else
 			{
-				if ( glConfig.textureCompression == TC_S3TC_ARB )
+				if ( !noTC && glConfig.textureCompression == TC_S3TC_ARB )
 				{
 					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 				}
-				else if ( glConfig.textureCompression == TC_S3TC )
+				else if ( !noTC && glConfig.textureCompression == TC_S3TC )
 				{
 					internalFormat = GL_RGB4_S3TC;
 				}
@@ -742,8 +742,8 @@ done:
 	if (mipmap)
 	{
 		if ( textureFilterAnisotropic )
-			qglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-					(GLint)Com_Clamp( 1, maxAnisotropy, r_ext_max_anisotropy->integer ) );
+			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+					(GLfloat)Com_Clamp( 1.0f, glConfig.maxTextureFilterAnisotropy, r_ext_max_anisotropy->value ) );
 
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
@@ -778,12 +778,18 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	image_t		*image;
 	qboolean	isLightmap = qfalse;
 	long		hash;
+	qboolean	noTC = qfalse;
 
 	if (strlen(name) >= MAX_QPATH ) {
 		ri.Error (ERR_DROP, "R_CreateImage: \"%s\" is too long", name);
 	}
 	if ( !strncmp( name, "*lightmap", 9 ) ) {
 		isLightmap = qtrue;
+		noTC = qtrue;
+	}
+
+	if( r_ext_compressed_textures->value && tr.allowCompression == qfalse ) {
+		noTC = qtrue;
 	}
 
 	if ( tr.numImages == MAX_DRAWIMAGES ) {
@@ -822,7 +828,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 								isLightmap,
 								&image->internalFormat,
 								&image->uploadWidth,
-								&image->uploadHeight );
+								&image->uploadHeight, noTC );
 
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapClampMode );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode );
