@@ -51,24 +51,23 @@ qkey_t		keys[MAX_KEYS];
 typedef struct {
 	char	*name;
 	int		keynum;
-	int		jkakeynum;
 } keyname_t;
 
 
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] =
 {
-	{"TAB", K_TAB,A_TAB},
-	{"ENTER", K_ENTER,A_ENTER},
-	{"ESCAPE", K_ESCAPE,A_ESCAPE},
-	{"SPACE", K_SPACE,A_SPACE},
-	{"BACKSPACE", K_BACKSPACE,A_BACKSPACE},
-	{"UPARROW", K_UPARROW,A_CURSOR_UP},
-	{"DOWNARROW", K_DOWNARROW,A_CURSOR_DOWN},
-	{"LEFTARROW", K_LEFTARROW,A_CURSOR_LEFT},
-	{"RIGHTARROW", K_RIGHTARROW,A_CURSOR_RIGHT},
+	{"TAB", K_TAB},
+	{"ENTER", K_ENTER},
+	{"ESCAPE", K_ESCAPE},
+	{"SPACE", K_SPACE},
+	{"BACKSPACE", K_BACKSPACE},
+	{"UPARROW", K_UPARROW},
+	{"DOWNARROW", K_DOWNARROW},
+	{"LEFTARROW", K_LEFTARROW},
+	{"RIGHTARROW", K_RIGHTARROW},
 
-	{"ALT", K_ALT,A_ALT},
+	{"ALT", K_ALT},
 	{"CTRL", K_CTRL},
 	{"SHIFT", K_SHIFT},
 
