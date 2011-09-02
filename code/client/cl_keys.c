@@ -21,8 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "client.h"
 
-#include "../ui/keycodes.h"
-
 /*
 
 key up events are sent even if in console mode
@@ -53,134 +51,166 @@ typedef struct {
 	int		keynum;
 } keyname_t;
 
+// A_UNDEFINED_7 -> COMMAND
+// A_UNDEFINED_8 -> F13
+// A_UNDEFINED_9 -> F14
+// A_UNDEFINED_10 -> F15
+// A_UNDEFINED_11 -> KP_SLASH
+// A_UNDEFINED_12 -> KP_STAR
+// A_UNDEFINED_13 -> WINDOWS
+// A_UNDEFINED_14 -> COMPOSE
+// A_UNDEFINED_15 -> MODE
+// A_UNDEFINED_16 -> HELP
+// A_UNDEFINED_17 -> SYSREQ
+// A_UNDEFINED_18 -> BREAK
+// A_UNDEFINED_19 -> MENU
+// A_UNDEFINED_20 -> POWER
+// A_UNDEFINED_21 -> UNDO
 
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] =
 {
-	{"TAB", K_TAB},
-	{"ENTER", K_ENTER},
-	{"ESCAPE", K_ESCAPE},
-	{"SPACE", K_SPACE},
-	{"BACKSPACE", K_BACKSPACE},
-	{"UPARROW", K_UPARROW},
-	{"DOWNARROW", K_DOWNARROW},
-	{"LEFTARROW", K_LEFTARROW},
-	{"RIGHTARROW", K_RIGHTARROW},
+	{"TAB", A_TAB},
+	{"ENTER", A_ENTER},
+	{"ESCAPE", A_ESCAPE},
+	{"SPACE", A_SPACE},
+	{"BACKSPACE", A_BACKSPACE},
+	{"UPARROW", A_CURSOR_UP},
+	{"DOWNARROW", A_CURSOR_DOWN},
+	{"LEFTARROW", A_CURSOR_LEFT},
+	{"RIGHTARROW", A_CURSOR_RIGHT},
 
-	{"ALT", K_ALT},
-	{"CTRL", K_CTRL},
-	{"SHIFT", K_SHIFT},
+	{"ALT", A_ALT},
+	{"CTRL", A_CTRL},
+	{"SHIFT", A_SHIFT},
 
-	{"COMMAND", K_COMMAND},
+	{"COMMAND", A_UNDEFINED_7},
 
-	{"CAPSLOCK", K_CAPSLOCK},
+	{"CAPSLOCK", A_CAPSLOCK},
 
 	
-	{"F1", K_F1},
-	{"F2", K_F2},
-	{"F3", K_F3},
-	{"F4", K_F4},
-	{"F5", K_F5},
-	{"F6", K_F6},
-	{"F7", K_F7},
-	{"F8", K_F8},
-	{"F9", K_F9},
-	{"F10", K_F10},
-	{"F11", K_F11},
-	{"F12", K_F12},
-	{"F13", K_F13},
-	{"F14", K_F14},
-	{"F15", K_F15},
+	{"F1", A_F1},
+	{"F2", A_F2},
+	{"F3", A_F3},
+	{"F4", A_F4},
+	{"F5", A_F5},
+	{"F6", A_F6},
+	{"F7", A_F7},
+	{"F8", A_F8},
+	{"F9", A_F9},
+	{"F10", A_F10},
+	{"F11", A_F11},
+	{"F12", A_F12},
+	{"F13", A_UNDEFINED_8},
+	{"F14", A_UNDEFINED_9},
+	{"F15", A_UNDEFINED_10},
 
-	{"INS", K_INS},
-	{"DEL", K_DEL},
-	{"PGDN", K_PGDN},
-	{"PGUP", K_PGUP},
-	{"HOME", K_HOME},
-	{"END", K_END},
+	{"INS", A_INSERT},
+	{"DEL", A_DELETE},
+	{"PGDN", A_PAGE_DOWN},
+	{"PGUP", A_PAGE_UP},
+	{"HOME", A_HOME},
+	{"END", A_END},
 
-	{"MOUSE1", K_MOUSE1},
-	{"MOUSE2", K_MOUSE2},
-	{"MOUSE3", K_MOUSE3},
-	{"MOUSE4", K_MOUSE4},
-	{"MOUSE5", K_MOUSE5},
+	{"MOUSE1", A_MOUSE1},
+	{"MOUSE2", A_MOUSE2},
+	{"MOUSE3", A_MOUSE3},
+	{"MOUSE4", A_MOUSE4},
+	{"MOUSE5", A_MOUSE5},
 
-	{"MWHEELUP",	K_MWHEELUP },
-	{"MWHEELDOWN",	K_MWHEELDOWN },
+	{"MWHEELUP",	A_MWHEELUP },
+	{"MWHEELDOWN",	A_MWHEELDOWN },
 
-	{"JOY1", K_JOY1},
-	{"JOY2", K_JOY2},
-	{"JOY3", K_JOY3},
-	{"JOY4", K_JOY4},
-	{"JOY5", K_JOY5},
-	{"JOY6", K_JOY6},
-	{"JOY7", K_JOY7},
-	{"JOY8", K_JOY8},
-	{"JOY9", K_JOY9},
-	{"JOY10", K_JOY10},
-	{"JOY11", K_JOY11},
-	{"JOY12", K_JOY12},
-	{"JOY13", K_JOY13},
-	{"JOY14", K_JOY14},
-	{"JOY15", K_JOY15},
-	{"JOY16", K_JOY16},
-	{"JOY17", K_JOY17},
-	{"JOY18", K_JOY18},
-	{"JOY19", K_JOY19},
-	{"JOY20", K_JOY20},
-	{"JOY21", K_JOY21},
-	{"JOY22", K_JOY22},
-	{"JOY23", K_JOY23},
-	{"JOY24", K_JOY24},
-	{"JOY25", K_JOY25},
-	{"JOY26", K_JOY26},
-	{"JOY27", K_JOY27},
-	{"JOY28", K_JOY28},
-	{"JOY29", K_JOY29},
-	{"JOY30", K_JOY30},
-	{"JOY31", K_JOY31},
-	{"JOY32", K_JOY32},
+	{"JOY0", A_JOY0},
+	{"JOY1", A_JOY1},
+	{"JOY2", A_JOY2},
+	{"JOY3", A_JOY3},
+	{"JOY4", A_JOY4},
+	{"JOY5", A_JOY5},
+	{"JOY6", A_JOY6},
+	{"JOY7", A_JOY7},
+	{"JOY8", A_JOY8},
+	{"JOY9", A_JOY9},
+	{"JOY10", A_JOY10},
+	{"JOY11", A_JOY11},
+	{"JOY12", A_JOY12},
+	{"JOY13", A_JOY13},
+	{"JOY14", A_JOY14},
+	{"JOY15", A_JOY15},
+	{"JOY16", A_JOY16},
+	{"JOY17", A_JOY17},
+	{"JOY18", A_JOY18},
+	{"JOY19", A_JOY19},
+	{"JOY20", A_JOY20},
+	{"JOY21", A_JOY21},
+	{"JOY22", A_JOY22},
+	{"JOY23", A_JOY23},
+	{"JOY24", A_JOY24},
+	{"JOY25", A_JOY25},
+	{"JOY26", A_JOY26},
+	{"JOY27", A_JOY27},
+	{"JOY28", A_JOY28},
+	{"JOY29", A_JOY29},
+	{"JOY30", A_JOY30},
+	{"JOY31", A_JOY31},
 
-	{"AUX1", K_AUX1},
-	{"AUX2", K_AUX2},
-	{"AUX3", K_AUX3},
-	{"AUX4", K_AUX4},
-	{"AUX5", K_AUX5},
-	{"AUX6", K_AUX6},
-	{"AUX7", K_AUX7},
-	{"AUX8", K_AUX8},
-	{"AUX9", K_AUX9},
-	{"AUX10", K_AUX10},
-	{"AUX11", K_AUX11},
-	{"AUX12", K_AUX12},
-	{"AUX13", K_AUX13},
-	{"AUX14", K_AUX14},
-	{"AUX15", K_AUX15},
-	{"AUX16", K_AUX16},
+	{"AUX0", A_AUX0},
+	{"AUX1", A_AUX1},
+	{"AUX2", A_AUX2},
+	{"AUX3", A_AUX3},
+	{"AUX4", A_AUX4},
+	{"AUX5", A_AUX5},
+	{"AUX6", A_AUX6},
+	{"AUX7", A_AUX7},
+	{"AUX8", A_AUX8},
+	{"AUX9", A_AUX9},
+	{"AUX10", A_AUX10},
+	{"AUX11", A_AUX11},
+	{"AUX12", A_AUX12},
+	{"AUX13", A_AUX13},
+	{"AUX14", A_AUX14},
+	{"AUX15", A_AUX15},
+	{"AUX16", A_AUX16},
+	{"AUX17", A_AUX17},
+	{"AUX18", A_AUX18},
+	{"AUX19", A_AUX19},
+	{"AUX20", A_AUX20},
+	{"AUX21", A_AUX21},
+	{"AUX22", A_AUX22},
+	{"AUX23", A_AUX23},
+	{"AUX24", A_AUX24},
+	{"AUX25", A_AUX25},
+	{"AUX26", A_AUX26},
+	{"AUX27", A_AUX27},
+	{"AUX28", A_AUX28},
+	{"AUX29", A_AUX29},
+	{"AUX30", A_AUX30},
+	{"AUX31", A_AUX31},
 
-	{"KP_HOME",			K_KP_HOME },
-	{"KP_UPARROW",		K_KP_UPARROW },
-	{"KP_PGUP",			K_KP_PGUP },
-	{"KP_LEFTARROW",	K_KP_LEFTARROW },
-	{"KP_5",			K_KP_5 },
-	{"KP_RIGHTARROW",	K_KP_RIGHTARROW },
-	{"KP_END",			K_KP_END },
-	{"KP_DOWNARROW",	K_KP_DOWNARROW },
-	{"KP_PGDN",			K_KP_PGDN },
-	{"KP_ENTER",		K_KP_ENTER },
-	{"KP_INS",			K_KP_INS },
-	{"KP_DEL",			K_KP_DEL },
-	{"KP_SLASH",		K_KP_SLASH },
-	{"KP_MINUS",		K_KP_MINUS },
-	{"KP_PLUS",			K_KP_PLUS },
-	{"KP_NUMLOCK",		K_KP_NUMLOCK },
-	{"KP_STAR",			K_KP_STAR },
-	{"KP_EQUALS",		K_KP_EQUALS },
+	{"KP_HOME",			A_KP_7 },
+	{"KP_UPARROW",		A_KP_8 },
+	{"KP_PGUP",			A_KP_9 },
+	{"KP_LEFTARROW",	A_KP_4 },
+	{"KP_5",			A_KP_5 },
+	{"KP_RIGHTARROW",	A_KP_6 },
+	{"KP_END",			A_KP_1 },
+	{"KP_DOWNARROW",	A_KP_2 },
+	{"KP_PGDN",			A_KP_3 },
+	{"KP_ENTER",		A_KP_ENTER },
+	{"KP_INS",			A_KP_0 },
+	{"KP_DEL",			A_KP_PERIOD },
+	{"KP_SLASH",		A_UNDEFINED_11 },
+	{"KP_MINUS",		A_KP_MINUS },
+	{"KP_PLUS",			A_KP_PLUS },
+	{"KP_NUMLOCK",		A_NUMLOCK },
+	{"KP_STAR",			A_UNDEFINED_12 },
+	//{"KP_EQUALS",		A_KP_EQUALS },
 
-	{"PAUSE", K_PAUSE},
+	{"PAUSE", A_PAUSE},
 	
 	{"SEMICOLON", ';'},	// because a raw semicolon seperates commands
 
+#if 0
 	{"WORLD_0", K_WORLD_0},
 	{"WORLD_1", K_WORLD_1},
 	{"WORLD_2", K_WORLD_2},
@@ -277,19 +307,20 @@ keyname_t keynames[] =
 	{"WORLD_93", K_WORLD_93},
 	{"WORLD_94", K_WORLD_94},
 	{"WORLD_95", K_WORLD_95},
+#endif
 
-	{"WINDOWS", K_SUPER},
-	{"COMPOSE", K_COMPOSE},
-	{"MODE", K_MODE},
-	{"HELP", K_HELP},
-	{"PRINT", K_PRINT},
-	{"SYSREQ", K_SYSREQ},
-	{"SCROLLOCK", K_SCROLLOCK },
-	{"BREAK", K_BREAK},
-	{"MENU", K_MENU},
-	{"POWER", K_POWER},
-	{"EURO", K_EURO},
-	{"UNDO", K_UNDO},
+	{"WINDOWS", A_UNDEFINED_13},
+	{"COMPOSE", A_UNDEFINED_14},
+	{"MODE", A_UNDEFINED_15},
+	{"HELP", A_UNDEFINED_16},
+	{"PRINT", A_PRINTSCREEN},
+	{"SYSREQ", A_UNDEFINED_17},
+	{"SCROLLOCK", A_SCROLLLOCK },
+	{"BREAK", A_UNDEFINED_18},
+	{"MENU", A_UNDEFINED_19},
+	{"POWER", A_UNDEFINED_20},
+	{"EURO", A_EURO},
+	{"UNDO", A_UNDEFINED_21},
 
 	{NULL,0}
 };
@@ -432,7 +463,7 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 	int		len;
 
 	// shift-insert is paste
-	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keys[K_SHIFT].down ) {
+	if ( ( ( key == A_INSERT ) || ( key == A_KP_0 ) ) && keys[A_SHIFT].down ) {
 		Field_Paste( edit );
 		return;
 	}
@@ -441,34 +472,34 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 	len = strlen( edit->buffer );
 
 	switch ( key ) {
-		case K_DEL:
+		case A_DELETE:
 			if ( edit->cursor < len ) {
 				memmove( edit->buffer + edit->cursor, 
 					edit->buffer + edit->cursor + 1, len - edit->cursor );
 			}
 			break;
 
-		case K_RIGHTARROW:
+		case A_CURSOR_RIGHT:
 			if ( edit->cursor < len ) {
 				edit->cursor++;
 			}
 			break;
 
-		case K_LEFTARROW:
+		case A_CURSOR_LEFT:
 			if ( edit->cursor > 0 ) {
 				edit->cursor--;
 			}
 			break;
 
-		case K_HOME:
+		case A_HOME:
 			edit->cursor = 0;
 			break;
 
-		case K_END:
+		case A_END:
 			edit->cursor = len;
 			break;
 
-		case K_INS:
+		case A_INSERT:
 			key_overstrikeMode = !key_overstrikeMode;
 			break;
 
@@ -581,13 +612,13 @@ Handles history and console scrollback
 extern cvar_t *con_allowChat;
 void Console_Key (int key) {
 	// ctrl-L clears screen
-	if ( key == 'l' && keys[K_CTRL].down ) {
+	if ( key == 'l' && keys[A_CTRL].down ) {
 		Cbuf_AddText ("clear\n");
 		return;
 	}
 
 	// enter finishes the line
-	if ( key == K_ENTER || key == K_KP_ENTER ) {
+	if ( key == A_ENTER || key == A_KP_ENTER ) {
 		if( !con_allowChat->integer ) {
 			Com_Printf( "]%s\n", g_consoleField.buffer );
 
@@ -654,15 +685,15 @@ void Console_Key (int key) {
 
 	// command completion
 
-	if (key == K_TAB) {
+	if (key == A_TAB) {
 		Field_AutoComplete(&g_consoleField);
 		return;
 	}
 
 	// command history (ctrl-p ctrl-n for unix style)
 
-	if ( (key == K_MWHEELUP && keys[K_SHIFT].down) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
-		 ( ( tolower(key) == 'p' ) && keys[K_CTRL].down ) ) {
+	if ( (key == A_MWHEELUP && keys[A_SHIFT].down) || ( key == A_CURSOR_UP ) || ( key == A_KP_8 ) ||
+		 ( ( tolower(key) == 'p' ) && keys[A_CTRL].down ) ) {
 		if ( nextHistoryLine - historyLine < COMMAND_HISTORY 
 			&& historyLine > 0 ) {
 			historyLine--;
@@ -671,8 +702,8 @@ void Console_Key (int key) {
 		return;
 	}
 
-	if ( (key == K_MWHEELDOWN && keys[K_SHIFT].down) || ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
-		 ( ( tolower(key) == 'n' ) && keys[K_CTRL].down ) ) {
+	if ( (key == A_MWHEELDOWN && keys[A_SHIFT].down) || ( key == A_CURSOR_DOWN ) || ( key == A_KP_2 ) ||
+		 ( ( tolower(key) == 'n' ) && keys[A_CTRL].down ) ) {
 		historyLine++;
 		if (historyLine >= nextHistoryLine) {
 			historyLine = nextHistoryLine;
@@ -685,28 +716,28 @@ void Console_Key (int key) {
 	}
 
 	// console scrolling
-	if ( key == K_PGUP ) {
+	if ( key == A_PAGE_UP ) {
 		Con_PageUp();
 		return;
 	}
 
-	if ( key == K_PGDN) {
+	if ( key == A_PAGE_DOWN ) {
 		Con_PageDown();
 		return;
 	}
 
-	if ( key == K_MWHEELUP) {	//----(SA)	added some mousewheel functionality to the console
+	if ( key == A_MWHEELUP ) {	//----(SA)	added some mousewheel functionality to the console
 		Con_PageUp();
-		if(keys[K_CTRL].down) {	// hold <ctrl> to accelerate scrolling
+		if(keys[A_CTRL].down) {	// hold <ctrl> to accelerate scrolling
 			Con_PageUp();
 			Con_PageUp();
 		}
 		return;
 	}
 
-	if ( key == K_MWHEELDOWN) {	//----(SA)	added some mousewheel functionality to the console
+	if ( key == A_MWHEELDOWN ) {	//----(SA)	added some mousewheel functionality to the console
 		Con_PageDown();
-		if(keys[K_CTRL].down) {	// hold <ctrl> to accelerate scrolling
+		if(keys[A_CTRL].down) {	// hold <ctrl> to accelerate scrolling
 			Con_PageDown();
 			Con_PageDown();
 		}
@@ -714,13 +745,13 @@ void Console_Key (int key) {
 	}
 
 	// ctrl-home = top of console
-	if ( key == K_HOME && keys[K_CTRL].down ) {
+	if ( key == A_HOME && keys[A_CTRL].down ) {
 		Con_Top();
 		return;
 	}
 
 	// ctrl-end = bottom of console
-	if ( key == K_END && keys[K_CTRL].down ) {
+	if ( key == A_END && keys[A_CTRL].down ) {
 		Con_Bottom();
 		return;
 	}
@@ -744,13 +775,13 @@ void Message_Key( int key ) {
 	char	buffer[MAX_STRING_CHARS];
 
 
-	if (key == K_ESCAPE) {
+	if (key == A_ESCAPE) {
 		Key_SetCatcher( Key_GetCatcher( ) & ~KEYCATCH_MESSAGE );
 		Field_Clear( &chatField );
 		return;
 	}
 
-	if ( key == K_ENTER || key == K_KP_ENTER )
+	if ( key == A_ENTER || key == A_KP_ENTER )
 	{
 		if ( chatField.buffer[0] && clc.state == CA_ACTIVE ) {
 			if (chat_playerNum != -1 )
@@ -762,8 +793,6 @@ void Message_Key( int key ) {
 				Com_sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
 			else
 				Com_sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
-
-
 
 			CL_AddReliableCommand(buffer, qfalse);
 		}
@@ -1196,10 +1225,10 @@ void CL_KeyDownEvent( int key, unsigned time )
 {
 	keys[key].down = qtrue;
 	keys[key].repeats++;
-	if( keys[key].repeats == 1 && key != K_SCROLLOCK && key != K_KP_NUMLOCK && key != K_CAPSLOCK )
+	if( keys[key].repeats == 1 && key != A_SCROLLLOCK && key != A_NUMLOCK && key != A_CAPSLOCK )
 		anykeydown++;
 
-	if( keys[K_ALT].down && key == K_ENTER )
+	if( keys[A_ALT].down && key == A_ENTER )
 	{
 		Cvar_SetValue( "r_fullscreen",
 			!Cvar_VariableIntegerValue( "r_fullscreen" ) );
@@ -1207,7 +1236,7 @@ void CL_KeyDownEvent( int key, unsigned time )
 	}
 
 	// console key is hardcoded, so the user can never unbind it
-	if( key == K_CONSOLE || ( keys[K_SHIFT].down && key == K_ESCAPE ) )
+	if( key == A_CONSOLE || ( keys[A_SHIFT].down && key == A_ESCAPE ) )
 	{
 		Con_ToggleConsole_f ();
 		Key_ClearStates ();
@@ -1216,17 +1245,17 @@ void CL_KeyDownEvent( int key, unsigned time )
 
 
 	// keys can still be used for bound actions
-	if ( ( key < 128 || key == K_MOUSE1 ) &&
+	if ( ( key < 128 || key == A_MOUSE1 ) &&
 		( clc.demoplaying || clc.state == CA_CINEMATIC ) && Key_GetCatcher( ) == 0 ) {
 
 		if (Cvar_VariableValue ("com_cameraMode") == 0) {
 			Cvar_Set ("nextdemo","");
-			key = K_ESCAPE;
+			key = A_ESCAPE;
 		}
 	}
 
 	// escape is always handled special
-	if ( key == K_ESCAPE ) {
+	if ( key == A_ESCAPE ) {
 		if ( Key_GetCatcher( ) & KEYCATCH_MESSAGE ) {
 			// clear message mode
 			Message_Key( key );
@@ -1289,7 +1318,7 @@ void CL_KeyUpEvent( int key, unsigned time )
 {
 	keys[key].repeats = 0;
 	keys[key].down = qfalse;
-	if (key != K_SCROLLOCK && key != K_KP_NUMLOCK && key != K_CAPSLOCK)
+	if (key != A_SCROLLLOCK && key != A_NUMLOCK && key != A_CAPSLOCK)
 		anykeydown--;
 
 	if (anykeydown < 0) {
@@ -1297,7 +1326,7 @@ void CL_KeyUpEvent( int key, unsigned time )
 	}
 
 	// don't process key-up events for the console key
-	if ( key == K_CONSOLE || ( key == K_ESCAPE && keys[K_SHIFT].down ) )
+	if ( key == A_CONSOLE || ( key == A_ESCAPE && keys[A_SHIFT].down ) )
 		return;
 
 	//
@@ -1376,7 +1405,7 @@ void Key_ClearStates (void)
 	anykeydown = 0;
 
 	for ( i=0 ; i < MAX_KEYS ; i++ ) {
-		if (i == K_SCROLLOCK || i == K_KP_NUMLOCK || i == K_CAPSLOCK)
+		if (i == A_SCROLLLOCK || i == A_NUMLOCK || i == A_CAPSLOCK)
 			continue;
 
 		if ( keys[i].down ) {

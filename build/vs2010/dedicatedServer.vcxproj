@@ -178,6 +178,7 @@
     </ClCompile>
     <ClCompile Include="..\..\code\null\null_snddma.c">
     </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\stringed.c" />
     <ClCompile Include="..\..\code\sys\con_log.c">
     </ClCompile>
     <ClCompile Include="..\..\code\sys\con_win32.c">

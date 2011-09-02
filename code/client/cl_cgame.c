@@ -419,6 +419,8 @@ static unsigned int AnyLanguage_ReadCharFromString( const char *psText, int *piA
 	return *psText;
 }
 
+void SE_GetString( const char *compare, char *buffer, int bufferSize );
+
 /*
 ====================
 CL_CgameSystemCalls
@@ -587,8 +589,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return 0;// AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation )
 
 	case CG_SP_GETSTRINGTEXTSTRING:
-		Q_strncpyz( VMA(2), VMA(1), args[3] );
-		return strlen( VMA(1) );
+		SE_GetString( VMA(1), VMA(2), args[3] );
+		return 0;
+		//return strlen( VMA(1) );
 
 	case CG_R_CLEARSCENE:
 		re.ClearScene();

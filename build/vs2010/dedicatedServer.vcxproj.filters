@@ -425,6 +425,9 @@
     <ClCompile Include="..\..\code\zlib\zutil.c">
       <Filter>code\zlib</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\qcommon\stringed.c">
+      <Filter>code\qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\code\sys\win_resource.rc">

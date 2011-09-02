@@ -120,6 +120,8 @@ float readFloat( void ) {
 	return me.ffred;
 }
 
+/* This has to be done better because ocr_a is loaded as smallFont at ingame.menu for cgame */
+
 #define MAX_FONTS 4
 static dfontdat_t registeredFont[MAX_FONTS];
 static char registeredFontNames[MAX_FONTS][64];
@@ -202,7 +204,7 @@ void R_InitFont( const int index, const char *fontName ) {
 			font->mGlyphs[i].t2           = readFloat();
 		}
 
-		/* Looks like something missing from the spec */
+		/* Looks like something missing from the spec (maybe :s) */
 		dummy             = readShort();
 		font->mPointSize  = readShort();
 		font->mHeight     = readShort();
@@ -327,6 +329,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 	int len, count;
 	vec4_t newColor;
 
+	// Fuckers :(
 	if( fontIndex & STYLE_DROPSHADOW )
 		fontIndex -= STYLE_DROPSHADOW;
 
@@ -336,7 +339,9 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 	if( !font || scale <= 0 )
 		return;
 
-	RE_Font_PaintChar( 312, 20, 11, 14, scale, font->mGlyphs[65].s, font->mGlyphs[65].t, font->mGlyphs[65].s2, font->mGlyphs[65].t2, fontIndex );
+	/* Use this for testing how to render a single character for now */
+	glyph = &font->mGlyphs[66]; // 'B'
+	RE_Font_PaintChar( 312, 20, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, fontIndex );
 
 	if( text ) {
 		const char *s = text;
