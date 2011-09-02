@@ -109,7 +109,8 @@ void SE_Load( const char *title, int index, const char *language ) {
 // Compare is expected in FILENAME_REFERENCE format
 // above stores FILENAME_(each reference) into each individual .reference
 void SE_GetString( const char *compare, char *buffer, int bufferSize ) {
-	int i, j;
+	Q_strncpyz( buffer, compare, bufferSize );
+/*	int i, j;
 
 	for( i = 0; i < 128; i++ ) {
 		for( j = 0; j < 1024; j++ ) {
@@ -119,6 +120,7 @@ void SE_GetString( const char *compare, char *buffer, int bufferSize ) {
 			}
 		}
 	}
+*/
 }
 
 void SE_Init( void ) {

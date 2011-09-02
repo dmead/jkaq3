@@ -128,13 +128,13 @@ static char registeredFontNames[MAX_FONTS][64];
 static qhandle_t registeredFontHandles[MAX_FONTS];
 
 dfontdat_t *FontFromHandle( qhandle_t handle ) {
-	if( handle == registeredFontHandles[FONT_SMALL] ) {
+	if( handle == registeredFontHandles[FONT_SMALL-1] ) {
 		return &registeredFont[FONT_SMALL-1];
-	} else if( handle == registeredFontHandles[FONT_MEDIUM] ) {
+	} else if( handle == registeredFontHandles[FONT_MEDIUM-1] ) {
 		return &registeredFont[FONT_MEDIUM-1];
-	} else if( handle == registeredFontHandles[FONT_LARGE] ) {
+	} else if( handle == registeredFontHandles[FONT_LARGE-1] ) {
 		return &registeredFont[FONT_LARGE-1];
-	} else if( handle == registeredFontHandles[FONT_SMALL2] ) {
+	} else if( handle == registeredFontHandles[FONT_SMALL2-1] ) {
 		return &registeredFont[FONT_SMALL2-1];
 	} else {
 		return &registeredFont[FONT_MEDIUM-1];
@@ -338,10 +338,6 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 
 	if( !font || scale <= 0 )
 		return;
-
-	/* Use this for testing how to render a single character for now */
-	glyph = &font->mGlyphs[66]; // 'B'
-	RE_Font_PaintChar( 312, 20, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, fontIndex );
 
 	if( text ) {
 		const char *s = text;
