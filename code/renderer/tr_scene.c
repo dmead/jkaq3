@@ -151,7 +151,7 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 		
 		Com_Memcpy( poly->verts, &verts[numVerts*j], numVerts * sizeof( *verts ) );
 
-		if ( glConfig.hardwareType == GLHW_RAGEPRO ) {
+		if ( glConfig2.hardwareType == GLHW_RAGEPRO ) {
 			poly->verts->modulate[0] = 255;
 			poly->verts->modulate[1] = 255;
 			poly->verts->modulate[2] = 255;
@@ -249,7 +249,7 @@ void RE_AddDynamicLightToScene( const vec3_t org, float intensity, float r, floa
 		return;
 	}
 	// these cards don't have the correct blend mode
-	if ( glConfig.hardwareType == GLHW_RIVA128 || glConfig.hardwareType == GLHW_PERMEDIA2 ) {
+	if ( glConfig2.hardwareType == GLHW_RIVA128 || glConfig2.hardwareType == GLHW_PERMEDIA2 ) {
 		return;
 	}
 	dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
@@ -369,7 +369,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 	// dlights if it needs to be disabled or if vertex lighting is enabled
 	if ( r_dynamiclight->integer == 0 ||
 		 r_vertexLight->integer == 1 ||
-		 glConfig.hardwareType == GLHW_PERMEDIA2 ) {
+		 glConfig2.hardwareType == GLHW_PERMEDIA2 ) {
 		tr.refdef.num_dlights = 0;
 	}
 

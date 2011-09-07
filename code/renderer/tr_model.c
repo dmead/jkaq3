@@ -1039,11 +1039,12 @@ static qboolean R_LoadMD4( model_t *mod, void *buffer, const char *mod_name ) {
 /*
 ** RE_BeginRegistration
 */
-void RE_BeginRegistration( glconfig_t *glconfigOut ) {
+void RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out ) {
 
 	R_Init();
 
 	*glconfigOut = glConfig;
+	*glconfig2Out = glConfig2;
 
 	R_SyncRenderThread();
 

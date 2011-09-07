@@ -81,12 +81,12 @@ R_InitCommandBuffers
 ====================
 */
 void R_InitCommandBuffers( void ) {
-	glConfig.smpActive = qfalse;
+	glConfig2.smpActive = qfalse;
 	if ( r_smp->integer ) {
 		ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
 		if ( GLimp_SpawnRenderThread( RB_RenderThread ) ) {
 			ri.Printf( PRINT_ALL, "...succeeded.\n" );
-			glConfig.smpActive = qtrue;
+			glConfig2.smpActive = qtrue;
 		} else {
 			ri.Printf( PRINT_ALL, "...failed.\n" );
 		}
@@ -100,9 +100,9 @@ R_ShutdownCommandBuffers
 */
 void R_ShutdownCommandBuffers( void ) {
 	// kill the rendering thread
-	if ( glConfig.smpActive ) {
+	if ( glConfig2.smpActive ) {
 		GLimp_WakeRenderer( NULL );
-		glConfig.smpActive = qfalse;
+		glConfig2.smpActive = qfalse;
 	}
 }
 
@@ -125,7 +125,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters ) {
 	// clear it out, in case this is a sync and not a buffer flip
 	cmdList->used = 0;
 
-	if ( glConfig.smpActive ) {
+	if ( glConfig2.smpActive ) {
 		// if the render thread is not idle, wait for it
 		if ( renderThreadActive ) {
 			c_blockedOnRender++;
@@ -152,7 +152,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters ) {
 	// actually start the commands going
 	if ( !r_skipBackEnd->integer ) {
 		// let it start on the new batch
-		if ( !glConfig.smpActive ) {
+		if ( !glConfig2.smpActive ) {
 			RB_ExecuteRenderCommands( cmdList->cmds );
 		} else {
 			GLimp_WakeRenderer( cmdList );
@@ -177,7 +177,7 @@ void R_SyncRenderThread( void ) {
 	}
 	R_IssueRenderCommands( qfalse );
 
-	if ( !glConfig.smpActive ) {
+	if ( !glConfig2.smpActive ) {
 		return;
 	}
 	GLimp_FrontEndSleep();

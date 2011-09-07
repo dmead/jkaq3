@@ -96,6 +96,7 @@ void GLimp_Shutdown( void )
 	screen = NULL;
 
 	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
+	Com_Memset( &glConfig2, 0, sizeof( glConfig2) );
 	Com_Memset( &glState, 0, sizeof( glState ) );
 }
 
@@ -250,7 +251,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder)
 
 	ri.Printf (PRINT_ALL, "...setting mode %d:", mode );
 
-	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
+	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig2.windowAspect, mode ) )
 	{
 		ri.Printf( PRINT_ALL, " invalid mode\n" );
 		return RSERR_INVALID_MODE;
@@ -736,8 +737,8 @@ void GLimp_Init( void )
 
 success:
 	// This values force the UI to disable driver selection
-	glConfig.driverType = GLDRV_ICD;
-	glConfig.hardwareType = GLHW_GENERIC;
+	glConfig2.driverType = GLDRV_ICD;
+	glConfig2.hardwareType = GLHW_GENERIC;
 	glConfig.deviceSupportsGamma = SDL_SetGamma( 1.0f, 1.0f, 1.0f ) >= 0;
 
 	// Mysteriously, if you use an NVidia graphics card and multiple monitors,

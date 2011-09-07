@@ -1008,6 +1008,7 @@ typedef struct {
 extern backEndState_t	backEnd;
 extern trGlobals_t	tr;
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
+extern glconfig2_t	glConfig2;		// outside of TR since it shouldn't be cleared during ref re-init
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init
 
 // These two variables should live inside glConfig but can't because of compatibility issues to the original ID vms.
@@ -1242,7 +1243,7 @@ void	RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 void	RE_UploadCinematic (int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty);
 
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
-void		RE_BeginRegistration( glconfig_t *glconfig );
+void		RE_BeginRegistration( glconfig_t *glconfig, glconfig2_t *glconfig2 );
 void		RE_LoadWorldMap( const char *mapname );
 void		RE_SetWorldVisData( const byte *vis );
 qhandle_t	RE_RegisterModel( const char *name );

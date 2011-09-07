@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 glconfig_t  glConfig;
+glconfig2_t glConfig2;
 qboolean    textureFilterAnisotropic = qfalse;
 //int         maxAnisotropy = 0;
 float       displayAspect = 0.0f;
@@ -954,19 +955,19 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ] );
 	ri.Printf( PRINT_ALL, "texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0] );
 	ri.Printf( PRINT_ALL, "compressed textures: %s\n", enablestrings[glConfig.textureCompression!=TC_NONE] );
-	if ( r_vertexLight->integer || glConfig.hardwareType == GLHW_PERMEDIA2 )
+	if ( r_vertexLight->integer || glConfig2.hardwareType == GLHW_PERMEDIA2 )
 	{
 		ri.Printf( PRINT_ALL, "HACK: using vertex lightmap approximation\n" );
 	}
-	if ( glConfig.hardwareType == GLHW_RAGEPRO )
+	if ( glConfig2.hardwareType == GLHW_RAGEPRO )
 	{
 		ri.Printf( PRINT_ALL, "HACK: ragePro approximations\n" );
 	}
-	if ( glConfig.hardwareType == GLHW_RIVA128 )
+	if ( glConfig2.hardwareType == GLHW_RIVA128 )
 	{
 		ri.Printf( PRINT_ALL, "HACK: riva128 approximations\n" );
 	}
-	if ( glConfig.smpActive ) {
+	if ( glConfig2.smpActive ) {
 		ri.Printf( PRINT_ALL, "Using dual processor acceleration\n" );
 	}
 	if ( r_finish->integer ) {
