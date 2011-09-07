@@ -190,9 +190,10 @@ void		NET_LeaveMulticast6(void);
 void		NET_Sleep(int msec);
 
 
-#define	MAX_MSGLEN				49152		// max length of a message, which may
+#define	MAX_MSGLEN				16384		// max length of a message, which may
 											// be fragmented into multiple packets
 
+// 49152
 //rww - 6/28/02 - Changed from 16384 to match sof2's. This does seem rather huge, but I guess it doesn't really hurt anything.
 
 #define MAX_DOWNLOAD_WINDOW		48	// ACK window of 48 download chunks. Cannot set this higher, or clients

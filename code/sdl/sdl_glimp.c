@@ -581,8 +581,16 @@ static void GLimp_InitExtensions( void )
 	}
 
 	// GL_EXT_texture_edge_clamp
-	glConfig.clampToEdgeAvailable = qtrue;
-	ri.Printf( PRINT_ALL, "...using GL_EXT_clamp_to_edge\n" );
+	glConfig.clampToEdgeAvailable = qfalse;
+	if ( GLimp_HaveExtension( "GL_EXT_texture_edge_clamp" ) )
+	{
+		glConfig.clampToEdgeAvailable = qtrue;
+		ri.Printf( PRINT_ALL, "...using GL_EXT_clamp_to_edge\n" );
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_EXT_clamp_to_edge not found\n" );
+	}
 
 	// GL_ARB_multitexture
 	qglMultiTexCoord2fARB = NULL;

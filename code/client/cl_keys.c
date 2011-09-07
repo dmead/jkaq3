@@ -850,6 +850,8 @@ int Key_StringToKeynum( char *str ) {
 		return -1;
 	}
 	if ( !str[1] ) {
+		// Always lowercase
+		Q_strlwr( str );
 		return str[0];
 	}
 

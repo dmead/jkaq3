@@ -2667,6 +2667,8 @@ static void Com_InitRand(void)
 		srand(time(NULL));
 }
 
+void SE_Init( void );
+
 /*
 =================
 Com_Init
@@ -2725,6 +2727,8 @@ void Com_Init( char *commandLine ) {
 		Cvar_ForceReset("com_basegame");
 
 	FS_InitFilesystem ();
+
+	SE_Init( );
 
 	Com_InitJournaling();
 

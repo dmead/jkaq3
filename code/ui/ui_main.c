@@ -985,7 +985,11 @@ void _UI_Refresh( int realtime )
 	// draw cursor
 	UI_SetColor( NULL );
 	if (Menu_Count() > 0) {
-		UI_DrawHandlePic( uiInfo.uiDC.cursorx, uiInfo.uiDC.cursory, 48, 48, uiInfo.uiDC.Assets.cursor);
+		uiClientState_t cstate;
+		trap_GetClientState( &cstate );
+		if ( cstate.connState <= CA_DISCONNECTED || cstate.connState >= CA_ACTIVE ) {
+			UI_DrawHandlePic( uiInfo.uiDC.cursorx, uiInfo.uiDC.cursory, 48, 48, uiInfo.uiDC.Assets.cursor);
+		}
 	}
 #endif
 
@@ -5972,13 +5976,15 @@ static void UI_RunMenuScript(char **args)
 			}
 			trap_Cmd_ExecuteText( EXEC_APPEND, va("cinematic %s.roq 2\n", uiInfo.movieList[uiInfo.movieIndex]));
 		} else if (Q_stricmp(name, "RunMod") == 0) {
-			trap_Cvar_Set( "fs_game", uiInfo.modList[uiInfo.modIndex].modName);
-			trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+			//trap_Cvar_Set( "fs_game", uiInfo.modList[uiInfo.modIndex].modName);
+			//trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "game_restart %s\n", uiInfo.modList[uiInfo.modIndex].modName ) );
 		} else if (Q_stricmp(name, "RunDemo") == 0) {
 			trap_Cmd_ExecuteText( EXEC_APPEND, va("demo \"%s\"\n", uiInfo.demoList[uiInfo.demoIndex]));
 		} else if (Q_stricmp(name, "Quake3") == 0) {
-			trap_Cvar_Set( "fs_game", "");
-			trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+			//trap_Cvar_Set( "fs_game", "");
+			//trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "game_restart \"\"\n" );
 		} else if (Q_stricmp(name, "closeJoin") == 0) {
 			if (uiInfo.serverStatus.refreshActive) {
 				UI_StopServerRefresh();

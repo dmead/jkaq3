@@ -3335,6 +3335,19 @@ void CL_SetModel_f( void ) {
 	}
 }
 
+void CL_SetForce_f( void ) {
+	char	*arg;
+	char	name[256];
+
+	arg = Cmd_Argv( 1 );
+	if (arg[0]) {
+		Cvar_Set( "forcepowers", arg );
+	} else {
+		Cvar_VariableStringBuffer( "forcepowers", name, sizeof(name) );
+		Com_Printf("forcepowers is set to %s\n", name);
+	}
+}
+
 
 //===========================================================================================
 
@@ -3651,6 +3664,7 @@ void CL_Init( void ) {
 	Cmd_AddCommand ("fs_openedList", CL_OpenedPK3List_f );
 	Cmd_AddCommand ("fs_referencedList", CL_ReferencedPK3List_f );
 	Cmd_AddCommand ("model", CL_SetModel_f );
+	Cmd_AddCommand ("forcepowers", CL_SetForce_f );
 	Cmd_AddCommand ("video", CL_Video_f );
 	Cmd_AddCommand ("stopvideo", CL_StopVideo_f );
 	CL_InitRef();
@@ -3720,6 +3734,7 @@ void CL_Shutdown(char *finalmsg, qboolean disconnect, qboolean quit)
 	Cmd_RemoveCommand ("fs_openedList");
 	Cmd_RemoveCommand ("fs_referencedList");
 	Cmd_RemoveCommand ("model");
+	Cmd_RemoveCommand ("forcepowers");
 	Cmd_RemoveCommand ("video");
 	Cmd_RemoveCommand ("stopvideo");
 

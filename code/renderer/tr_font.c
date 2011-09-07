@@ -126,18 +126,33 @@ float readFloat( void ) {
 static dfontdat_t registeredFont[MAX_FONTS];
 static char registeredFontNames[MAX_FONTS][64];
 static qhandle_t registeredFontHandles[MAX_FONTS];
+static int registeredFontOffsets[MAX_FONTS] = { 2, 1, 3, 4 };
+qboolean small_font_hack = qfalse; // qfalse for UI - aurabesh, qtrue for CGAME/ingame - ocr_a
 
-dfontdat_t *FontFromHandle( qhandle_t handle ) {
-	if( handle == registeredFontHandles[FONT_SMALL-1] ) {
-		return &registeredFont[FONT_SMALL-1];
-	} else if( handle == registeredFontHandles[FONT_MEDIUM-1] ) {
+dfontdat_t *FontFromHandle( int offset ) {
+	if( offset == 1 ) {
 		return &registeredFont[FONT_MEDIUM-1];
-	} else if( handle == registeredFontHandles[FONT_LARGE-1] ) {
+	} else if( offset == 2 ) {
+		return &registeredFont[FONT_SMALL-1];
+	} else if( offset == 3 ) {
 		return &registeredFont[FONT_LARGE-1];
-	} else if( handle == registeredFontHandles[FONT_SMALL2-1] ) {
+	} else if( offset == 4 ) {
 		return &registeredFont[FONT_SMALL2-1];
 	} else {
 		return &registeredFont[FONT_MEDIUM-1];
+	}
+}
+qhandle_t ShaderFromHandle( int offset ) {
+	if( offset == 1 ) {
+		return registeredFontHandles[FONT_MEDIUM-1];
+	} else if( offset == 2 ) {
+		return registeredFontHandles[FONT_SMALL-1];
+	} else if( offset == 3 ) {
+		return registeredFontHandles[FONT_LARGE-1];
+	} else if( offset == 4 ) {
+		return registeredFontHandles[FONT_SMALL2-1];
+	} else {
+		return registeredFontHandles[FONT_MEDIUM-1];
 	}
 }
 void R_InitFont( const int index, const char *fontName ) {
@@ -239,10 +254,22 @@ void R_InitFonts( void ) {
 qhandle_t RE_RegisterFont( const char *fontName ) {
 	int i;
 	char name[64];
+
+	if( !small_font_hack && !Q_stricmp( fontName, "ocr_a" ) ) {
+		R_InitFont( FONT_SMALL, "ocr_a" );
+		small_font_hack = qtrue;
+	}
+
+	if( small_font_hack && !Q_stricmp( fontName, "aurabesh" ) ) {
+		R_InitFont( FONT_SMALL, "aurabesh" );
+		small_font_hack = qfalse;
+	}
+
 	Com_sprintf( name, sizeof( name ), "fonts/%s.fontdat", fontName );
 	for( i = 0; i < MAX_FONTS; i++ ) {
 		if( Q_stricmp( name, registeredFontNames[i] ) == 0 ) {
-			return registeredFontHandles[i];
+			return registeredFontOffsets[i];
+			//return registeredFontHandles[i];
 		}
 	}
 	return 0;
@@ -324,6 +351,7 @@ void RE_Font_PaintChar( float x, float y, float width, float height, float scale
 }
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale ) {
 	qhandle_t fontIndex = setIndex;
+	qhandle_t shader;
 	dfontdat_t *font;
 	glyphInfo_t *glyph;
 	int len, count;
@@ -335,6 +363,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 
 	fontIndex &= ~STYLE_BLINK;
 	font = FontFromHandle( fontIndex );
+	shader = ShaderFromHandle( fontIndex );
 
 	if( !font || scale <= 0 )
 		return;
@@ -359,8 +388,8 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 				continue;
 			}
 			else {
-				float yadj = scale * glyph->baseline;
-				RE_Font_PaintChar( ox + glyph->horizOffset, oy - yadj, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, fontIndex );
+				float yadj = /*scale **/ glyph->baseline;
+				RE_Font_PaintChar( ox + glyph->horizOffset, (oy - yadj)+(font->mAscender), glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
 				ox += ( glyph->horizAdvance * scale );
 				s++;
 				count++;

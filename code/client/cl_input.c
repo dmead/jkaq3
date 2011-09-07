@@ -52,6 +52,8 @@ kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
 kbutton_t	in_strafe, in_speed;
 kbutton_t	in_up, in_down;
 
+genCmds_t	generic_cmd;
+
 #ifdef USE_VOIP
 kbutton_t	in_voiprecord;
 #endif
@@ -276,6 +278,49 @@ void IN_CenterView (void) {
 	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
 }
 
+void IN_VoiceChat (void) {
+	if ( !( Key_GetCatcher( ) & KEYCATCH_UI ) ) {
+		if ( clc.state == CA_ACTIVE && !clc.demoplaying ) {
+			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_VOICECHAT );
+		}
+	}
+}
+
+void IN_GenCmd (genCmds_t cmd ) {
+	generic_cmd = cmd;
+}
+
+void IN_GenCmd_SaberSwitch( void ) {IN_GenCmd(GENCMD_SABERSWITCH);}
+void IN_GenCmd_Duel( void ) {IN_GenCmd(GENCMD_ENGAGE_DUEL);}
+void IN_GenCmd_Heal( void ) {IN_GenCmd(GENCMD_FORCE_HEAL);}
+void IN_GenCmd_Speed( void ) {IN_GenCmd(GENCMD_FORCE_SPEED);}
+void IN_GenCmd_Throw( void ) {IN_GenCmd(GENCMD_FORCE_THROW);}
+void IN_GenCmd_Pull( void ) {IN_GenCmd(GENCMD_FORCE_PULL);}
+void IN_GenCmd_Distract( void ) {IN_GenCmd(GENCMD_FORCE_DISTRACT);}
+void IN_GenCmd_Rage( void ) {IN_GenCmd(GENCMD_FORCE_RAGE);}
+void IN_GenCmd_Protect( void ) {IN_GenCmd(GENCMD_FORCE_PROTECT);}
+void IN_GenCmd_Absorb( void ) {IN_GenCmd(GENCMD_FORCE_ABSORB);}
+void IN_GenCmd_HealOther( void ) {IN_GenCmd(GENCMD_FORCE_HEALOTHER);}
+void IN_GenCmd_ForceOther( void ) {IN_GenCmd(GENCMD_FORCE_FORCEPOWEROTHER);}
+void IN_GenCmd_Seeing( void ) {IN_GenCmd(GENCMD_FORCE_SEEING);}
+void IN_GenCmd_Seeker( void ) {IN_GenCmd(GENCMD_USE_SEEKER);}
+void IN_GenCmd_Field( void ) {IN_GenCmd(GENCMD_USE_FIELD);}
+void IN_GenCmd_Bacta( void ) {IN_GenCmd(GENCMD_USE_BACTA);}
+void IN_GenCmd_Binoculars( void ) {IN_GenCmd(GENCMD_USE_ELECTROBINOCULARS);}
+void IN_GenCmd_Zoom( void ) {IN_GenCmd(GENCMD_ZOOM);}
+void IN_GenCmd_Sentry( void ) {IN_GenCmd(GENCMD_USE_SENTRY);}
+void IN_GenCmd_Jetpack( void ) {IN_GenCmd(GENCMD_USE_JETPACK);}
+void IN_GenCmd_BactaBig( void ) {IN_GenCmd(GENCMD_USE_BACTABIG);}
+void IN_GenCmd_HealthDisp( void ) {IN_GenCmd(GENCMD_USE_HEALTHDISP);}
+void IN_GenCmd_AmmoDisp( void ) {IN_GenCmd(GENCMD_USE_AMMODISP);}
+void IN_GenCmd_EWeb( void ) {IN_GenCmd(GENCMD_USE_EWEB);}
+void IN_GenCmd_Cloak( void ) {IN_GenCmd(GENCMD_USE_CLOAK);}
+void IN_GenCmd_SaberCycle( void ) {IN_GenCmd(GENCMD_SABERATTACKCYCLE);}
+void IN_GenCmd_Taunt( void ) {IN_GenCmd(GENCMD_TAUNT);}
+void IN_GenCmd_Bow( void ) {IN_GenCmd(GENCMD_BOW);}
+void IN_GenCmd_Meditate( void ) {IN_GenCmd(GENCMD_MEDITATE);}
+void IN_GenCmd_Flourish( void ) {IN_GenCmd(GENCMD_FLOURISH);}
+void IN_GenCmd_Gloat( void ) {IN_GenCmd(GENCMD_GLOAT);}
 
 //==========================================================================
 
@@ -560,6 +605,8 @@ void CL_FinishMove( usercmd_t *cmd ) {
 	cmd->weapon = cl.cgameUserCmdValue;
 	cmd->forcesel = cl.cgameUserCmdForce;
 	cmd->invensel = cl.cgameUserCmdInv;
+	cmd->generic_cmd = generic_cmd;
+	generic_cmd = (genCmds_t)0;
 
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
@@ -920,12 +967,55 @@ void CL_SendCmd( void ) {
 	CL_WritePacket();
 }
 
+typedef struct {
+	char		*name;
+	xcommand_t	func;
+} gencmd_t;
+
+gencmd_t gencmds[] = {
+	{"sv_saberswitch", IN_GenCmd_SaberSwitch},
+	{"engage_duel", IN_GenCmd_Duel},
+	{"force_heal", IN_GenCmd_Heal},
+	{"force_speed", IN_GenCmd_Speed},
+	{"force_throw", IN_GenCmd_Throw},
+	{"force_pull", IN_GenCmd_Pull},
+	{"force_distract", IN_GenCmd_Distract},
+	{"force_rage", IN_GenCmd_Rage},
+	{"force_protect", IN_GenCmd_Protect},
+	{"force_absorb", IN_GenCmd_Absorb},
+	{"force_healother", IN_GenCmd_HealOther},
+	{"force_forcepowerother", IN_GenCmd_ForceOther},
+	{"force_seeing", IN_GenCmd_Seeing},
+	{"use_seeker", IN_GenCmd_Seeker},
+	{"use_field", IN_GenCmd_Field},
+	{"use_bacta", IN_GenCmd_Bacta},
+	{"use_electrobinoculars", IN_GenCmd_Binoculars},
+	{"zoom", IN_GenCmd_Zoom},
+	{"use_sentry", IN_GenCmd_Sentry},
+	{"use_jetpack", IN_GenCmd_Jetpack},
+	{"use_bactabig", IN_GenCmd_BactaBig},
+	{"use_healthdisp", IN_GenCmd_HealthDisp},
+	{"use_ammodisp", IN_GenCmd_AmmoDisp},
+	{"use_eweb", IN_GenCmd_EWeb},
+	{"use_cloak", IN_GenCmd_Cloak},
+	{"saberAttackCycle", IN_GenCmd_SaberCycle},
+	{"taunt", IN_GenCmd_Taunt},
+	{"bow", IN_GenCmd_Bow},
+	{"meditate", IN_GenCmd_Meditate},
+	{"flourish", IN_GenCmd_Flourish},
+	{"gloat", IN_GenCmd_Gloat},
+
+	{NULL,0}
+};
+
 /*
 ============
 CL_InitInput
 ============
 */
 void CL_InitInput( void ) {
+	gencmd_t *gc;
+
 	Cmd_AddCommand ("centerview",IN_CenterView);
 
 	Cmd_AddCommand ("+moveup",IN_UpDown);
@@ -954,6 +1044,18 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("-speed", IN_SpeedUp);
 	Cmd_AddCommand ("+attack", IN_Button0Down);
 	Cmd_AddCommand ("-attack", IN_Button0Up);
+	Cmd_AddCommand ("+use", IN_Button5Down);
+	Cmd_AddCommand ("-use", IN_Button5Up);
+	Cmd_AddCommand ("+force_grip", IN_Button6Down);
+	Cmd_AddCommand ("-force_grip", IN_Button6Up);
+	Cmd_AddCommand ("+altattack", IN_Button7Down);
+	Cmd_AddCommand ("-altattack", IN_Button7Up);
+	Cmd_AddCommand ("+useforce", IN_Button9Down);
+	Cmd_AddCommand ("-useforce", IN_Button9Up);
+	Cmd_AddCommand ("+force_lightning", IN_Button10Down);
+	Cmd_AddCommand ("-force_lightning", IN_Button10Up);
+	Cmd_AddCommand ("+force_drain", IN_Button11Down);
+	Cmd_AddCommand ("-force_drain", IN_Button11Up);
 	Cmd_AddCommand ("+button0", IN_Button0Down);
 	Cmd_AddCommand ("-button0", IN_Button0Up);
 	Cmd_AddCommand ("+button1", IN_Button1Down);
@@ -966,12 +1068,8 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("-button4", IN_Button4Up);
 	Cmd_AddCommand ("+button5", IN_Button5Down);
 	Cmd_AddCommand ("-button5", IN_Button5Up);
-	Cmd_AddCommand ("+use", IN_Button5Down);
-	Cmd_AddCommand ("-use", IN_Button5Up);
 	Cmd_AddCommand ("+button6", IN_Button6Down);
 	Cmd_AddCommand ("-button6", IN_Button6Up);
-	Cmd_AddCommand ("+altattack", IN_Button7Down);
-	Cmd_AddCommand ("-altattack", IN_Button7Up);
 	Cmd_AddCommand ("+button7", IN_Button7Down);
 	Cmd_AddCommand ("-button7", IN_Button7Up);
 	Cmd_AddCommand ("+button8", IN_Button8Down);
@@ -996,6 +1094,12 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("-voiprecord", IN_VoipRecordUp);
 #endif
 
+	Cmd_AddCommand ("voicechat", IN_VoiceChat);
+
+	for ( gc=gencmds ; gc->name ; gc++ ) {
+		Cmd_AddCommand (gc->name, gc->func);
+	}
+
 	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
 	cl_debugMove = Cvar_Get ("cl_debugMove", "0", 0);
 }
@@ -1007,6 +1111,7 @@ CL_ShutdownInput
 */
 void CL_ShutdownInput(void)
 {
+	gencmd_t *gc;
 	Cmd_RemoveCommand("centerview");
 
 	Cmd_RemoveCommand("+moveup");
@@ -1035,6 +1140,18 @@ void CL_ShutdownInput(void)
 	Cmd_RemoveCommand("-speed");
 	Cmd_RemoveCommand("+attack");
 	Cmd_RemoveCommand("-attack");
+	Cmd_RemoveCommand("+use");
+	Cmd_RemoveCommand("-use");
+	Cmd_RemoveCommand("+force_grip");
+	Cmd_RemoveCommand("-force_grip");
+	Cmd_RemoveCommand("+altattack");
+	Cmd_RemoveCommand("-altattack");
+	Cmd_RemoveCommand("+useforce");
+	Cmd_RemoveCommand("-useforce");
+	Cmd_RemoveCommand("+force_lightning");
+	Cmd_RemoveCommand("-force_lightning");
+	Cmd_RemoveCommand("+force_drain");
+	Cmd_RemoveCommand("-force_drain");
 	Cmd_RemoveCommand("+button0");
 	Cmd_RemoveCommand("-button0");
 	Cmd_RemoveCommand("+button1");
@@ -1072,4 +1189,10 @@ void CL_ShutdownInput(void)
 	Cmd_RemoveCommand("+voiprecord");
 	Cmd_RemoveCommand("-voiprecord");
 #endif
+
+	Cmd_RemoveCommand("voicechat");
+
+	for ( gc=gencmds ; gc->name ; gc++ ) {
+		Cmd_RemoveCommand(gc->name);
+	}
 }

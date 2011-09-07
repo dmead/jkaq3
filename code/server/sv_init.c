@@ -430,6 +430,14 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	// clear collision map data
 	CM_ClearMap();
 
+	// clear siege data if the map really is just starting or changed because we don't want to clash across maps
+	if(svs.siege)
+	{
+		Z_Free(svs.siege);
+	}
+
+	svs.siege = Z_Malloc (sizeof(siegePers_t) );
+
 	// init client structures and svs.numSnapshotEntities 
 	if ( !Cvar_VariableValue("sv_running") ) {
 		SV_Startup();
@@ -758,6 +766,12 @@ void SV_Shutdown( char *finalmsg ) {
 
 	// free current level
 	SV_ClearServer();
+
+	// free siege static data since this is cross level or shutdown, not map restart
+	if(svs.siege)
+	{
+		Z_Free(svs.siege);
+	}
 
 	// free server static data
 	if(svs.clients)

@@ -1224,7 +1224,14 @@ void R_AddEntitySurfaces (void) {
 		case RT_PORTALSURFACE:
 			break;		// don't draw anything
 		case RT_SPRITE:
+		case RT_LINE:
+		case RT_ORIENTEDLINE:
+		case RT_CYLINDER:
+		case RT_ENT_CHAIN:
+		case RT_POLY:
+		case RT_ORIENTED_QUAD:
 		case RT_BEAM:
+		case RT_ELECTRICITY:
 		case RT_LIGHTNING:
 		case RT_RAIL_CORE:
 		case RT_RAIL_RINGS:

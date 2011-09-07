@@ -256,6 +256,8 @@ typedef struct {
 	netadr_t	redirectAddress;			// for rcon return messages
 
 	netadr_t	authorizeAddress;			// for rcon return messages
+
+	siegePers_t	*siege;
 } serverStatic_t;
 
 #define SERVER_MAXBANS	1024

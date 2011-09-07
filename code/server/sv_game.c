@@ -366,6 +366,9 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 	case G_TRACE:
 		SV_Trace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule*/ qfalse );
 		return 0;
+	case G_G2TRACE:
+		SV_Trace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule*/ qfalse );
+		return 0;
 	case G_TRACECAPSULE:
 		SV_Trace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule*/ qtrue );
 		return 0;
@@ -421,6 +424,16 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 				return qtrue;
 			}
 		}
+
+	// store pointer into the engine
+	case G_SIEGEPERSSET:
+		Com_Memcpy(svs.siege, VMA(1), sizeof(siegePers_t));
+		return 0;
+
+	// retrieve pointer from the engine
+	case G_SIEGEPERSGET:
+		Com_Memcpy(VMA(1), svs.siege, sizeof(siegePers_t));
+		return 0;
 
 	case G_DEBUG_POLYGON_CREATE:
 		return BotImport_DebugPolygonCreate( args[1], args[2], VMA(3) );
@@ -547,6 +560,14 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 		return 0;
 	case BOTLIB_EA_ATTACK:
 		botlib_export->ea.EA_Attack( args[1] );
+		return 0;
+	case BOTLIB_EA_ALT_ATTACK:
+		// TODO
+		botlib_export->ea.EA_Attack( args[1] );
+		return 0;
+	case BOTLIB_EA_FORCEPOWER:
+		// TODO
+		//botlib_export->ea.EA_ForcePower( args[1] );
 		return 0;
 	case BOTLIB_EA_USE:
 		botlib_export->ea.EA_Use( args[1] );
@@ -840,6 +861,9 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 	case TRAP_CEIL:
 		return FloatAsInt( ceil( VMF(1) ) );
 
+	case SP_GETSTRINGTEXTSTRING:
+		// We don't need to even bother supporting this because we just send to the client with @@@ in print
+		return 0;
 
 	default:
 		return 0;

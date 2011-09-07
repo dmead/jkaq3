@@ -1834,6 +1834,13 @@ typedef struct playerState_s {
 	vec3_t		userVec2;
 } playerState_t;
 
+typedef struct siegePers_s
+{
+	qboolean	beatingTime;
+	int			lastTeam;
+	int			lastTime;
+} siegePers_t;
+
 
 //====================================================================
 
