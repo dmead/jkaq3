@@ -959,8 +959,8 @@ void SV_InitGameProgs( void ) {
 		bot_enable = 0;
 	}
 
-	// load the dll or bytecode
-	gvm = VM_Create( "jampgame", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
+	// load the dll
+	gvm = VM_Create( "jampgame", SV_GameSystemCalls, VMI_NATIVE );
 	if ( !gvm ) {
 		Com_Error( ERR_FATAL, "VM_Create on game failed" );
 	}
