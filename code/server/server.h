@@ -379,6 +379,7 @@ int SV_SendQueuedMessages(void);
 //
 // sv_ccmds.c
 //
+const char *SV_StringEdString( const char *refName );
 void SV_Heartbeat_f( void );
 
 //

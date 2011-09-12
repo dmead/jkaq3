@@ -151,15 +151,18 @@ void SE_Load( const char *title, const char *language ) {
 			break;
 		}
 		if ( !strcmp( "VERSION", token ) ) {
-			token = COM_Parse( &text_p );
+			//token = COM_Parse( &text_p );
+			SkipRestOfLine( &text_p );
 			continue;
 		}
 		if ( !strcmp( "CONFIG", token ) ) {
-			token = COM_Parse( &text_p );
+			//token = COM_Parse( &text_p );
+			SkipRestOfLine( &text_p );
 			continue;
 		}
 		if ( !strcmp( "FILENOTES", token ) ) {
-			token = COM_Parse( &text_p );
+			//token = COM_Parse( &text_p );
+			SkipRestOfLine( &text_p );
 			continue;
 		}
 		if ( !strcmp( "REFERENCE", token ) ) {
@@ -167,7 +170,13 @@ void SE_Load( const char *title, const char *language ) {
 			Q_strncpyz( reference, va("%s_%s", title, token), MAX_QPATH );
 			token = COM_Parse( &text_p );
 			if ( !strcmp( "NOTES", token ) ) {
+				SkipRestOfLine( &text_p );
+#if 0
 				token = COM_Parse( &text_p ); // skip over notes
+				// Fixme MENUS_FORCEDESC_LIGHT and MENUSFORCEDESC_DARK have "'s inside of their notes section gay fucks :(
+				if(token && !*token)
+					token = COM_Parse( &text_p ); // skip over notes
+#endif
 				token = COM_Parse( &text_p ); // look for LANG_ENGLISH
 				if ( !strcmp( "LANG_ENGLISH", token ) ) {
 					token = COM_Parse( &text_p );
@@ -205,7 +214,7 @@ void SE_Load( const char *title, const char *language ) {
 
 // Compare is expected in FILENAME_REFERENCE format
 // above stores FILENAME_(each reference) into each individual .reference
-int SE_GetString( const char *compare, char *buffer, int bufferSize ) {
+int SE_GetStringBuffer( const char *compare, char *buffer, int bufferSize ) {
 	stringEd_t *str;
 
 	if( !buffer )
@@ -223,6 +232,21 @@ int SE_GetString( const char *compare, char *buffer, int bufferSize ) {
 	return 0;
 }
 
+char *SE_GetString( const char *compare ) {
+	static char text[MAX_STRING_CHARS] = { 0 };
+
+	stringEd_t *str;
+
+	str = FindString( compare );
+
+	if( str && str->translated && *str->translated ) {
+		Q_strncpyz( text, str->translated, sizeof(text) );
+		return text;
+	}
+	else
+		return "";
+}
+
 void SE_Shutdown( void ) {
 }
 
@@ -232,7 +256,7 @@ void SE_Init( void ) {
 	char	title[MAX_QPATH];
 
 	se_debug = Cvar_Get( "se_debug", "0", CVAR_TEMP );
-	se_language = Cvar_Get( "se_language", "english", CVAR_ARCHIVE|CVAR_LATCH );
+	se_language = Cvar_Get( "se_language", "english", CVAR_ARCHIVE|CVAR_NORESTART );
 
 	fileList = FS_ListFiles( "strings/english", ".str", &numFiles );
 

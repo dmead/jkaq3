@@ -711,7 +711,6 @@ static unsigned int AnyLanguage_ReadCharFromString( const char *psText, int *piA
 	}
 	return *psText;
 }
-int SE_GetString( const char *compare, char *buffer, int bufferSize );
 
 /*
 ====================
@@ -1030,7 +1029,7 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 		return 0;
 
 	case UI_SP_GETSTRINGTEXTSTRING:
-		return SE_GetString( VMA(1), VMA(2), args[3] );
+		return SE_GetStringBuffer( VMA(1), VMA(2), args[3] );
 
 	case UI_MEMSET:
 		Com_Memset( VMA(1), args[2], args[3] );

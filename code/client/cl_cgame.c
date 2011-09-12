@@ -265,9 +265,11 @@ CL_GetServerCommand
 Set up argc/argv for the given command
 ===================
 */
+char *CL_PrintPacket( const char *string );
 qboolean CL_GetServerCommand( int serverCommandNumber ) {
 	char	*s;
 	char	*cmd;
+	char	*msg;
 	static char bigConfigString[BIG_INFO_STRING];
 	int argc;
 
@@ -299,10 +301,13 @@ rescan:
 	if ( !strcmp( cmd, "disconnect" ) ) {
 		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
-		if ( argc >= 2 )
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected - %s", Cmd_Argv( 1 ) );
-		else
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected" );
+		if ( argc >= 2 ) {
+			msg = CL_PrintPacket( Cmd_Argv( 1 ) );
+			Com_Error( ERR_SERVERDISCONNECT, "%s - %s", SE_GetString("MP_SVGAME_SERVER_DISCONNECTED"), msg );
+		}
+		else {
+			Com_Error( ERR_SERVERDISCONNECT, "%s", SE_GetString("MP_SVGAME_SERVER_DISCONNECTED") );
+		}
 	}
 
 	if ( !strcmp( cmd, "bcs0" ) ) {
@@ -418,8 +423,6 @@ static unsigned int AnyLanguage_ReadCharFromString( const char *psText, int *piA
 	}
 	return *psText;
 }
-
-int SE_GetString( const char *compare, char *buffer, int bufferSize );
 
 /*
 ====================
@@ -589,7 +592,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return 0;// AnyLanguage_ReadCharFromString( const char *psText, int *piAdvanceCount, qboolean *pbIsTrailingPunctuation )
 
 	case CG_SP_GETSTRINGTEXTSTRING:
-		return SE_GetString( VMA(1), VMA(2), args[3] );
+		return SE_GetStringBuffer( VMA(1), VMA(2), args[3] );
 
 	case CG_R_CLEARSCENE:
 		re.ClearScene();

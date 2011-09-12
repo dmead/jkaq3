@@ -600,12 +600,12 @@ void Con_DrawNotify (void)
 	{
 		if (chat_team)
 		{
-			SCR_DrawBigString (8, v, "say_team:", 1.0f, qfalse );
-			skip = 10;
+			SCR_DrawBigString (8, v, SE_GetString("MP_SVGAME_SAY_TEAM"), 1.0f, qfalse );
+			skip = 11;
 		}
 		else
 		{
-			SCR_DrawBigString (8, v, "say:", 1.0f, qfalse );
+			SCR_DrawBigString (8, v, SE_GetString("MP_SVGAME_SAY"), 1.0f, qfalse );
 			skip = 5;
 		}
 

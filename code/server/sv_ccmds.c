@@ -31,6 +31,11 @@ These commands can only be entered from stdin or by a remote operator datagram
 ===============================================================================
 */
 
+const char *SV_StringEdString( const char *refName ) {
+	static char text[1024]={0};
+	Com_sprintf(text, sizeof(text), "@@@%s", refName);
+	return text;
+}
 
 /*
 ==================
@@ -388,7 +393,7 @@ static void SV_Kick_f( void ) {
 		return;
 	}
 
-	SV_DropClient( cl, "was kicked" );
+	SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
 	cl->lastPacketTime = svs.time; // in case there is a funny zombie
 }
 /*
@@ -417,7 +422,7 @@ static void SV_KickBots_f( void ) {
 			continue;
 		}
 
-		SV_DropClient( cl, "was kicked" );
+		SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
 }
@@ -447,7 +452,7 @@ static void SV_KickAll_f( void ) {
 			continue;
 		}
 
-		SV_DropClient( cl, "was kicked" );
+		SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
 }
@@ -1084,11 +1089,11 @@ static void SV_KickNum_f( void ) {
 		return;
 	}
 	if( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
-		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
+		SV_SendServerCommand(NULL, "print \"%s\"", SV_StringEdString("CANNOT_KICK_HOST"));
 		return;
 	}
 
-	SV_DropClient( cl, "was kicked" );
+	SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
 	cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 }
 

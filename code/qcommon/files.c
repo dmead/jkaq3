@@ -3783,8 +3783,6 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 	fs_numServerReferencedPaks = c;	
 }
 
-void SE_Init( void );
-
 /*
 ================
 FS_InitFilesystem
@@ -3812,7 +3810,8 @@ void FS_InitFilesystem( void ) {
 	FS_CheckPak0( );
 #endif
 
-	SE_Init( );
+	// reload new strings for the new filesystem path
+	//SE_Init( );
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
@@ -3849,7 +3848,7 @@ void FS_Restart( int checksumFeed ) {
 	FS_CheckPak0( );
 #endif
 
-	SE_Init( );
+	//SE_Init( );
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable

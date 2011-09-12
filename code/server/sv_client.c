@@ -307,6 +307,10 @@ A "connect" OOB command has been received
 ==================
 */
 
+char *SV_GetString( const char *refName ) {
+	return SE_GetString(va("MP_SVGAME_%s", refName));
+}
+
 void SV_DirectConnect( netadr_t from ) {
 	char		userinfo[MAX_INFO_STRING];
 	int			i;
@@ -421,20 +425,20 @@ void SV_DirectConnect( netadr_t from ) {
 		// never reject a LAN client based on ping
 		if ( !Sys_IsLANAddress( from ) ) {
 			if ( sv_minPing->value && ping < sv_minPing->value ) {
-				NET_OutOfBandPrint( NS_SERVER, from, "print\nServer is for high pings only\n" );
-				Com_DPrintf ("Client %i rejected on a too low ping\n", i);
+				NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", SV_StringEdString("SERVER_FOR_HIGH_PING") );
+				Com_DPrintf ("%s", SV_GetString("CLIENT_REJECTED_LOW_PING"), i);
 				challengeptr->wasrefused = qtrue;
 				return;
 			}
 			if ( sv_maxPing->value && ping > sv_maxPing->value ) {
-				NET_OutOfBandPrint( NS_SERVER, from, "print\nServer is for low pings only\n" );
-				Com_DPrintf ("Client %i rejected on a too high ping\n", i);
+				NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", SV_StringEdString("SERVER_FOR_LOW_PING") );
+				Com_DPrintf ("%s", SV_GetString("CLIENT_REJECTED_HIGH_PING"), i);
 				challengeptr->wasrefused = qtrue;
 				return;
 			}
 		}
 
-		Com_Printf("Client %i connecting with %i challenge ping\n", i, ping);
+		Com_Printf("%s", SV_GetString("CLIENT_CONN_WITH_PING"), i, ping);
 		challengeptr->connected = qtrue;
 	}
 
@@ -510,7 +514,7 @@ void SV_DirectConnect( netadr_t from ) {
 			}
 		}
 		else {
-			NET_OutOfBandPrint( NS_SERVER, from, "print\nServer is full.\n" );
+			NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", SV_StringEdString("SERVER_IS_FULL") );
 			Com_DPrintf ("Rejected a connection.\n");
 			return;
 		}
@@ -1191,7 +1195,7 @@ The client is going to disconnect, so remove the connection immediately  FIXME: 
 =================
 */
 static void SV_Disconnect_f( client_t *cl ) {
-	SV_DropClient( cl, "disconnected" );
+	SV_DropClient( cl, "@@@DISCONNECTED" );
 }
 
 /*

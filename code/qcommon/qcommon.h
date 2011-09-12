@@ -1237,4 +1237,9 @@ extern huffman_t clientHuffTables;
 #define DLF_NO_UDP 4
 #define DLF_NO_DISCONNECT 8
 
+char *SE_GetString( const char *compare );
+int SE_GetStringBuffer( const char *compare, char *buffer, int bufferSize );
+void SE_Init( void );
+void SE_Shutdown( void );
+
 #endif // _QCOMMON_H_
