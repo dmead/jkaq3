@@ -174,26 +174,19 @@ or configs will never get loaded from disk!
 
 // every time a new demo pk3 file is built, this checksum must be updated.
 // the easiest way to get it is to just run the game and see what it spits out
-#define	DEMO_PAK0_CHECKSUM	2985612116u
-static const unsigned int pak_checksums[] = {
-	1566731103u,
-	298122907u,
-	412165236u,
-	2991495316u,
-	1197932710u,
-	4087071573u,
-	3709064859u,
-	908855077u,
-	977125798u
+static const int pak_checksums[] = {
+	1767559464,
+	-682941524,
+	-1239421272,
+	-1342311474
 };
 
-static const unsigned int missionpak_checksums[] =
-{
-	2430342401u,
-	511014160u,
-	2662638993u,
-	1438664554u
-};
+static const unsigned int bonus_checksum = 391678326u;
+
+/*
+bonus     assets3     assets2     assets1    assets0
+391678326 -1342311474 -1239421272 -682941524 1767559464
+*/
 
 // if this is defined, the executable positively won't work with any paks other
 // than the demo pak, even if productid is present.  This is only used for our
@@ -499,6 +492,29 @@ char *FS_BuildOSPath( const char *base, const char *game, const char *qpath ) {
 	}
 
 	Com_sprintf( temp, sizeof(temp), "/%s/%s", game, qpath );
+	FS_ReplaceSeparators( temp );
+	Com_sprintf( ospath[toggle], sizeof( ospath[0] ), "%s%s", base, temp );
+	
+	return ospath[toggle];
+}
+
+
+/*
+===================
+FS_BuildDLLPath
+
+Qpath may have either forward or backwards slashes
+Base contains base+mod (use this only for when trying to get a netpath from a pk3's directory)
+===================
+*/
+char *FS_BuildDLLPath( const char *base,  const char *qpath ) {
+	char	temp[MAX_OSPATH];
+	static char ospath[2][MAX_OSPATH];
+	static int toggle;
+	
+	toggle ^= 1;		// flip-flop to allow two returns without clash
+
+	Com_sprintf( temp, sizeof(temp), "/%s", qpath );
 	FS_ReplaceSeparators( temp );
 	Com_sprintf( ospath[toggle], sizeof( ospath[0] ), "%s%s", base, temp );
 	
@@ -891,6 +907,55 @@ fileHandle_t FS_FOpenFileWrite( const char *filename ) {
 
 /*
 ===========
+FS_FOpenDLLWrite
+
+Like FS_FOpenFileWrite, but allows dll extension (for FS_CL_Extract) and writes to basepath then homepath
+===========
+*/
+fileHandle_t FS_FOpenDLLWrite( const char *filename ) {
+	char			*ospath;
+	fileHandle_t	f;
+
+	if ( !fs_searchpaths ) {
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
+	}
+
+	f = FS_HandleForFile();
+	fsh[f].zipFile = qfalse;
+
+	ospath = FS_BuildOSPath( fs_basepath->string, fs_gamedir, filename );
+
+	if ( fs_debug->integer ) {
+		Com_Printf( "FS_FOpenFileWrite: %s\n", ospath );
+	}
+
+	if( FS_CreatePath( ospath ) ) {
+		ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
+
+		if ( fs_debug->integer ) {
+			Com_Printf( "FS_FOpenFileWrite: %s\n", ospath );
+		}
+		if( FS_CreatePath( ospath ) ) {
+			return 0;
+		}
+	}
+
+	// enabling the following line causes a recursive function call loop
+	// when running with +set logfile 1 +set developer 1
+	//Com_DPrintf( "writing to: %s\n", ospath );
+	fsh[f].handleFiles.file.o = fopen( ospath, "wb" );
+
+	Q_strncpyz( fsh[f].name, filename, sizeof( fsh[f].name ) );
+
+	fsh[f].handleSync = qfalse;
+	if (!fsh[f].handleFiles.file.o) {
+		f = 0;
+	}
+	return f;
+}
+
+/*
+===========
 FS_FOpenFileAppend
 
 ===========
@@ -1081,6 +1146,9 @@ Returns filesize and an open FILE pointer.
 */
 extern qboolean		com_fullyInitialized;
 
+// see FS_FOpenFileRead_Filtered
+static int fs_filter_flag = 0;
+
 long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_t *file, qboolean uniqueFILE)
 {
 	long			hash;
@@ -1103,19 +1171,19 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 	// be prepended, so we don't need to worry about "c:" or "//limbo" 
 	if(strstr(filename, ".." ) || strstr(filename, "::"))
 	{
-	        if(file == NULL)
-	                return qfalse;
-	                
+		if(file == NULL)
+			return qfalse;
+
 		*file = 0;
 		return -1;
 	}
-        
+
 	// make sure the q3key file is only readable by the quake3.exe at initialization
 	// any other time the key should only be accessed in memory using the provided functions
 	if(com_fullyInitialized && strstr(filename, "q3key"))
 	{
-	        if(file == NULL)
-	                return qfalse;
+		if(file == NULL)
+			return qfalse;
 
 		*file = 0;
 		return -1;
@@ -1129,9 +1197,9 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 		if(search->pack)
 		{
 			hash = FS_HashFileName(filename, search->pack->hashSize);
-                        
-                        if(search->pack->hashTable[hash])
-                        {
+
+			if(search->pack->hashTable[hash])
+			{
 				// look through all the pak file elements
 				pak = search->pack;
 				pakFile = pak->hashTable[hash];
@@ -1143,14 +1211,14 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 					{
 						// found it!
 						if(pakFile->len)
-        						return pakFile->len;
-                                                else
-                                                {
-                                                        // It's not nice, but legacy code depends
-                                                        // on positive value if file exists no matter
-                                                        // what size
-                                                        return 1;
-                                                }
+							return pakFile->len;
+						else
+						{
+							// It's not nice, but legacy code depends
+							// on positive value if file exists no matter
+							// what size
+							return 1;
+						}
 					}
 
 					pakFile = pakFile->next;
@@ -1160,22 +1228,22 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 		else if(search->dir)
 		{
 			dir = search->dir;
-		
+
 			netpath = FS_BuildOSPath(dir->path, dir->gamedir, filename);
 			filep = fopen (netpath, "rb");
 
 			if(filep)
 			{
-			        len = FS_fplength(filep);
+				len = FS_fplength(filep);
 				fclose(filep);
-				
+
 				if(len)
-        				return len;
-                                else
-                                        return 1;
+					return len;
+				else
+					return 1;
 			}
 		}
-		
+
 		return 0;
 	}
 
@@ -1216,24 +1284,36 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 					if (!(pak->referenced & FS_GENERAL_REF))
 					{
 						if(!FS_IsExt(filename, ".shader", len) &&
-						   !FS_IsExt(filename, ".txt", len) &&
-						   !FS_IsExt(filename, ".cfg", len) &&
-						   !FS_IsExt(filename, ".config", len) &&
-						   !FS_IsExt(filename, ".bot", len) &&
-						   !FS_IsExt(filename, ".arena", len) &&
-						   !FS_IsExt(filename, ".menu", len) &&
-						   !strstr(filename, "levelshots"))
+							!FS_IsExt(filename, ".txt", len) &&
+							!FS_IsExt(filename, ".cfg", len) &&
+							!FS_IsExt(filename, ".config", len) &&
+							!FS_IsExt(filename, ".bot", len) &&
+							!FS_IsExt(filename, ".arena", len) &&
+							!FS_IsExt(filename, ".menu", len) &&
+							!FS_IsExt(filename, ".str", len) &&
+							!FS_IsExt(filename, ".fcf", len) &&
+							!strstr(filename, "levelshots"))
 						{
 							pak->referenced |= FS_GENERAL_REF;
 						}
 					}
 
+#if 1
+					/* Should probably use shifted str str */
+					if(strstr(filename, "jampgame" ARCH_STRING DLL_EXT))
+						pak->referenced |= FS_QAGAME_REF;
+					if(strstr(filename, "cgame" ARCH_STRING DLL_EXT))
+						pak->referenced |= FS_CGAME_REF;
+					if(strstr(filename, "ui" ARCH_STRING DLL_EXT))
+						pak->referenced |= FS_UI_REF;
+#else
 					if(strstr(filename, "qagame.qvm"))
 						pak->referenced |= FS_QAGAME_REF;
 					if(strstr(filename, "cgame.qvm"))
 						pak->referenced |= FS_CGAME_REF;
 					if(strstr(filename, "ui.qvm"))
 						pak->referenced |= FS_UI_REF;
+#endif
 
 					if(uniqueFILE)
 					{
@@ -1302,7 +1382,7 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 		if (filep == NULL)
 		{
 			*file = 0;
-                        return -1;
+			return -1;
 		}
 
 		Q_strncpyz(fsh[*file].name, filename, sizeof(fsh[*file].name));
@@ -1341,31 +1421,180 @@ long FS_FOpenFileRead(const char *filename, fileHandle_t *file, qboolean uniqueF
 
 	for(search = fs_searchpaths; search; search = search->next)
 	{
-	        len = FS_FOpenFileReadDir(filename, search, file, uniqueFILE);
-	        
-	        if(file == NULL)
-	        {
-	                if(len > 0)
-	                        return len;
-	        }
-	        else
-	        {
-	                if(len >= 0 && *file)
-	                        return len;
-	        }
-	        
+		if ( search->pack && (fs_filter_flag & FS_EXCLUDE_PK3) )
+			continue;
+		if ( search->dir && (fs_filter_flag & FS_EXCLUDE_DIR) )
+			continue;
+		len = FS_FOpenFileReadDir(filename, search, file, uniqueFILE);
+
+		if(file == NULL)
+		{
+			if(len > 0)
+				return len;
+		}
+		else
+		{
+			if(len >= 0 && *file)
+				return len;
+		}
 	}
-	
+
 #ifdef FS_MISSING
 	if(missingFiles)
 		fprintf(missingFiles, "%s\n", filename);
 #endif
 
-        if(file)
-        	*file = 0;
-        	
+	if(file)
+		*file = 0;
+
 	return -1;
 }
+
+int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag ) {
+	int ret;
+
+	fs_filter_flag = filter_flag;
+	ret = FS_FOpenFileRead( qpath, file, uniqueFILE );
+	fs_filter_flag = 0;
+
+	return ret;
+}
+
+// TTimo
+// relevant to client only
+#if !defined( DEDICATED )
+/*
+===========================================================================
+
+Wolfenstein: Enemy Territory GPL Source Code
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+
+Wolf ET Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Wolf ET Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+
+===========================================================================
+*/
+/*
+==================
+FS_CL_ExtractFromPakFile
+
+NERVE - SMF - Extracts the latest file from a pak file.
+
+Compares packed file against extracted file. If no differences, does not copy.
+This is necessary for exe/dlls which may or may not be locked.
+
+NOTE TTimo:
+  fullpath gives the full OS path to the dll that will potentially be loaded
+	on win32 it's always in fs_basepath/<fs_game>/
+	on linux it can be in fs_homepath/<fs_game>/ or fs_basepath/<fs_game>/
+  the dll is extracted to fs_homepath (== fs_basepath on win32) if needed
+
+  the return value doesn't tell wether file was extracted or not, it just says wether it's ok to continue
+  (i.e. either the right file was extracted successfully, or it was already present)
+
+  cvar_lastVersion is the optional name of a CVAR_ARCHIVE used to store the wolf version for the last extracted .so
+  show_bug.cgi?id=463
+
+==================
+*/
+qboolean FS_CL_ExtractFromPakFile( const char *fullpath, const char *gamedir, const char *filename, const char *cvar_lastVersion ) {
+	int srcLength;
+	int destLength;
+	unsigned char   *srcData;
+	unsigned char   *destData;
+	qboolean needToCopy;
+	FILE            *destHandle;
+
+	needToCopy = qtrue;
+
+	// read in compressed file
+	srcLength = FS_ReadFile( filename, (void **)&srcData );
+
+	// if its not in the pak, we bail
+	if ( srcLength == -1 ) {
+		return qfalse;
+	}
+
+	// read in local file
+	destHandle = fopen( fullpath, "rb" );
+
+	// if we have a local file, we need to compare the two
+	if ( destHandle ) {
+		fseek( destHandle, 0, SEEK_END );
+		destLength = ftell( destHandle );
+		fseek( destHandle, 0, SEEK_SET );
+
+		if ( destLength > 0 ) {
+			destData = (unsigned char*)Z_Malloc( destLength );
+
+//			fread( destData, 1, destLength, destHandle );
+			fread( destData, destLength, 1, destHandle );
+
+			// compare files
+			if ( destLength == srcLength ) {
+				int i;
+
+				for ( i = 0; i < destLength; i++ ) {
+					if ( destData[i] != srcData[i] ) {
+						break;
+					}
+				}
+
+				if ( i == destLength ) {
+					needToCopy = qfalse;
+				}
+			}
+
+			Z_Free( destData ); // TTimo
+		}
+
+		fclose( destHandle );
+	}
+
+	// write file
+	if ( needToCopy ) {
+		fileHandle_t f;
+
+		// Com_DPrintf("FS_ExtractFromPakFile: FS_FOpenFileWrite '%s'\n", filename);
+		f = FS_FOpenDLLWrite( filename );
+		if ( !f ) {
+			Com_Printf( "Failed to open %s\n", filename );
+			return qfalse;
+		}
+
+		FS_Write( srcData, srcLength, f );
+
+		FS_FCloseFile( f );
+
+#ifdef __linux__
+		// show_bug.cgi?id=463
+		// need to keep track of what versions we extract
+		if ( cvar_lastVersion ) {
+			Cvar_Set( cvar_lastVersion, Cvar_VariableString( "version" ) );
+		}
+#endif
+	}
+
+	FS_FreeFile( srcData );
+	return qtrue;
+}
+#endif
 
 /*
 =================
@@ -1397,31 +1626,35 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 
 	if(enableDll)
 		Com_sprintf(dllName, sizeof(dllName), "%s" ARCH_STRING DLL_EXT, name);
-		
-	Com_sprintf(qvmName, sizeof(dllName), "vm/%s.qvm", name);
+
+	Com_sprintf(qvmName, sizeof(qvmName), "vm/%s.qvm", name);
 
 	lastSearch = *startSearch;
 	if(*startSearch == NULL)
 		search = fs_searchpaths;
 	else
 		search = lastSearch->next;
-        
+
 	while(search)
 	{
-		if(search->dir && !fs_numServerPaks)
+		if(search->dir)
 		{
 			dir = search->dir;
 
 			if(enableDll)
 			{
-				netpath = FS_BuildOSPath(dir->path, dir->gamedir, dllName);
-
-				if(FS_FileInPathExists(netpath))
+				// If this dll is the server dll, or if we're not on pure go ahead and try to load from directory right away
+				if(!Q_stricmp(name, "jampgame") || !fs_numServerPaks)
 				{
-					Q_strncpyz(found, netpath, foundlen);
-					*startSearch = search;
-					
-					return VMI_NATIVE;
+					netpath = FS_BuildOSPath(dir->path, dir->gamedir, dllName);
+
+					if(FS_FileInPathExists(netpath))
+					{
+						Q_strncpyz(found, netpath, foundlen);
+						*startSearch = search;
+
+						return VMI_NATIVE;
+					}
 				}
 			}
 
@@ -1435,17 +1668,65 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 		{
 			pack = search->pack;
 
-		        if(lastSearch && lastSearch->pack)
-		        {
-		                // make sure we only try loading one VM file per game dir
-		                // i.e. if VM from pak7.pk3 fails we won't try one from pak6.pk3
-		                
-		                if(!FS_FilenameCompare(lastSearch->pack->pakPathname, pack->pakPathname))
-                                {
-                                        search = search->next;
-                                        continue;
-                                }
-		        }
+			if(lastSearch && lastSearch->pack)
+			{
+				// make sure we only try loading one VM file per game dir
+				// i.e. if VM from pak7.pk3 fails we won't try one from pak6.pk3
+
+				if(!FS_FilenameCompare(lastSearch->pack->pakPathname, pack->pakPathname))
+				{
+					search = search->next;
+					continue;
+				}
+			}
+
+#if !defined( DEDICATED )
+			if(enableDll)
+			{
+				netpath = FS_BuildDLLPath( pack->pakPathname, dllName );
+
+				// server dll always loaded from directory
+				if(Q_strncmp(name, "jampgame", 8))
+				{
+					// if cgame or ui doesn't exist in directory, extract it
+					// fixme check in homepath too?
+					if(!FS_FileInPathExists(netpath))
+					{
+						Com_DPrintf("Try extracting dll file %s from %s.pk3\n", dllName, pack->pakBasename);
+						if(FS_CL_ExtractFromPakFile(netpath, pack->pakGamename, dllName, NULL))
+						{
+							// Fixme if it gets written to homepath then this will be invalid.
+							if(FS_FileInPathExists(netpath))
+							{
+								Q_strncpyz(found, netpath, foundlen);
+								*startSearch = search;
+
+								return VMI_NATIVE;
+							}
+						}
+					}
+					else if( fs_numServerPaks )
+					{
+						Com_DPrintf("Pure server dll file %s being checked against %s.pk3\n", dllName, pack->pakBasename);
+						if(FS_CL_ExtractFromPakFile(netpath, pack->pakGamename, dllName, NULL))
+						{
+							// Fixme if it gets written to homepath then this will be invalid.
+							if(FS_FileInPathExists(netpath))
+							{
+								Q_strncpyz(found, netpath, foundlen);
+								*startSearch = search;
+
+								return VMI_NATIVE;
+							}
+						}
+						else
+						{
+							Com_Error( ERR_DROP, "Game code(%s) failed Pure Server check", dllName );
+						}
+					}
+				}
+			}
+#endif
 
 			if(FS_FOpenFileReadDir(qvmName, search, NULL, qfalse) > 0)
 			{
@@ -1454,7 +1735,7 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 				return VMI_COMPILED;
 			}
 		}
-		
+
 		search = search->next;
 	}
 
@@ -2890,8 +3171,18 @@ qboolean FS_idPak(char *pak, char *base, int numPaks)
 {
 	int i;
 
-	for (i = 0; i < NUM_ID_PAKS; i++) {
-		if ( !FS_FilenameCompare(pak, va("%s/pak%d", base, i)) ) {
+	// Adding this because it makes more sense to have a binaries
+	// pk3 instead of throwing them into a new assets pk3.
+	if ( !FS_FilenameCompare(pak, va("%s/mp_bin", base)) ) {
+		return qtrue;
+	}
+
+	if ( !FS_FilenameCompare(pak, va("%s/bonus", base)) ) {
+		return qtrue;
+	}
+
+	for (i = 0; i < NUM_RV_PAKS; i++) {
+		if ( !FS_FilenameCompare(pak, va("%s/assets%d", base, i)) ) {
 			break;
 		}
 	}
@@ -2960,12 +3251,8 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring ) {
 		// Ok, see if we have this pak file
 		havepak = qfalse;
 
-		// never autodownload any of the id paks
-		if(FS_idPak(fs_serverReferencedPakNames[i], BASEGAME, NUM_ID_PAKS)
-#ifndef STANDALONE
-		   || FS_idPak(fs_serverReferencedPakNames[i], BASETA, NUM_TA_PAKS)
-#endif
-		  )
+		// never autodownload any of the jk3 paks
+		if(FS_idPak(fs_serverReferencedPakNames[i], BASEGAME, NUM_RV_PAKS))
 		{
 			continue;
 		}
@@ -3225,11 +3512,11 @@ static void FS_Startup( const char *gameName )
 ===================
 FS_CheckPak0
 
-Check whether any of the original id pak files is present,
+Check whether any of the original rv pak files are present,
 and start up in standalone mode, if there are none and a
 different com_basegame was set.
 Note: If you're building a game that doesn't depend on the
-Q3 media pak0.pk3, you'll want to remove this by defining
+JK3 media assets0.pk3, you'll want to remove this by defining
 STANDALONE in q_shared.h
 ===================
 */
@@ -3237,8 +3524,7 @@ static void FS_CheckPak0( void )
 {
 	searchpath_t	*path;
 	pack_t		*curpack;
-	qboolean founddemo = qfalse;
-	unsigned int foundPak = 0, foundTA = 0;
+	unsigned int foundPak = 0, foundBonus = 0;
 
 	for( path = fs_searchpaths; path; path = path->next )
 	{
@@ -3249,26 +3535,19 @@ static void FS_CheckPak0( void )
 		
 		curpack = path->pack;
 
-		if(!Q_stricmpn( curpack->pakGamename, "demoq3", MAX_OSPATH )
-		   && !Q_stricmpn( pakBasename, "pak0", MAX_OSPATH ))
+		if(!Q_stricmpn( curpack->pakGamename, BASEGAME, MAX_OSPATH )
+			&& strlen(pakBasename) == 7 && !Q_stricmpn( pakBasename, "assets", 6 )
+			&& pakBasename[6] >= '0' && pakBasename[6] <= '0' + NUM_RV_PAKS - 1)
 		{
-			if(curpack->checksum == DEMO_PAK0_CHECKSUM)
-				founddemo = qtrue;
-		}
-
-		else if(!Q_stricmpn( curpack->pakGamename, BASEGAME, MAX_OSPATH )
-			&& strlen(pakBasename) == 4 && !Q_stricmpn( pakBasename, "pak", 3 )
-			&& pakBasename[3] >= '0' && pakBasename[3] <= '0' + NUM_ID_PAKS - 1)
-		{
-			if( curpack->checksum != pak_checksums[pakBasename[3]-'0'] )
+			if( curpack->checksum != pak_checksums[pakBasename[6]-'0'] )
 			{
-				if(pakBasename[3] == '0')
+				if(pakBasename[6] == '0')
 				{
 					Com_Printf("\n\n"
 						"**************************************************\n"
-						"WARNING: " BASEGAME "/pak0.pk3 is present but its checksum (%u)\n"
-						"is not correct. Please re-copy pak0.pk3 from your\n"
-						"legitimate Q3 CDROM.\n"
+						"WARNING: " BASEGAME "/assets0.pk3 is present but its checksum (%u)\n"
+						"is not correct. Please re-copy assets0.pk3 from your\n"
+						"legitimate JK3 CDROM.\n"
 						"**************************************************\n\n\n",
 						curpack->checksum );
 				}
@@ -3276,31 +3555,30 @@ static void FS_CheckPak0( void )
 				{
 					Com_Printf("\n\n"
 						"**************************************************\n"
-						"WARNING: " BASEGAME "/pak%d.pk3 is present but its checksum (%u)\n"
+						"WARNING: " BASEGAME "/assets%d.pk3 is present but its checksum (%u)\n"
 						"is not correct. Please re-install the point release\n"
 						"**************************************************\n\n\n",
-						pakBasename[3]-'0', curpack->checksum );
+						pakBasename[6]-'0', curpack->checksum );
 				}
 			}
 
-			foundPak |= 1<<(pakBasename[3]-'0');
+			foundPak |= 1<<(pakBasename[6]-'0');
 		}
-		else if(!Q_stricmpn(curpack->pakGamename, BASETA, MAX_OSPATH)
-			&& strlen(pakBasename) == 4 && !Q_stricmpn(pakBasename, "pak", 3)
-			&& pakBasename[3] >= '0' && pakBasename[3] <= '0' + NUM_TA_PAKS - 1)
+		else if(!Q_stricmpn(curpack->pakGamename, BASEGAME, MAX_OSPATH)
+			&& strlen(pakBasename) == 5 && !Q_stricmp(pakBasename, "bonus"))
 			
 		{
-			if(curpack->checksum != missionpak_checksums[pakBasename[3]-'0'])
+			if(curpack->checksum != bonus_checksum)
 			{
 				Com_Printf("\n\n"
 					"**************************************************\n"
-					"WARNING: " BASETA "/pak%d.pk3 is present but its checksum (%u)\n"
-					"is not correct. Please re-install Team Arena\n"
+					"WARNING: " BASEGAME "/bonus.pk3 is present but its checksum (%u)\n"
+					"is not correct. Please re-install Jedi Academy Bonus Maps\n"
 					"**************************************************\n\n\n",
-					pakBasename[3]-'0', curpack->checksum );				
+					curpack->checksum );				
 			}
 			
-			foundTA |= 1 << (pakBasename[3]-'0');
+			foundBonus = 1;
 		}
 		else
 		{
@@ -3315,7 +3593,7 @@ static void FS_CheckPak0( void )
 				{
 					Com_Printf("\n\n"
 						"**************************************************\n"
-						"WARNING: %s is renamed pak file %s%cpak%d.pk3\n"
+						"WARNING: %s is renamed pak file %s%cassets%d.pk3\n"
 						"Running in standalone mode won't work\n"
 						"Please rename, or remove this file\n"
 						"**************************************************\n\n\n",
@@ -3326,93 +3604,61 @@ static void FS_CheckPak0( void )
 				}
 			}
 
-			for(index = 0; index < ARRAY_LEN(missionpak_checksums); index++)
+			if(curpack->checksum == bonus_checksum)
 			{
-				if(curpack->checksum == missionpak_checksums[index])
-				{
-					Com_Printf("\n\n"
-						"**************************************************\n"
-						"WARNING: %s is renamed pak file %s%cpak%d.pk3\n"
-						"Running in standalone mode won't work\n"
-						"Please rename, or remove this file\n"
-						"**************************************************\n\n\n",
-						curpack->pakFilename, BASETA, PATH_SEP, index);
+				Com_Printf("\n\n"
+					"**************************************************\n"
+					"WARNING: %s is renamed pak file %s%c/bonus.pk3\n"
+					"Running in standalone mode won't work\n"
+					"Please rename, or remove this file\n"
+					"**************************************************\n\n\n",
+					curpack->pakFilename, BASEGAME, PATH_SEP);
 
-					foundTA |= 0x80000000;
-				}
+				foundBonus = 2;
 			}
 		}
 	}
 
-	if(!foundPak && !foundTA && Q_stricmp(com_basegame->string, BASEGAME))
+	if(!foundPak && !foundBonus && Q_stricmp(com_basegame->string, BASEGAME))
 	{
 		Cvar_Set("com_standalone", "1");
 	}
 	else
 		Cvar_Set("com_standalone", "0");
 
-	if(!com_standalone->integer)
-	{
-		if(!(foundPak & 0x01))
-		{
-			if(founddemo)
-			{
-				Com_Printf( "\n\n"
-						"**************************************************\n"
-						"WARNING: It looks like you're using pak0.pk3\n"
-						"from the demo. This may work fine, but it is not\n"
-						"guaranteed or supported.\n"
-						"**************************************************\n\n\n" );
-				
-				foundPak |= 0x01;
-			}
-		}
-	}
-
-
-	if(!com_standalone->integer && (foundPak & 0x1ff) != 0x1ff)
+	if(!com_standalone->integer && (foundPak & 0x4) != 0x04)
 	{
 		char errorText[MAX_STRING_CHARS] = "";
 
 		if((foundPak & 0x01) != 0x01)
 		{
 			Q_strcat(errorText, sizeof(errorText),
-				"\"pak0.pk3\" is missing. Please copy it "
-				"from your legitimate Q3 CDROM. ");
+				"\"assets0.pk3\" is missing. Please copy it "
+				"from your legitimate JK3 CDROM. ");
 		}
 
-		if((foundPak & 0x1fe) != 0x1fe)
+		if((foundPak & 0x04) != 0x04)
 		{
 			Q_strcat(errorText, sizeof(errorText),
-				"Point Release files are missing. Please "
-				"re-install the 1.32 point release. ");
+				"Update files are missing. Please "
+				"re-install the 1.0.1.0 update. ");
 		}
 
 		Q_strcat(errorText, sizeof(errorText),
-			va("Also check that your ioq3 executable is in "
+			va("Also check that your jamp2 executable is in "
 			"the correct place and that every file "
 			"in the \"%s\" directory is present and readable", BASEGAME));
 
 		Com_Error(ERR_FATAL, "%s", errorText);
 	}
-	
-	if(!com_standalone->integer && foundTA && (foundTA & 0x0f) != 0x0f)
+
+	if(!com_standalone->integer && foundBonus == 2)
 	{
 		char errorText[MAX_STRING_CHARS] = "";
 
-		if((foundTA & 0x01) != 0x01)
-		{
-			Com_sprintf(errorText, sizeof(errorText),
-				"\"" BASETA "%cpak0.pk3\" is missing. Please copy it "
-				"from your legitimate Quake 3 Team Arena CDROM. ", PATH_SEP);
-		}
-
-		if((foundTA & 0x0e) != 0x0e)
-		{
-			Q_strcat(errorText, sizeof(errorText),
-				"Team Arena Point Release files are missing. Please "
-				"re-install the latest Team Arena point release.");
-		}
+		Com_sprintf(errorText, sizeof(errorText),
+			"\"bonus.pk3\" is missing. Please re-install it "
+			"from the Jedi Academy Bonus Maps download. ", PATH_SEP);
 
 		Com_Error(ERR_FATAL, "%s", errorText);
 	}

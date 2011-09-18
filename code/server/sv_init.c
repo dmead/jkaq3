@@ -372,6 +372,7 @@ static void SV_ClearServer(void) {
 	Com_Memset (&sv, 0, sizeof(sv));
 }
 
+#if 0
 /*
 ================
 SV_TouchCGame
@@ -387,6 +388,26 @@ static void SV_TouchCGame(void) {
 	FS_FOpenFileRead( filename, &f, qfalse );
 	if ( f ) {
 		FS_FCloseFile( f );
+	}
+}
+#endif
+
+/*
+================
+SV_TouchCGameDLL
+  touch the cgame DLL so that a pure client (with DLL sv_pure support) can load do the correct checks
+================
+*/
+void SV_TouchCGameDLL( void ) {
+	fileHandle_t f;
+	char filename[MAX_QPATH];
+
+	Com_sprintf(filename, sizeof(filename), "cgame" ARCH_STRING DLL_EXT);
+	FS_FOpenFileRead_Filtered( filename, &f, qfalse, FS_EXCLUDE_DIR );
+	if ( f ) {
+		FS_FCloseFile( f );
+	} else if ( sv_pure->integer ) { // ydnar: so we can work the damn game
+		Com_Error( ERR_DROP, "Failed to locate cgame DLL for pure server mode" );
 	}
 }
 
@@ -598,6 +619,10 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	}
 	// the server sends these to the clients so they can figure
 	// out which pk3s should be auto-downloaded
+
+	// we want the server to reference the mp_bins pk3 that the client is expected to load from
+	SV_TouchCGameDLL();
+
 	p = FS_ReferencedPakChecksums();
 	Cvar_Set( "sv_referencedPaks", p );
 	p = FS_ReferencedPakNames();
