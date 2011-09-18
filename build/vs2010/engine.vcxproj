@@ -236,6 +236,7 @@
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_model.c">
     </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_model_ghoul2.c" />
     <ClCompile Include="..\..\code\renderer\tr_model_iqm.c">
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_noise.c">
