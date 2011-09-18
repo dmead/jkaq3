@@ -269,15 +269,6 @@ extern int demo_protocols[];
 #define MASTER_SERVER_NAME	"masterjk3.ravensoft.com"
 #endif
 
-#ifndef STANDALONE
-  #ifndef AUTHORIZE_SERVER_NAME
-    #define	AUTHORIZE_SERVER_NAME	"authorizejk3.ravensoft.com"
-  #endif
-  #ifndef PORT_AUTHORIZE
-  #define	PORT_AUTHORIZE		29062
-  #endif
-#endif
-
 #define	PORT_MASTER			29060
 #define	PORT_UPDATE			29061
 #define	PORT_SERVER			29070
@@ -775,10 +766,6 @@ MISC
 ==============================================================
 */
 
-// centralizing the declarations for cl_cdkey
-// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=470
-extern char cl_cdkey[34];
-
 // returned by Sys_GetProcessorFeatures
 typedef enum
 {
@@ -1054,8 +1041,6 @@ int SV_SendQueuedPackets(void);
 // UI interface
 //
 qboolean UI_GameCommand( void );
-qboolean UI_usesUniqueCDKey(void);
-
 /*
 ==============================================================
 
