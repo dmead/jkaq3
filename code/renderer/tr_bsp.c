@@ -375,7 +375,7 @@ ParseMesh
 */
 static void ParseMesh ( dsurface_t *ds, drawVert_t *verts, msurface_t *surf ) {
 	srfGridMesh_t	*grid;
-	int				i, j;
+	int				i, j, k;
 	int				width, height, numPoints;
 	drawVert_t points[MAX_PATCH_SIZE*MAX_PATCH_SIZE];
 	int				lightmapNum;
@@ -413,9 +413,13 @@ static void ParseMesh ( dsurface_t *ds, drawVert_t *verts, msurface_t *surf ) {
 		}
 		for ( j = 0 ; j < 2 ; j++ ) {
 			points[i].st[j] = LittleFloat( verts[i].st[j] );
-			points[i].lightmap[0][j] = LittleFloat( verts[i].lightmap[0][j] );
+			for( k = 0; k < MAXLIGHTMAPS; k++ ) {
+				points[i].lightmap[k][j] = LittleFloat( verts[i].lightmap[k][j] );
+			}
 		}
-		R_ColorShiftLightingBytes( verts[i].color[0], points[i].color[0] );
+		for( k = 0; k < MAXLIGHTMAPS; k++ ) {
+			R_ColorShiftLightingBytes( verts[i].color[k], points[i].color[k] );
+		}
 	}
 
 	// pre-tesseleate
@@ -442,7 +446,7 @@ ParseTriSurf
 */
 static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, msurface_t *surf, int *indexes ) {
 	srfTriangles_t	*tri;
-	int				i, j;
+	int				i, j, k;
 	int				numVerts, numIndexes;
 
 	// get fog volume
@@ -478,10 +482,14 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, msurface_t *surf, i
 		AddPointToBounds( tri->verts[i].xyz, tri->bounds[0], tri->bounds[1] );
 		for ( j = 0 ; j < 2 ; j++ ) {
 			tri->verts[i].st[j] = LittleFloat( verts[i].st[j] );
-			tri->verts[i].lightmap[0][j] = LittleFloat( verts[i].lightmap[0][j] );
+			for( k = 0; k < MAXLIGHTMAPS; k++ ) {
+				tri->verts[i].lightmap[k][j] = LittleFloat( verts[i].lightmap[k][j] );
+			}
 		}
 
-		R_ColorShiftLightingBytes( verts[i].color[0], tri->verts[i].color[0] );
+		for( k = 0; k < MAXLIGHTMAPS; k++ ) {
+			R_ColorShiftLightingBytes( verts[i].color[k], tri->verts[i].color[k] );
+		}
 	}
 
 	// copy indexes

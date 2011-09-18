@@ -267,7 +267,7 @@ static void RB_SurfaceTriangles( srfTriangles_t *srf ) {
 		texCoords[2] = dv->lightmap[0][0];
 		texCoords[3] = dv->lightmap[0][1];
 
-		*(int *)color = *(int *)dv->color;
+		*(int *)color = *(int *)dv->color[0];
 	}
 
 	for ( i = 0 ; i < srf->numVerts ; i++ ) {
