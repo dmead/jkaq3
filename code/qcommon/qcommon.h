@@ -595,14 +595,13 @@ issues.
 #define FS_UI_REF		0x02
 #define FS_CGAME_REF	0x04
 #define FS_QAGAME_REF	0x08
-// number of id paks that will never be autodownloaded from baseq3/missionpack
-#define NUM_ID_PAKS		9
-#define NUM_TA_PAKS		4
+// number of jk3 paks that will never be autodownloaded from base
+#define NUM_RV_PAKS		4
 
 #define	MAX_FILE_HANDLES	64
 
 #ifdef DEDICATED
-#	define Q3CONFIG_CFG "jampconfig_server.cfg"
+#	define Q3CONFIG_CFG "jampserver.cfg"
 #else
 #	define Q3CONFIG_CFG "jampconfig.cfg"
 #endif

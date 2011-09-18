@@ -37,21 +37,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define GAMENAME_FOR_MASTER		"JediAcademy"	// must NOT contain whitespace
 //  #define LEGACY_PROTOCOL	// You probably don't need this for your standalone game
 #else
-  #define PRODUCT_NAME			"ioq3"
-  #define BASEGAME			"baseq3"
-  #define CLIENT_WINDOW_TITLE     	"ioquake3"
-  #define CLIENT_WINDOW_MIN_TITLE 	"ioq3"
-  #define HOMEPATH_NAME_UNIX		".q3a"
-  #define HOMEPATH_NAME_WIN		"Quake3"
+  #define PRODUCT_NAME			"jamp"
+  #define BASEGAME			"base"
+  #define CLIENT_WINDOW_TITLE     	"Jedi Knight(r): Jedi Academy (MP)"
+  #define CLIENT_WINDOW_MIN_TITLE 	"jamp"
+  #define HOMEPATH_NAME_UNIX		".jkamp"
+  #define HOMEPATH_NAME_WIN		"JediAcademyMP"
   #define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
-  #define GAMENAME_FOR_MASTER		"Quake3Arena"
-  #define LEGACY_PROTOCOL
+  #define GAMENAME_FOR_MASTER		"JediAcademy"	// must NOT contain whitespace
+//  #define LEGACY_PROTOCOL	// You probably don't need this for your standalone game
 #endif
 
 // Heartbeat for dpmaster protocol. You shouldn't change this unless you know what you're doing
-#define HEARTBEAT_FOR_MASTER		"DarkPlaces"
-
-#define BASETA				"missionpack"
+//#define HEARTBEAT_FOR_MASTER		"DarkPlaces"
+// Heartbeat for jk3 protocol. You shouldn't change this unless you know what you're doing
+#define HEARTBEAT_FOR_MASTER		"QuakeArena-1"
 
 #ifndef PRODUCT_VERSION
   #define PRODUCT_VERSION "2.0"
@@ -2227,6 +2227,8 @@ typedef enum _flag_status {
 /*
 Ghoul2 Insert Start
 */
+
+#define MDXABONEDEF
 
 typedef struct {
 	float		matrix[3][4];
