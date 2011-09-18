@@ -54,6 +54,7 @@ typedef struct {
 	cplane_t	*plane;
 	int			surfaceFlags;
 	int			shaderNum;
+	int			drawSurfNum;
 } cbrushside_t;
 
 typedef struct {
