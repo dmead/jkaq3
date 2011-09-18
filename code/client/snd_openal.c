@@ -1176,6 +1176,28 @@ void S_AL_StartLocalSound(sfxHandle_t sfx, int channel)
 	qalSourcePlay(srcList[src].alSource);
 }
 
+/* Fixme i don't even know if the openal system even looks at channels much */
+static void S_AL_MuteSound( int entnum, int entchannel )
+{
+	int i;
+
+	if (entnum < 0 || entnum > MAX_GENTITIES)
+		Com_Error(ERR_DROP, "ERROR: S_AL_MuteSound: bad entitynum %i", entnum);
+
+	for(i = 0; i < srcCount; i++)
+	{
+		if(!srcList[i].isActive)
+			continue;
+
+		if(srcList[i].entity == entnum && srcList[i].channel == entchannel)
+		{
+			//srcList[i].scaleGain = 0;
+			//S_AL_SrcKill( i );
+			return;
+		}
+	}
+}
+
 /*
 =================
 S_AL_StartSound
@@ -2592,6 +2614,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 #endif
 
 	si->Shutdown = S_AL_Shutdown;
+	si->MuteSound = S_AL_MuteSound;
 	si->StartSound = S_AL_StartSound;
 	si->StartLocalSound = S_AL_StartLocalSound;
 	si->StartBackgroundTrack = S_AL_StartBackgroundTrack;

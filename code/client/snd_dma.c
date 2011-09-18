@@ -468,6 +468,29 @@ void S_SpatializeOrigin (vec3_t origin, int master_vol, int *left_vol, int *righ
 		*left_vol = 0;
 }
 
+void S_Base_MuteSound(int entityNum, int entchannel) {
+	channel_t	*ch;
+	int i;
+
+	if ( !s_soundStarted || s_soundMuted ) {
+		return;
+	}
+
+	if ( entityNum < 0 || entityNum > MAX_GENTITIES ) {
+		Com_Error( ERR_DROP, "S_MuteSound: bad entitynum %i", entityNum );
+	}
+
+	ch = s_channels;
+
+	for ( i = 0; i < MAX_CHANNELS ; i++, ch++ ) {		
+		if (ch->entnum == entityNum && ch->entchannel == entchannel) {
+			ch->master_vol = ch->leftvol = ch->rightvol = 0;
+			//S_ChannelFree(ch);
+			return;
+		}
+	}
+}
+
 // =======================================================================
 // Start a sound effect
 // =======================================================================
@@ -1521,6 +1544,7 @@ qboolean S_Base_Init( soundInterface_t *si ) {
 	}
 
 	si->Shutdown = S_Base_Shutdown;
+	si->MuteSound = S_Base_MuteSound;
 	si->StartSound = S_Base_StartSound;
 	si->StartLocalSound = S_Base_StartLocalSound;
 	si->StartBackgroundTrack = S_Base_StartBackgroundTrack;

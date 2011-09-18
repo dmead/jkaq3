@@ -44,6 +44,7 @@ S_ValidateInterface
 static qboolean S_ValidSoundInterface( soundInterface_t *si )
 {
 	if( !si->Shutdown ) return qfalse;
+	if( !si->MuteSound ) return qfalse;
 	if( !si->StartSound ) return qfalse;
 	if( !si->StartLocalSound ) return qfalse;
 	if( !si->StartBackgroundTrack ) return qfalse;
@@ -73,6 +74,18 @@ static qboolean S_ValidSoundInterface( soundInterface_t *si )
 #endif
 
 	return qtrue;
+}
+
+/*
+=================
+S_MuteSound
+=================
+*/
+void S_MuteSound( int entnum, int entchannel )
+{
+	if( si.MuteSound ) {
+		si.MuteSound( entnum, entchannel );
+	}
 }
 
 /*
