@@ -5293,7 +5293,7 @@ static void UI_GetCharacterCvars ( void )
 
 		for (i = 0; i < uiInfo.playerSpeciesCount; i++)
 		{
-			if ( !stricmp(model, uiInfo.playerSpecies[i].Name) )
+			if ( !Q_stricmp(model, uiInfo.playerSpecies[i].Name) )
 			{
 				uiInfo.playerSpeciesIndex = i;
 				break;
@@ -5305,7 +5305,7 @@ static void UI_GetCharacterCvars ( void )
 		model = UI_Cvar_VariableString ( "ui_char_model" );
 		for (i = 0; i < uiInfo.playerSpeciesCount; i++)
 		{
-			if ( !stricmp(model, uiInfo.playerSpecies[i].Name) )
+			if ( !Q_stricmp(model, uiInfo.playerSpecies[i].Name) )
 			{
 				uiInfo.playerSpeciesIndex = i;
 				return;	//FOUND IT, don't fall through
@@ -8194,7 +8194,7 @@ static int UI_FeederCount(float feederID)
 			for (i=0;i< WP_NUM_WEAPONS;i++)
 			{
 				trap_Cvar_VariableStringBuffer( va("ui_class_weapon%i", i), info, sizeof(info) );
-				if (stricmp(info,"gfx/2d/select")!=0)
+				if (Q_stricmp(info,"gfx/2d/select")!=0)
 				{
 					count++;
 				}
@@ -8209,8 +8209,8 @@ static int UI_FeederCount(float feederID)
 			{
 				trap_Cvar_VariableStringBuffer( va("ui_class_item%i", i), info, sizeof(info) );
 				// A hack so health and ammo dispenser icons don't show up.
-				if ((stricmp(info,"gfx/2d/select")!=0) && (stricmp(info,"gfx/hud/i_icon_healthdisp")!=0) &&
-					(stricmp(info,"gfx/hud/i_icon_ammodisp")!=0))
+				if ((Q_stricmp(info,"gfx/2d/select")!=0) && (Q_stricmp(info,"gfx/hud/i_icon_healthdisp")!=0) &&
+					(Q_stricmp(info,"gfx/hud/i_icon_ammodisp")!=0))
 				{
 					count++;
 				}
@@ -8223,7 +8223,7 @@ static int UI_FeederCount(float feederID)
 			for (i=0;i< NUM_FORCE_POWERS;i++)
 			{
 				trap_Cvar_VariableStringBuffer( va("ui_class_power%i", i), info, sizeof(info) );
-				if (stricmp(info,"gfx/2d/select")!=0)
+				if (Q_stricmp(info,"gfx/2d/select")!=0)
 				{
 					count++;
 				}
@@ -8918,7 +8918,7 @@ static qhandle_t UI_FeederItemImage(float feederID, int index) {
 		for (i=0;i< WP_NUM_WEAPONS;i++)
 		{
 			trap_Cvar_VariableStringBuffer( va("ui_class_weapon%i", i), info, sizeof(info) );
-			if (stricmp(info,"gfx/2d/select")!=0)
+			if (Q_stricmp(info,"gfx/2d/select")!=0)
 			{
 				if (validCnt == index)
 				{
@@ -8936,8 +8936,8 @@ static qhandle_t UI_FeederItemImage(float feederID, int index) {
 		{
 			trap_Cvar_VariableStringBuffer( va("ui_class_item%i", i), info, sizeof(info) );
 			// A hack so health and ammo dispenser icons don't show up.
-			if ((stricmp(info,"gfx/2d/select")!=0) && (stricmp(info,"gfx/hud/i_icon_healthdisp")!=0) &&
-				(stricmp(info,"gfx/hud/i_icon_ammodisp")!=0))
+			if ((Q_stricmp(info,"gfx/2d/select")!=0) && (Q_stricmp(info,"gfx/hud/i_icon_healthdisp")!=0) &&
+				(Q_stricmp(info,"gfx/hud/i_icon_ammodisp")!=0))
 			{
 				if (validCnt == index)
 				{
@@ -8976,7 +8976,7 @@ static qhandle_t UI_FeederItemImage(float feederID, int index) {
 		for (i=0;i< NUM_FORCE_POWERS;i++)
 		{
 			trap_Cvar_VariableStringBuffer( va("ui_class_power%i", i), info, sizeof(info) );
-			if (stricmp(info,"gfx/2d/select")!=0)
+			if (Q_stricmp(info,"gfx/2d/select")!=0)
 			{
 				if (validCnt == index)
 				{
@@ -10149,7 +10149,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 
 				if (bIsImageFile(dirptr, skinname))
 				{ //if it exists
-					if (strnicmp(skinname,"head_",5) == 0)
+					if (Q_stricmpn(skinname,"head_",5) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadCount < MAX_PLAYERMODELS) 
 						{
@@ -10161,7 +10161,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 							iSkinParts |= 1<<0;
 						}
 					} else
-					if (strnicmp(skinname,"torso_",6) == 0)
+					if (Q_stricmpn(skinname,"torso_",6) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoCount < MAX_PLAYERMODELS) 
 						{
@@ -10172,7 +10172,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 							iSkinParts |= 1<<1;
 						}
 					} else
-					if (strnicmp(skinname,"lower_",6) == 0)
+					if (Q_stricmpn(skinname,"lower_",6) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegCount < MAX_PLAYERMODELS) 
 						{
