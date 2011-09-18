@@ -399,12 +399,17 @@ clients along with it.
 This is NOT called for map_restart
 ================
 */
+void SV_MapChange( void );
 void SV_SpawnServer( char *server, qboolean killBots ) {
 	int			i;
 	int			checksum;
 	qboolean	isBot;
 	char		systemInfo[16384];
 	const char	*p;
+
+	if ( svs.clients && !com_errorEntered ) {
+		SV_MapChange( );
+	}
 
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
@@ -723,6 +728,37 @@ void SV_FinalMessage( char *message ) {
 				if ( cl->netchan.remoteAddress.type != NA_LOOPBACK ) {
 					SV_SendServerCommand( cl, "print \"%s\n\"\n", message );
 					SV_SendServerCommand( cl, "disconnect \"%s\"", message );
+				}
+				// force a snapshot to be sent
+				cl->lastSnapshotTime = 0;
+				SV_SendClientSnapshot( cl );
+			}
+		}
+	}
+}
+
+
+/*
+==================
+SV_MapChange
+
+Used by SV_SpawnServer to send a final message to all
+connected clients before the server changes maps.  The messages are sent immediately,
+not just stuck on the outgoing message list.
+Assumes svs.clients is valid and not com_errorEntered.
+==================
+*/
+void SV_MapChange( void ) {
+	int			i, j;
+	client_t	*cl;
+	
+	// send it 4 times, ignoring rate
+	for ( j = 0 ; j < 4 ; j++ ) {
+		for (i=0, cl = svs.clients ; i < sv_maxclients->integer ; i++, cl++) {
+			if (cl->state >= CS_CONNECTED) {
+				// don't send a mapchange to a local client
+				if ( cl->netchan.remoteAddress.type != NA_LOOPBACK ) {
+					SV_SendServerCommand( cl, "mapchange\n" );
 				}
 				// force a snapshot to be sent
 				cl->lastSnapshotTime = 0;

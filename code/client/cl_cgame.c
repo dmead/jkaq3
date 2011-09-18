@@ -373,6 +373,13 @@ rescan:
 		return qtrue;
 	}
 
+	/* JKA: This gets spammed so that the client can draw server changing maps message */
+	if( !strcmp( cmd, "mapchange" ) ) {
+		if( cgvm )
+			VM_Call( cgvm, CG_MAP_CHANGE );
+		return qfalse;
+	}
+
 	// we may want to put a "connect to other server" command here
 
 	// cgame can now act on the command
