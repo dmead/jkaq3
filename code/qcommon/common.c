@@ -2482,6 +2482,35 @@ static void Com_DetectAltivec(void)
 	}
 }
 
+
+#ifndef __GNUC__ //see snapvectora.s
+/*
+================
+Old_SnapVector
+================
+*/
+void QDECL Old_SnapVector( vec3_t v )
+{
+	int i;
+	float f;
+
+	f = *v;
+	__asm	fld		f;
+	__asm	fistp	i;
+	*v = i;
+	v++;
+	f = *v;
+	__asm	fld		f;
+	__asm	fistp	i;
+	*v = i;
+	v++;
+	f = *v;
+	__asm	fld		f;
+	__asm	fistp	i;
+	*v = i;
+}
+#endif
+
 /*
 =================
 Com_DetectSSE
@@ -2503,7 +2532,8 @@ static void Com_DetectSSE(void)
 		if(feat & CF_SSE2)
 			Q_SnapVector = qsnapvectorsse;
 		else
-			Q_SnapVector = qsnapvectorx87;
+			Q_SnapVector = Old_SnapVector;
+			//Q_SnapVector = qsnapvectorx87;
 
 		Q_ftol = qftolsse;
 #endif
@@ -2516,7 +2546,8 @@ static void Com_DetectSSE(void)
 	{
 		Q_ftol = qftolx87;
 		Q_VMftol = qvmftolx87;
-		Q_SnapVector = qsnapvectorx87;
+		Q_SnapVector = Old_SnapVector;
+		//Q_SnapVector = qsnapvectorx87;
 
 		Com_Printf("No SSE support on this machine\n");
 	}
