@@ -678,6 +678,39 @@ static unsigned int AnyLanguage_ReadCharFromString( const char *psText, int *piA
 }
 
 /*
+================
+CL_AdjustFrom640
+
+Adjusted for resolution and screen aspect ratio
+================
+*/
+void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
+	float	xscale;
+	float	yscale;
+
+	// scale for screen sizes
+	xscale = cls.glconfig.vidWidth / 640.0;
+	yscale = cls.glconfig.vidHeight / 480.0;
+	if ( x ) {
+		*x *= xscale;
+	}
+	if ( y ) {
+		*y *= yscale;
+	}
+	if ( w ) {
+		*w *= xscale;
+	}
+	if ( h ) {
+		*h *= yscale;
+	}
+}
+
+void UI_RE_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ) {
+	UI_AdjustFrom640( &x, &y, &w, &h );
+	re.DrawStretchPic( x, y, w, h, s1, t1, s2, t2, hShader );
+}
+
+/*
 ====================
 CL_UISystemCalls
 
@@ -807,7 +840,7 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 		return 0;
 
 	case UI_R_DRAWSTRETCHPIC:
-		re.DrawStretchPic( VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9] );
+		UI_RE_DrawStretchPic( VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9] );
 		return 0;
 
   case UI_R_MODELBOUNDS:
