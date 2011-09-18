@@ -1129,6 +1129,80 @@ static void SV_Systeminfo_f( void ) {
 	Info_Print ( Cvar_InfoString_Big( CVAR_SYSTEMINFO ) );
 }
 
+/*
+===========
+SV_ForceToggle_f
+
+Changes g_forcePowerDisable according to the options specified
+===========
+*/
+
+typedef struct fpToggle_s {
+	char	*name;
+	int		num;
+	qboolean status;
+} fpToggle_t;
+
+const char *forcePowers[NUM_FORCE_POWERS] = {
+	"HEAL",
+	"JUMP",
+	"SPEED",
+	"PUSH",
+	"PULL",
+	"MINDTRICK",
+	"GRIP",
+	"LIGHTNING",
+	"DARK RAGE",
+	"PROTECT",
+	"ABSORB",
+	"TEAM HEAL",
+	"TEAM REPLENISH",
+	"DRAIN",
+	"SEEING",
+	"SABER OFFENSE",
+	"SABER DEFENSE",
+	"SABER THROW",
+};
+
+static void SV_ForceToggle_f( void ) {
+	int bits = Cvar_VariableIntegerValue("g_forcePowerDisable");
+	int i, val;
+	char *s;
+	const char *enablestrings[] =
+	{
+		"Disabled",
+		"Enabled"
+	};
+
+	if ( Cmd_Argc() != 2 ) {
+		for(i = 0; i < NUM_FORCE_POWERS; i++ ) {
+			Com_Printf ("%i - %s - Status: %s\n", i, forcePowers[i], enablestrings[!(bits & (1<<i))]);
+		}
+		Com_Printf ("Example usage: forcetoggle 3(toggles PUSH)\n");
+		return;
+	}
+
+	s = Cmd_Argv(1);
+
+	if( Q_isanumber( s ) ) {
+		val = atoi(s);
+		if( val >= 0 && val < NUM_FORCE_POWERS) {
+			bits = Cvar_VariableIntegerValue("g_forcePowerDisable");
+			bits ^= (1 << val);
+			Com_Printf ("%s has been %s.\n", forcePowers[val], (bits & (1<<val)) ? "disabled" : "enabled");
+			Cvar_SetValue("g_forcePowerDisable", bits);
+		}
+		else {
+			Com_Printf ("Specified a power that does not exist.\n");
+		}
+	}
+	else {
+		for(i = 0; i < NUM_FORCE_POWERS; i++ ) {
+			Com_Printf ("%i - %s - Status: %s\n", i, forcePowers[i], enablestrings[!(bits & (1<<i))]);
+		}
+		Com_Printf ("Example usage: forcetoggle 3(toggles PUSH)\n");
+	}
+}
 
 /*
 ===========
@@ -1207,6 +1281,7 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand ("serverinfo", SV_Serverinfo_f);
 	Cmd_AddCommand ("systeminfo", SV_Systeminfo_f);
 	Cmd_AddCommand ("dumpuser", SV_DumpUser_f);
+	Cmd_AddCommand ("forcetoggle", SV_ForceToggle_f);
 	Cmd_AddCommand ("map_restart", SV_MapRestart_f);
 	Cmd_AddCommand ("sectorlist", SV_SectorList_f);
 	Cmd_AddCommand ("map", SV_Map_f);
