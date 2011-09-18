@@ -514,6 +514,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_FS_FCLOSEFILE:
 		FS_FCloseFile( args[1] );
 		return 0;
+	case CG_FS_GETFILELIST:
+		return FS_GetFileList( VMA(1), VMA(2), VMA(3), args[4] );
 //	case CG_FS_SEEK:
 //		return FS_Seek( args[1], args[2], args[3] );
 	case CG_SENDCONSOLECOMMAND:
@@ -690,6 +692,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_SETUSERCMDVALUE:
 		CL_SetUserCmdValue( args[1], VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7], args[8] );
 		return 0;
+	case CG_SETCLIENTFORCEANGLE:
+		return 0;
+	case CG_SETCLIENTTURNEXTENT:
+		return 0;
+	case CG_OPENUIMENU:
+		if ( clc.state == CA_ACTIVE && !clc.demoplaying ) {
+			if ( uivm ) {
+				VM_Call( uivm, UI_SET_ACTIVE_MENU, args[1] );
+			}
+		}
 	case CG_MEMORY_REMAINING:
 		return Hunk_MemoryRemaining();
   case CG_KEY_ISDOWN:
@@ -741,6 +753,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return botlib_export->PC_ReadTokenHandle( args[1], VMA(2) );
 	case CG_PC_SOURCE_FILE_AND_LINE:
 		return botlib_export->PC_SourceFileAndLine( args[1], VMA(2), VMA(3) );
+	case CG_PC_LOAD_GLOBAL_DEFINES:
+		return botlib_export->PC_LoadGlobalDefines( VMA(1) );
+	case CG_PC_REMOVE_ALL_GLOBAL_DEFINES:
+		botlib_export->PC_RemoveAllGlobalDefines();
+		return 0;
 
 	case CG_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();
