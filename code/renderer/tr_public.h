@@ -49,6 +49,7 @@ typedef struct {
 	qhandle_t (*RegisterSkin)( const char *name );
 	qhandle_t (*RegisterShader)( const char *name );
 	qhandle_t (*RegisterShaderNoMip)( const char *name );
+	void	(*ShaderNameFromIndex)( char *name, qhandle_t hShader );
 	void	(*LoadWorld)( const char *name );
 
 	// the vis data is a large enough block of data that we go to the trouble
@@ -100,6 +101,7 @@ typedef struct {
 	void	(*Font_DrawString)(int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale);
 	void	(*RemapShader)(const char *oldShader, const char *newShader, const char *offsetTime);
 	qboolean (*GetEntityToken)( char *buffer, int size );
+	void	(*GetDistanceCull)( float *value );
 	qboolean (*inPVS)( const vec3_t p1, const vec3_t p2 );
 
 	void (*TakeVideoFrame)( int h, int w, byte* captureBuffer, byte *encodeBuffer, qboolean motionJpeg );

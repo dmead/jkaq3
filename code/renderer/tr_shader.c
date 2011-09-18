@@ -2882,6 +2882,17 @@ shader_t *R_GetShaderByHandle( qhandle_t hShader ) {
 	return tr.shaders[hShader];
 }
 
+void RE_ShaderNameFromIndex( char *name, qhandle_t hShader ) {
+	if(name) {
+		shader_t *sh = R_GetShaderByHandle(hShader);
+
+		if(sh && sh != tr.defaultShader)
+			name = sh->name;
+		else
+			name = "";
+	}
+}
+
 /*
 ===============
 R_ShaderList_f

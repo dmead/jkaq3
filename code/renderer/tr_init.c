@@ -1318,6 +1318,7 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.RegisterSkin = RE_RegisterSkin;
 	re.RegisterShader = RE_RegisterShader;
 	re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
+	re.ShaderNameFromIndex = RE_ShaderNameFromIndex;
 	re.LoadWorld = RE_LoadWorldMap;
 	re.SetWorldVisData = RE_SetWorldVisData;
 	re.EndRegistration = RE_EndRegistration;
@@ -1348,6 +1349,7 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.Font_HeightPixels = RE_Font_HeightPixels;
 	re.Font_DrawString = RE_Font_DrawString;
 	re.RemapShader = R_RemapShader;
+	re.GetDistanceCull = R_GetDistanceCull;
 	re.GetEntityToken = R_GetEntityToken;
 	re.inPVS = R_inPVS;
 

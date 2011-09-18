@@ -815,6 +815,10 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 	case UI_R_REGISTERSHADERNOMIP:
 		return re.RegisterShaderNoMip( VMA(1) );
 
+	case UI_R_SHADERNAMEFROMINDEX:
+		re.ShaderNameFromIndex( VMA(1), args[2] );
+		return 0;
+
 	case UI_R_CLEARSCENE:
 		re.ClearScene();
 		return 0;
@@ -1107,6 +1111,10 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 	case UI_VERIFY_CDKEY:
 		return CL_CDKeyValidate(VMA(1), VMA(2));
 
+	case UI_G2_GETGLANAME:
+		strcpy(VMA(3), "models/players/_humanoid/_humanoid");
+		return 0;
+
 	case UI_G2_LISTSURFACES:
 	case UI_G2_LISTBONES:
 	case UI_G2_SETMODELS:
@@ -1122,7 +1130,7 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 	case UI_G2_PLAYANIM:
 	case UI_G2_GETBONEANIM:
 	case UI_G2_GETBONEFRAME:
-	case UI_G2_GETGLANAME:
+	//case UI_G2_GETGLANAME:
 	case UI_G2_COPYGHOUL2INSTANCE:
 	case UI_G2_COPYSPECIFICGHOUL2MODEL:
 	case UI_G2_DUPLICATEGHOUL2INSTANCE:

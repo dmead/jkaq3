@@ -793,6 +793,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		re.RemapShader( VMA(1), VMA(2), VMA(3) );
 		return 0;
 
+	case CG_R_GETDISTANCECULL:
+		re.GetDistanceCull( VMA(1) );
+		return 0;
+
 /*
 	case CG_LOADCAMERA:
 		return loadCamera(VMA(1));
@@ -808,6 +812,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return re.GetEntityToken( VMA(1), args[2] );
 	case CG_R_INPVS:
 		return re.inPVS( VMA(1), VMA(2) );
+
+	case CG_G2_GETGLANAME:
+		strcpy(VMA(3), "models/players/_humanoid/_humanoid");
+		return 0;
 
 	default:
 		return 0;

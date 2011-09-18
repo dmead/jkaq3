@@ -1696,6 +1696,11 @@ void R_LoadLightGrid( lump_t *l, lump_t *larray ) {
 	}
 }
 
+void R_GetDistanceCull( float *value ) {
+	if(value)
+		*value = s_worldData.distanceCull;
+}
+
 /*
 ================
 R_LoadEntities
@@ -1711,6 +1716,8 @@ void R_LoadEntities( lump_t *l ) {
 	w->lightGridSize[0] = 64;
 	w->lightGridSize[1] = 64;
 	w->lightGridSize[2] = 128;
+
+	w->distanceCull = 6000.0;
 
 	p = (char *)(fileBase + l->fileofs);
 
@@ -1768,13 +1775,22 @@ void R_LoadEntities( lump_t *l ) {
 			R_RemapShader(value, s, "0");
 			continue;
 		}
+		
+		/* TODO */
+		if (!Q_stricmp(keyname, "ambient")) {
+			continue;
+		}
+		/* TODO */
+		if (!Q_stricmp(keyname, "_color")) {
+			continue;
+		}
 		// check for a different grid size
 		if (!Q_stricmp(keyname, "gridsize")) {
 			sscanf(value, "%f %f %f", &w->lightGridSize[0], &w->lightGridSize[1], &w->lightGridSize[2] );
 			continue;
 		}
-		/* JKA: TODO */
 		if (!Q_stricmp(keyname, "distanceCull")) {
+			w->distanceCull = atof( value );
 			continue;
 		}
 	}

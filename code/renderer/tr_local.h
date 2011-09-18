@@ -766,6 +766,8 @@ typedef struct {
 
 	char		*entityString;
 	char		*entityParsePoint;
+
+	float		distanceCull;
 } world_t;
 
 //======================================================================
@@ -1250,6 +1252,7 @@ qhandle_t	RE_RegisterModel( const char *name );
 qhandle_t	RE_RegisterSkin( const char *name );
 void		RE_Shutdown( qboolean destroyWindow );
 
+void		R_GetDistanceCull( float *value );
 qboolean	R_GetEntityToken( char *buffer, int size );
 
 model_t		*R_AllocModel( void );
@@ -1288,6 +1291,7 @@ const void *RB_TakeVideoFrameCmd( const void *data );
 qhandle_t		 RE_RegisterShaderLightMap( const char *name, int lightmapIndex );
 qhandle_t		 RE_RegisterShader( const char *name );
 qhandle_t		 RE_RegisterShaderNoMip( const char *name );
+void			RE_ShaderNameFromIndex( char *name, qhandle_t hShader );
 qhandle_t RE_RegisterShaderFromImage(const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage);
 
 shader_t	*R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
