@@ -1522,7 +1522,7 @@ static qboolean ParseShader( char **text )
 			continue;
 		}
 		// sun parms
-		else if ( !Q_stricmp( token, "q3map_sun" ) ) {
+		else if ( !Q_stricmp( token, "sun" ) || !Q_stricmp( token, "q3map_sun" ) ) {
 			float	a, b;
 
 			token = COM_ParseExt( text, qfalse );
@@ -1587,10 +1587,19 @@ static qboolean ParseShader( char **text )
 			shader.noPicMip = qtrue;
 			continue;
 		}
+		else if ( !Q_stricmp( token, "noglfog" ) )
+		{
+			continue;
+		}
 		// polygonOffset
 		else if ( !Q_stricmp( token, "polygonOffset" ) )
 		{
 			shader.polygonOffset = qtrue;
+			continue;
+		}
+		else if( !Q_stricmp( token, "noTC" ) )
+		{
+			tr.allowCompression = qfalse;
 			continue;
 		}
 		// entityMergable, allowing sprite surfaces from multiple entities
@@ -1631,11 +1640,6 @@ static qboolean ParseShader( char **text )
 		else if ( !Q_stricmp( token, "skyparms" ) )
 		{
 			ParseSkyParms( text );
-			continue;
-		}
-		else if( !Q_stricmp( token, "notc" ) )
-		{
-			tr.allowCompression = qfalse;
 			continue;
 		}
 		// light <value> determines flaring in q3map, not needed here
