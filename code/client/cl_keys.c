@@ -885,6 +885,7 @@ char *Key_KeynumToString( int keynum ) {
 	keyname_t	*kn;	
 	static	char	tinystr[5];
 	int			i, j;
+	char		*stringed;
 
 	if ( keynum == -1 ) {
 		return "<KEY NOT FOUND>";
@@ -904,7 +905,11 @@ char *Key_KeynumToString( int keynum ) {
 	// check for a key string
 	for ( kn=keynames ; kn->name ; kn++ ) {
 		if (keynum == kn->keynum) {
-			return kn->name;
+			stringed = SE_GetString(va("KEYNAMES_KEYNAME_%s",kn->name));
+			if( stringed && *stringed )
+				return stringed;
+			else
+				return kn->name;
 		}
 	}
 

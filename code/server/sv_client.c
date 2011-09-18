@@ -326,6 +326,7 @@ void SV_DirectConnect( netadr_t from ) {
 	intptr_t		denied;
 	int			count;
 	char		*ip;
+	const char	*stringEd;
 #ifdef LEGACY_PROTOCOL
 	qboolean	compat = qfalse;
 #endif
@@ -426,19 +427,22 @@ void SV_DirectConnect( netadr_t from ) {
 		if ( !Sys_IsLANAddress( from ) ) {
 			if ( sv_minPing->value && ping < sv_minPing->value ) {
 				NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", SV_StringEdString("SERVER_FOR_HIGH_PING") );
-				Com_DPrintf ("%s", SV_GetString("CLIENT_REJECTED_LOW_PING"), i);
+				stringEd = SV_GetString("CLIENT_REJECTED_LOW_PING");
+				Com_DPrintf (stringEd, i);
 				challengeptr->wasrefused = qtrue;
 				return;
 			}
 			if ( sv_maxPing->value && ping > sv_maxPing->value ) {
 				NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", SV_StringEdString("SERVER_FOR_LOW_PING") );
-				Com_DPrintf ("%s", SV_GetString("CLIENT_REJECTED_HIGH_PING"), i);
+				stringEd = SV_GetString("CLIENT_REJECTED_LOW_PING");
+				Com_DPrintf (stringEd, i);
 				challengeptr->wasrefused = qtrue;
 				return;
 			}
 		}
 
-		Com_Printf("%s", SV_GetString("CLIENT_CONN_WITH_PING"), i, ping);
+		stringEd = SV_GetString("CLIENT_CONN_WITH_PING");
+		Com_Printf(stringEd, i, ping);
 		challengeptr->connected = qtrue;
 	}
 

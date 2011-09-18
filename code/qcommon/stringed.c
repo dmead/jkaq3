@@ -24,15 +24,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "q_shared.h"
 #include "qcommon.h"
 
-/* TODO: This only loads on firsttime Com_Init, so a filesystem restart wont fix up files*/
-/* Still seems to be having some issues with the hash-table because some of the values appear to be junk and cause a sig11 when trying to loop through hash list in FindString from SP_GetString */
+/* TODO: This only loads on firsttime Com_Init, so a filesystem restart or cvar change wont cause a reload*/
 
 static	cvar_t		*se_debug;
 static	cvar_t		*se_language;
 
 typedef unsigned int uInt;
-
-// 2048000 // 2mb
 
 #define MAX_POOL_SIZE	512000
 
@@ -92,7 +89,6 @@ uInt FNV32( const char *value, qboolean caseSensitive ) {
 }
 
 #define MAX_TRANS_STRINGS	4096
-//#define FILE_HASH_SIZE		1024
 #define MAX_TRANS_STRING	4096
 
 typedef struct stringEd_s {
@@ -125,6 +121,34 @@ static stringEd_t* FindString( const char *reference ) {
 	}
 
 	return NULL;
+}
+
+/* Ensures that newlines "\n" are converted to real '\n' (from g_spawn.c) */
+char *SE_NewString( const char *string ) {
+	char	*newb, *new_p;
+	int		i,l;
+	
+	l = strlen(string) + 1;
+
+	newb = (char *) SE_Alloc( l );
+
+	new_p = newb;
+
+	// turn \n into a real linefeed
+	for ( i=0 ; i< l ; i++ ) {
+		if (string[i] == '\\' && i < l-1) {
+			i++;
+			if (string[i] == 'n') {
+				*new_p++ = '\n';
+			} else {
+				*new_p++ = '\\';
+			}
+		} else {
+			*new_p++ = string[i];
+		}
+	}
+	
+	return newb;
 }
 
 void SE_Load( const char *title, const char *language ) {
@@ -200,7 +224,7 @@ void SE_Load( const char *title, const char *language ) {
 
 			str->reference = SE_StringAlloc( reference );
 			str->refhash = FNV32( reference, qfalse );
-			str->translated = SE_StringAlloc( translated );
+			str->translated = SE_NewString( translated );
 
 			strings[numStrings] = *str;
 
