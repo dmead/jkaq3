@@ -787,8 +787,6 @@ void	Cmd_ExecuteString( const char *text ) {
 		return;
 	}
 
-	/* Seems like a good place for the cgame command intercept check to go */
-
 	// check client game commands
 	if ( com_cl_running && com_cl_running->integer && CL_GameCommand() ) {
 		return;

@@ -2667,7 +2667,7 @@ void FS_NewDir_f( void ) {
 
 	if ( Cmd_Argc() < 2 ) {
 		Com_Printf( "usage: fdir <filter>\n" );
-		Com_Printf( "example: fdir *q3dm*.bsp\n");
+		Com_Printf( "example: fdir *ffa*.bsp\n");
 		return;
 	}
 
@@ -3792,9 +3792,6 @@ void FS_InitFilesystem( void ) {
 	FS_CheckPak0( );
 #endif
 
-	// reload new strings for the new filesystem path
-	//SE_Init( );
-
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
 	// graphics screen when the font fails to load
@@ -3829,8 +3826,6 @@ void FS_Restart( int checksumFeed ) {
 #ifndef STANDALONE
 	FS_CheckPak0( );
 #endif
-
-	//SE_Init( );
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable

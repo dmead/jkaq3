@@ -163,7 +163,7 @@ A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 void QDECL Com_Printf( const char *fmt, ... ) {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
-  static qboolean opening_qconsole = qfalse;
+	static qboolean opening_qconsole = qfalse;
 
 
 	va_start (argptr,fmt);
@@ -176,7 +176,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 			*rd_buffer = 0;
 		}
 		Q_strcat(rd_buffer, rd_buffersize, msg);
-    // TTimo nooo .. that would defeat the purpose
+		// TTimo nooo .. that would defeat the purpose
 		//rd_flush(rd_buffer);			
 		//*rd_buffer = 0;
 		return;
@@ -197,7 +197,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 			struct tm *newtime;
 			time_t aclock;
 
-      opening_qconsole = qtrue;
+			opening_qconsole = qtrue;
 
 			time( &aclock );
 			newtime = localtime( &aclock );
@@ -221,7 +221,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 				Cvar_SetValue("logfile", 0);
 			}
 
-      opening_qconsole = qfalse;
+			opening_qconsole = qfalse;
 		}
 		if ( logfile && FS_Initialized()) {
 			FS_Write(msg, strlen(msg), logfile);
@@ -2545,8 +2545,6 @@ static void Com_InitRand(void)
 		srand(time(NULL));
 }
 
-void SE_Init( void );
-
 /*
 =================
 Com_Init
@@ -2731,10 +2729,6 @@ void Com_Init( char *commandLine ) {
 		if ( !com_dedicated->integer ) {
 			if( com_bootlogo->integer ) {
 				Cbuf_AddText ("cinematic openinglogos.RoQ\n");
-				if( !com_introPlayed->integer ) {
-					Cvar_Set( com_introPlayed->name, "1" );
-					Cvar_Set( "nextmap", "cinematic openinglogos.RoQ" );
-				}
 			}
 		}
 	}

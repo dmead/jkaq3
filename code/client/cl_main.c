@@ -3081,8 +3081,7 @@ void CL_InitRenderer( void ) {
 	}
 
 	// load character sets
-	//cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars" );
-	cls.charSetShader = re.RegisterShaderNoMip( "gfx/2d/charsgrid_med" ); // this looks bad without proper offsets but at least not q3 asset
+	cls.charSetShader = re.RegisterShaderNoMip( "gfx/2d/charsgrid_med" );
 	cls.whiteShader = re.RegisterShader( "white" );
 	cls.consoleShader = re.RegisterShader( "console" );
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
