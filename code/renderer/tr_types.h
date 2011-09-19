@@ -274,7 +274,9 @@ typedef struct {
 	int			x, y, width, height;
 	float		fov_x, fov_y;
 	vec3_t		vieworg;
+	vec3_t		viewangles;
 	vec3_t		viewaxis[3];		// transformation matrix
+	int			viewContents;		// world contents at vieworg
 
 	// time in milliseconds for shader effects and other time dependent rendering issues
 	int			time;
