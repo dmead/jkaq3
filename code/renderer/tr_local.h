@@ -312,6 +312,7 @@ typedef struct {
 	acff_t			adjustColorsForFog;
 
 	qboolean		isDetail;
+	qboolean		isGlow;
 } shaderStage_t;
 
 struct shaderCommands_s;

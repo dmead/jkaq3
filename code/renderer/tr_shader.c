@@ -1069,7 +1069,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		}
 		else if ( !Q_stricmp( token, "glow" ) )
 		{
-			SkipRestOfLine( text );
+			stage->isGlow = qtrue;
 			continue;
 		}
 		else
