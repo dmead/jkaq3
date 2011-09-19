@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// For FS_CL_ExtractFromPakFile and FS_CL_ExtractFromPakFile:
+// For FS_CL_ExtractFromPakFile and FS_FOpenFileRead_Filtered:
 /*
 ===========================================================================
 
