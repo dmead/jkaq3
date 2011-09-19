@@ -1521,6 +1521,11 @@ static qboolean ParseShader( char **text )
 			SkipRestOfLine( text );
 			continue;
 		}
+		// jka materials
+		else if ( !Q_stricmp( token, "material" ) || !Q_stricmp( token, "q3map_material" ) ) {
+			SkipRestOfLine( text );
+			continue;
+		}
 		// sun parms
 		else if ( !Q_stricmp( token, "sun" ) || !Q_stricmp( token, "q3map_sun" ) ) {
 			float	a, b;
