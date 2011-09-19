@@ -53,6 +53,13 @@ void CL_GetGlconfig( glconfig_t *glconfig ) {
 	*glconfig = cls.glconfig;
 }
 
+/*
+CL_GetRealRes
+*/
+void CL_GetRealRes( float *width, float *height ) {
+	*width = cls.glconfig.vidWidth;
+	*height = cls.glconfig.vidHeight;
+}
 
 /*
 ====================
@@ -677,6 +684,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return re.LerpTag( VMA(1), args[2], args[3], args[4], VMF(5), VMA(6) );
 	case CG_GETGLCONFIG:
 		CL_GetGlconfig( VMA(1) );
+		return 0;
+	case CG_R_GETREALRES:
+		CL_GetRealRes( VMA(1), VMA(2) );
 		return 0;
 	case CG_GETGAMESTATE:
 		CL_GetGameState( VMA(1) );
