@@ -254,7 +254,8 @@ PROTOCOL
 ==============================================================
 */
 
-#define	PROTOCOL_VERSION	26
+#define	PROTOCOL_VERSION	27
+#define PROTOCOL_LEGACY_VERSION	26
 // 1.0.1.0 - 26
 
 // maintain a list of compatible protocols for demo playing
