@@ -281,6 +281,10 @@ void IN_VoiceChat (void) {
 	}
 }
 
+void IN_AutoMapToggle (void) { }
+void IN_AutoMapButton (void) { }
+void IN_UseGivenForce (void) { }
+
 void IN_GenCmd (genCmds_t cmd ) {
 	generic_cmd = cmd;
 }
@@ -1090,6 +1094,10 @@ void CL_InitInput( void ) {
 #endif
 
 	Cmd_AddCommand ("voicechat", IN_VoiceChat);
+	Cmd_AddCommand ("automap_toggle", IN_AutoMapToggle);
+	Cmd_AddCommand ("automap_button", IN_AutoMapButton);
+	Cmd_AddCommand ("useGivenForce", IN_UseGivenForce);
+	
 
 	for ( gc=gencmds ; gc->name ; gc++ ) {
 		Cmd_AddCommand (gc->name, gc->func);
