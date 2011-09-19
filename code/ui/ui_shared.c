@@ -1535,11 +1535,19 @@ static void Menu_RunCloseScript(menuDef_t *menu) {
 void Menus_CloseByName ( const char *p )
 {
 	menuDef_t *menu = Menus_FindByName(p);
+	int i;
 	
 	// If the menu wasnt found just exit
 	if (menu == NULL) 
 	{
 		return;
+	}
+
+	for ( i = 0; i < menu->itemCount; i++ ) {
+		if ( g_editItem == menu->items[ i ] ) {
+			g_editingField = qfalse;
+			g_editItem = NULL;
+		}
 	}
 
 	// Run the close script for the menu
@@ -4613,7 +4621,7 @@ void Menu_HandleKey(menuDef_t *menu, int key, qboolean down) {
 		    it.parent = menu;
 		    Item_RunScript(&it, menu->onESC);
 			}
-		    g_waitingForKey = qfalse;
+		    //g_waitingForKey = qfalse;
 			break;
 		case A_TAB:
 		case A_KP_2:
@@ -4642,7 +4650,7 @@ void Menu_HandleKey(menuDef_t *menu, int key, qboolean down) {
 						item->cursorPos = 0;
 						g_editingField = qtrue;
 						g_editItem = item;
-						DC->setOverstrikeMode(qtrue);
+						//DC->setOverstrikeMode(qtrue);
 					}
 				}
 				
@@ -4714,7 +4722,7 @@ void Menu_HandleKey(menuDef_t *menu, int key, qboolean down) {
 					item->cursorPos = 0;
 					g_editingField = qtrue;
 					g_editItem = item;
-					DC->setOverstrikeMode(qtrue);
+					//DC->setOverstrikeMode(qtrue);
 				} else {
 						Item_Action(item);
 				}
@@ -5492,14 +5500,14 @@ void Item_Bind_Paint(itemDef_t *item)
 
 	if (item->window.flags & WINDOW_HASFOCUS) 
 	{
-		if (g_bindItem == item) 
+		if (g_bindItem == item)
 		{
 			lowLight[0] = 0.8f * 1.0f;
 			lowLight[1] = 0.8f * 0.0f;
 			lowLight[2] = 0.8f * 0.0f;
 			lowLight[3] = 0.8f * 1.0f;
-		} 
-		else 
+		}
+		else
 		{
 			lowLight[0] = 0.8f * parent->focusColor[0]; 
 			lowLight[1] = 0.8f * parent->focusColor[1]; 
@@ -5510,7 +5518,18 @@ void Item_Bind_Paint(itemDef_t *item)
 	} 
 	else 
 	{
-		memcpy(&newColor, &item->window.foreColor, sizeof(vec4_t));
+		if (g_bindItem == item)
+		{
+			lowLight[0] = 0.8f * 1.0f;
+			lowLight[1] = 0.8f * 0.0f;
+			lowLight[2] = 0.8f * 0.0f;
+			lowLight[3] = 0.8f * 1.0f;
+			LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin((float)(DC->realTime / PULSE_DIVISOR)));
+		}
+		else
+		{
+			memcpy(&newColor, &item->window.foreColor, sizeof(vec4_t));
+		}
 	}
 
 	if (item->text) 
@@ -5584,6 +5603,7 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 		{
 			case A_ESCAPE:
 				g_waitingForKey = qfalse;
+				g_bindItem = NULL;
 				return qtrue;
 	
 			case A_BACKSPACE:
@@ -5661,6 +5681,7 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 
 	Controls_SetConfig(qtrue);	
 	g_waitingForKey = qfalse;
+	g_bindItem = NULL;
 
 	return qtrue;
 }
