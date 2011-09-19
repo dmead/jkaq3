@@ -10354,6 +10354,11 @@ void _UI_Init( qboolean inGameLoad ) {
 	UI_LoadMenus(menuSet, qtrue);
 	UI_LoadMenus("ui/jampingame.txt", qtrue);
 #endif
+
+	if (inGameLoad)
+	{
+		Menus_SetIngameOnEsc();
+	}
 	
 	trap_Cvar_Register(NULL, "ui_name", UI_Cvar_VariableString("name"), CVAR_INTERNAL );	//get this now, jic the menus change again trying to setName before getName
 
@@ -10405,11 +10410,11 @@ void _UI_KeyEvent( int key, qboolean down ) {
 			UpdateDemoTimer();
 
 #endif
-			if (key == A_ESCAPE && down && !Menus_AnyFullScreenVisible()) {
-				Menus_CloseAll();
-			} else {
+			//if (key == A_ESCAPE && down && !Menus_AnyFullScreenVisible()) {
+			//	Menus_CloseAll();
+			//} else {
 				Menu_HandleKey(menu, key, down );
-			}
+			//}
 		} else {
 			trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
 			trap_Key_ClearStates();

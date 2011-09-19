@@ -1513,6 +1513,17 @@ menuDef_t *Menus_FindByName(const char *p) {
   return NULL;
 }
 
+/* Sets onEsc to all ingame* menus */
+void Menus_SetIngameOnEsc(void) {
+  int i;
+  for (i = 0; i < menuCount; i++) {
+    if (Q_stricmpn(Menus[i].window.name, "ingame", 6) == 0) {
+		if(!Menus[i].onESC || !*Menus[i].onESC)
+			Menus[i].onESC = String_Alloc(va("close \"%s\";", Menus[i].window.name));
+    } 
+  }
+}
+
 void Menus_ShowByName(const char *p) {
 	menuDef_t *menu = Menus_FindByName(p);
 	if (menu) {

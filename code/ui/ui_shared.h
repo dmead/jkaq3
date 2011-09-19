@@ -518,6 +518,7 @@ int Display_CursorType(int x, int y);
 qboolean Display_KeyBindPending();
 void Menus_OpenByName(const char *p);
 menuDef_t *Menus_FindByName(const char *p);
+void Menus_SetIngameOnEsc(void);
 void Menus_ShowByName(const char *p);
 void Menus_CloseByName(const char *p);
 void Display_HandleKey(int key, qboolean down, int x, int y);
