@@ -5464,7 +5464,16 @@ char g_nameBind2[32];
 void BindingFromName(const char *cvar) {
 	int		i, b1, b2;
 	char	sOR[32];
+//	char	lang[64];
+	qboolean english = qtrue;//qfalse;
 
+	/* Ensiform: Enable this if we support the other languages later
+	DC->getCVarString("se_language", lang, sizeof(lang));
+
+	if(!Q_stricmp(lang, "english")) {
+		english = qtrue;
+	}
+	*/
 
 	// iterate each command, set its default binding
 	for (i=0; i < g_bindCount; i++)
@@ -5475,12 +5484,16 @@ void BindingFromName(const char *cvar) {
 				break;
 			}
 				DC->keynumToStringBuf( b1, g_nameBind1, 32 );
+				if(english)
+					Q_strupr(g_nameBind1);
 // do NOT do this or it corrupts asian text!!!					Q_strupr(g_nameBind1);
 
 				b2 = g_bindings[i].bind2;
 				if (b2 != -1)
 				{
 					DC->keynumToStringBuf( b2, g_nameBind2, 32 );
+					if(english)
+						Q_strupr(g_nameBind2);
 // do NOT do this or it corrupts asian text!!!					Q_strupr(g_nameBind2);
 
 					trap_SP_GetStringTextString("MENUS_KEYBIND_OR",sOR, sizeof(sOR));
