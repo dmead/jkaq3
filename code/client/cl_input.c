@@ -281,7 +281,11 @@ void IN_VoiceChat (void) {
 	}
 }
 
-void IN_AutoMapToggle (void) { }
+void Cvar_SetValue2( const char *var_name, float value);
+void IN_AutoMapToggle (void) {
+	cvar_t *cv = Cvar_Get("cg_drawRadar", "1", CVAR_ARCHIVE);
+	Cvar_SetValue2(cv->name, !cv->value);
+}
 void IN_AutoMapButton (void) { }
 void IN_UseGivenForce (void) { }
 
