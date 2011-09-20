@@ -1195,6 +1195,7 @@ static void RB_SurfaceEntity( surfaceType_t *surfType ) {
 	case RT_RAIL_RINGS:
 		RB_SurfaceRailRings();
 		break;
+	case RT_ELECTRICITY:
 	case RT_LIGHTNING:
 		RB_SurfaceLightningBolt();
 		break;
