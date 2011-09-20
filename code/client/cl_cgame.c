@@ -827,6 +827,15 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		strcpy(VMA(3), "models/players/_humanoid/_humanoid");
 		return 0;
 
+	case CG_G2_HAVEWEGHOULMODELS:
+		return 1;
+
+	case CG_G2_COPYGHOUL2INSTANCE:
+		return 1;
+
+	case CG_G2_INITGHOUL2MODEL:
+		return 0;
+
 	default:
 		return 0;
 //	        assert(0);
