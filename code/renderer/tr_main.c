@@ -1271,7 +1271,9 @@ void R_AddEntitySurfaces (void) {
 				case MOD_BRUSH:
 					R_AddBrushModelSurfaces( ent );
 					break;
-				case MOD_MDX:
+				case MOD_GLM:
+					R_AddMyGhoulSurfaces( ent );
+					break;
 				case MOD_BAD:		// null model axis
 					if ( (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal) {
 						break;

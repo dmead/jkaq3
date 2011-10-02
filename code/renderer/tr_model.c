@@ -196,7 +196,7 @@ qhandle_t R_RegisterIQM(const char *name, model_t *mod)
 R_RegisterIQM
 ====================
 */
-qhandle_t R_RegisterMDXM(const char *name, model_t *mod)
+qhandle_t R_RegisterGLM(const char *name, model_t *mod)
 {
 	union {
 		unsigned *u;
@@ -212,13 +212,13 @@ qhandle_t R_RegisterMDXM(const char *name, model_t *mod)
 		return 0;
 	}
 	
-	loaded = R_LoadMDXM(mod, buf.u, filesize, name);
+	loaded = R_LoadGLM(mod, buf.u, filesize, name);
 
 	ri.FS_FreeFile (buf.v);
 	
 	if(!loaded)
 	{
-		ri.Printf(PRINT_WARNING,"R_RegisterMDXM: couldn't load glm file %s\n", name);
+		ri.Printf(PRINT_WARNING,"R_RegisterGLM: couldn't load glm file %s\n", name);
 		mod->type = MOD_BAD;
 		return 0;
 	}
@@ -237,7 +237,7 @@ typedef struct
 // when there are multiple models of different formats available
 static modelExtToLoaderMap_t modelLoaders[ ] =
 {
-	{ "glm", R_RegisterMDXM },
+	{ "glm", R_RegisterGLM },
 	{ "iqm", R_RegisterIQM },
 #ifdef RAVENMD4
 	{ "mdr", R_RegisterMDR },

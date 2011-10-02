@@ -529,6 +529,7 @@ typedef enum {
 	SF_MDR,
 #endif
 	SF_IQM,
+	SF_GLM,
 	SF_FLARE,
 	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
 	SF_DISPLAY_LIST,
@@ -782,7 +783,8 @@ typedef enum {
 	MOD_MDR,
 #endif
 	MOD_IQM,
-	MOD_MDX
+	MOD_GLM,
+	MOD_GLA
 } modtype_t;
 
 typedef struct model_s {
@@ -793,7 +795,7 @@ typedef struct model_s {
 	int			dataSize;	// just for listing purposes
 	bmodel_t	*bmodel;		// only if type == MOD_BRUSH
 	md3Header_t	*md3[MD3_MAX_LODS];	// only if type == MOD_MESH
-	void	*modelData;			// only if type == (MOD_MD4 | MOD_MDR | MOD_IQM)
+	void	*modelData;			// only if type == (MOD_MD4 | MOD_MDR | MOD_IQM | MOD_GLM | MOD_GLA)
 
 	int			 numLods;
 } model_t;
@@ -1542,12 +1544,16 @@ void R_MDRAddAnimSurfaces( trRefEntity_t *ent );
 void RB_MDRSurfaceAnim( md4Surface_t *surface );
 #endif
 qboolean R_LoadIQM (model_t *mod, void *buffer, int filesize, const char *name );
-qboolean R_LoadMDXM (model_t *mod, void *buffer, int filesize, const char *name );
+qboolean R_LoadGLM (model_t *mod, void *buffer, int filesize, const char *name );
+//qboolean R_LoadGLA (model_t *mod, void *buffer, int filesize, const char *name );
 void R_AddIQMSurfaces( trRefEntity_t *ent );
 void RB_IQMSurfaceAnim( surfaceType_t *surface );
 int R_IQMLerpTag( orientation_t *tag, iqmData_t *data,
                   int startFrame, int endFrame,
                   float frac, const char *tagName );
+
+void RB_SurfaceMyGhoul( glmSurface_t *surface );
+void R_AddMyGhoulSurfaces( trRefEntity_t *ent );
 
 /*
 =============================================================
