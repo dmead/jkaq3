@@ -2380,6 +2380,32 @@ enum sharedEIKMoveState
 	IKS_DYNAMIC
 };
 
+//material stuff needs to be shared
+typedef enum //# material_e
+{
+	MAT_METAL = 0,	// scorched blue-grey metal
+	MAT_GLASS,		// not a real chunk type, just plays an effect with glass sprites
+	MAT_ELECTRICAL,	// sparks only
+	MAT_ELEC_METAL,	// sparks/electrical type metal
+	MAT_DRK_STONE,	// brown
+	MAT_LT_STONE,	// tan
+	MAT_GLASS_METAL,// glass sprites and METAl chunk
+	MAT_METAL2,		// electrical metal type
+	MAT_NONE,		// no chunks
+	MAT_GREY_STONE,	// grey
+	MAT_METAL3,		// METAL and METAL2 chunks
+	MAT_CRATE1,		// yellow multi-colored crate chunks
+	MAT_GRATE1,		// grate chunks
+	MAT_ROPE,		// for yavin trial...no chunks, just wispy bits
+	MAT_CRATE2,		// read multi-colored crate chunks
+	MAT_WHITE_METAL,// white angular chunks
+	MAT_SNOWY_ROCK,	// gray & brown chunks
+
+	NUM_MATERIALS
+
+};
+typedef int material_t;
+
 //rww - unsightly hack to allow us to make an FX call that takes a horrible amount of args
 typedef struct addpolyArgStruct_s {
 	vec3_t				p[4];

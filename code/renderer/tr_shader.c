@@ -1401,6 +1401,7 @@ infoParm_t	infoParms[] = {
 	{"nonsolid",	1,	0,	0},						// clears the solid flag
 	{"ladder",		0,	0,	CONTENTS_LADDER },
 	{"abseil",		0,	0,	CONTENTS_ABSEIL },
+	{"terrain",		0,	0,	CONTENTS_TERRAIN },
 
 	// utility relevant attributes
 	//{"origin",		1,	0,	CONTENTS_ORIGIN },		// center of rotating brushes
@@ -1427,6 +1428,7 @@ infoParm_t	infoParms[] = {
 	//{"pointlight",	0,	SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
 	//{"nolightmap",	0,	SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
 	{"nodlight",	0,	SURF_NODLIGHT, 0 },		// don't ever add dynamic lights
+	{"nomiscents", 0, SURF_NOMISCENTS, 0},
 };
 
 
@@ -1452,6 +1454,24 @@ static void ParseSurfaceParm( char **text ) {
 				si->contents &= ~CONTENTS_SOLID;
 			}
 #endif
+			break;
+		}
+	}
+}
+
+static const char *materials[] = {
+	MATERIALS
+};
+
+static void ParseMaterialParm( char **text ) {
+	char	*token;
+	int		numMaterials = ARRAY_LEN( materials );
+	int		i;
+
+	token = COM_ParseExt( text, qfalse );
+	for ( i = 1 ; i < numMaterials ; i++ ) {
+		if ( !Q_stricmp( token, materials[i] ) ) {
+			shader.surfaceFlags |= i;
 			break;
 		}
 	}
@@ -1523,7 +1543,8 @@ static qboolean ParseShader( char **text )
 		}
 		// jka materials
 		else if ( !Q_stricmp( token, "material" ) || !Q_stricmp( token, "q3map_material" ) ) {
-			SkipRestOfLine( text );
+			ParseMaterialParm( text );
+			//SkipRestOfLine( text );
 			continue;
 		}
 		// sun parms
