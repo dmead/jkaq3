@@ -1199,6 +1199,11 @@ void CL_ShutdownInput(void)
 
 	Cmd_RemoveCommand("voicechat");
 
+	Cmd_RemoveCommand("voicechat");
+	Cmd_RemoveCommand("automap_toggle");
+	Cmd_RemoveCommand("automap_button");
+	Cmd_RemoveCommand("useGivenForce");
+
 	for ( gc=gencmds ; gc->name ; gc++ ) {
 		Cmd_RemoveCommand(gc->name);
 	}
