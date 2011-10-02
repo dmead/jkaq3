@@ -132,6 +132,7 @@ void R_InitFont( const int index, const char *fontName ) {
 	len = ri.FS_ReadFile( name, NULL );
 
 	if( len == sizeof( dfontdat_t ) ) {
+		short maxGlyphBaseline = 0;
 		ri.FS_ReadFile( name, &faceData );
 		font = (dfontdat_t *)ri.Hunk_AllocateTempMemory( len );
 		fdOffset = 0;
@@ -167,13 +168,21 @@ void R_InitFont( const int index, const char *fontName ) {
 			font->mGlyphs[i].t            = readFloat();
 			font->mGlyphs[i].s2           = readFloat();
 			font->mGlyphs[i].t2           = readFloat();
+
+			if (font->mGlyphs[i].baseline > maxGlyphBaseline) {
+				maxGlyphBaseline = font->mGlyphs[i].baseline;
+			}
 		}
 
 		/* Looks like something missing from the spec (maybe :s) */
 		dummy             = readShort();
 		font->mPointSize  = readShort();
 		font->mHeight     = readShort();
+		if (font->mHeight <= 0) {
+			font->mHeight = maxGlyphBaseline;
+		}
 		font->mAscender   = readShort();
+		font->mAscender  += maxGlyphBaseline;
 		font->mDescender  = readShort();
 		font->mKoreanHack = readShort();
 	}
@@ -188,6 +197,7 @@ void R_InitFont( const int index, const char *fontName ) {
 	registeredFontHandles[index-1] = hnd;
 }
 void R_InitFonts( void ) {
+	small_font_hack = qfalse;
 	R_InitFont( FONT_MEDIUM, "ergoec" );
 	R_InitFont( FONT_SMALL, "aurabesh" );
 	R_InitFont( FONT_LARGE, "anewhope" );
@@ -245,7 +255,7 @@ int RE_Font_StrLenPixels( const char *text, const int iFontIndex, const float sc
 			}
 			else {
 				glyph = &font->mGlyphs[(unsigned char)*s];
-				out  += glyph->width;
+				out  += glyph->horizAdvance;
 				s++;
 				count++;
 			}
@@ -291,6 +301,7 @@ void RE_Font_PaintChar( float x, float y, float width, float height, float scale
 	Font_AdjustFrom640( &x, &y, &w, &h );
 	RE_StretchPic( x, y, w, h, s, t, s2, t2, hShader );
 }
+vec4_t dropShadow = {0.2f, 0.2f, 0.2f, 1};
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale ) {
 	qhandle_t fontIndex = setIndex;
 	qhandle_t shader;
@@ -298,11 +309,10 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 	glyphInfo_t *glyph;
 	int len, count;
 	vec4_t newColor;
+	float fox = (float)ox;
+	float foy = (float)oy;
 
-	// Fuckers :(
-	if( fontIndex & STYLE_DROPSHADOW )
-		fontIndex -= STYLE_DROPSHADOW;
-
+	fontIndex &= ~STYLE_DROPSHADOW;
 	fontIndex &= ~STYLE_BLINK;
 	font = FontFromHandle( fontIndex );
 	shader = ShaderFromHandle( fontIndex );
@@ -334,18 +344,24 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 				continue;
 			}
 			else {
-				float yadj = scale * glyph->baseline;
+				/*   ----------------------- ascender = highest point above baseline
+				 *     F o n t
+				 *   ----------------------- baseline = line all chars rest on
+				 *   ----------------------- descender = lowest point below baseline
+				 */
+
+				float yadj = scale * (font->mAscender - glyph->baseline);
 
 				if( setIndex & STYLE_DROPSHADOW ) {
-					colorBlack[3] = newColor[3];
-					RE_SetColor( colorBlack );
-					RE_Font_PaintChar( (ox + glyph->horizOffset)+2, ((oy-yadj)+(font->mAscender))+2, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
+					dropShadow[3] = newColor[3];
+					RE_SetColor( dropShadow );
+					RE_Font_PaintChar( (fox + ( glyph->horizOffset * scale ))+1, ((foy+yadj))+1, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
 					RE_SetColor( newColor );
-					colorBlack[3] = 1.0;
+					dropShadow[3] = 1.0;
 				}
 
-				RE_Font_PaintChar( ox + glyph->horizOffset, (oy-yadj)+(font->mAscender), glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
-				ox += ( glyph->horizAdvance * scale );
+				RE_Font_PaintChar( fox + ( glyph->horizOffset * scale ), (foy+yadj), glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
+				fox += ( glyph->horizAdvance * scale );
 				s++;
 				count++;
 			}
