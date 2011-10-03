@@ -535,10 +535,10 @@ static void SV_ClipMoveToEntities( moveclip_t *clip ) {
 			if ( touchlist[i] == clip->passEntityNum ) {
 				continue;	// don't clip against the pass entity
 			}
-			if ( touch->r.ownerNum == clip->passEntityNum ) {
+			if ( !(touch->r.svFlags & SVF_OWNERNOTSHARED) && touch->r.ownerNum == clip->passEntityNum ) {
 				continue;	// don't clip against own missiles
 			}
-			if ( touch->r.ownerNum == passOwnerNum ) {
+			if ( !(touch->r.svFlags & SVF_OWNERNOTSHARED) && touch->r.ownerNum == passOwnerNum ) {
 				continue;	// don't clip against other missiles from our owner
 			}
 		}
