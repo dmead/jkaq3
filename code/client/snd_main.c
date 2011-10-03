@@ -36,6 +36,8 @@ cvar_t *s_muteWhenUnfocused;
 
 static soundInterface_t si;
 
+qboolean s_shutUp = qfalse;
+
 /*
 =================
 S_ValidateInterface
@@ -86,6 +88,23 @@ void S_MuteSound( int entnum, int entchannel )
 	if( si.MuteSound ) {
 		si.MuteSound( entnum, entchannel );
 	}
+}
+
+/*
+=================
+S_ShutUp
+
+Suppress the sound file could not be loaded
+=================
+*/
+void S_ShutUp( qboolean state )
+{
+	s_shutUp = state;
+}
+
+qboolean S_Get_ShutUp( void )
+{
+	return s_shutUp;
 }
 
 /*

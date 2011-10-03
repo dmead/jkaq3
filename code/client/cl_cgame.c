@@ -577,6 +577,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_S_MUTESOUND:
 		S_MuteSound( args[1], args[2] );
 		return 0;
+	case CG_S_SHUTUP:
+		S_ShutUp( args[1] );
+		return 0;
 	case CG_S_STARTSOUND:
 		S_StartSound( VMA(1), args[2], args[3], args[4] );
 		return 0;

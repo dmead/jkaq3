@@ -24,6 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void S_Init( void );
 void S_Shutdown( void );
 
+void S_ShutUp( qboolean state );
+qboolean S_Get_ShutUp( void );
+
 void S_MuteSound( int entnum, int entchannel );
 // if origin is NULL, the sound will be dynamically sourced from the entity
 void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );

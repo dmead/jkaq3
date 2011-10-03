@@ -110,7 +110,8 @@ static void *S_CodecGetSound(const char *filename, snd_info_t *info)
 		}
 	}
 
-	Com_Printf(S_COLOR_YELLOW "WARNING: Failed to %s sound %s!\n", info ? "load" : "open", filename);
+	if( !S_Get_ShutUp() )
+		Com_Printf(S_COLOR_YELLOW "WARNING: Failed to %s sound %s!\n", info ? "load" : "open", filename);
 
 	return NULL;
 }
