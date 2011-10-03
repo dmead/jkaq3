@@ -231,6 +231,20 @@ static void R_BindAnimatedImage( textureBundle_t *bundle ) {
 		return;
 	}
 
+	if ( bundle->isOneShot ) {
+		if (backEnd.currentEntity && (backEnd.currentEntity->e.renderfx & RF_SETANIMINDEX)) {
+			int frame = backEnd.currentEntity->e.skinNum;
+			if( frame >= 0 && frame <= bundle->numImageAnimations ) {
+				GL_Bind( bundle->image[frame] );
+				return;
+			}
+		}
+		if( bundle->didOneShot ) {
+			GL_Bind( bundle->image[bundle->numImageAnimations] );
+			return;
+		}
+	}
+
 	// it is necessary to do this messy calc to make sure animations line up
 	// exactly with waveforms of the same frequency
 	index = ri.ftol(tess.shaderTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE);
@@ -242,6 +256,9 @@ static void R_BindAnimatedImage( textureBundle_t *bundle ) {
 	index %= bundle->numImageAnimations;
 
 	GL_Bind( bundle->image[ index ] );
+	if ( bundle->isOneShot ) {
+		bundle->didOneShot = qtrue;
+	}
 }
 
 /*

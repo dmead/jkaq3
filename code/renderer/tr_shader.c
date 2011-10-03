@@ -760,6 +760,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 					}
 					stage->bundle[0].numImageAnimations++;
 				}
+				stage->bundle[0].isOneShot = qtrue;
 			}
 		}
 		else if ( !Q_stricmp( token, "videoMap" ) )

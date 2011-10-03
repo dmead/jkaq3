@@ -290,6 +290,8 @@ typedef struct {
 	qboolean		isLightmap;
 	qboolean		vertexLightmap;
 	qboolean		isVideoMap;
+	qboolean		isOneShot;
+	qboolean		didOneShot;
 } textureBundle_t;
 
 #define NUM_TEXTURE_BUNDLES 2
