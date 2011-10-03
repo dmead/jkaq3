@@ -2490,6 +2490,11 @@ void CL_ServersResponsePacket( const netadr_t* from, msg_t *msg, qboolean extend
 	Com_Printf("%d servers parsed (total %d)\n", numservers, total);
 }
 
+/*
+===================
+CL_PrintPacket
+===================
+*/
 void CL_PrintPacket( netadr_t from, msg_t *msg ) {
 	char *s;
 	int len;
@@ -2503,20 +2508,6 @@ void CL_PrintPacket( netadr_t from, msg_t *msg ) {
 	}
 	Com_Printf( "%s", s );
 }
-/*char *CL_PrintPacket( const char *string ) {
-	static char text[MAX_STRING_CHARS] = { 0 };
-	int len = strlen( string );
-
-	Q_strncpyz(text, string, sizeof( text ) );
-
-	if( len > 3 && string[0] == '@' && string[1] == '@' && string[2] == '@' ) {
-		char ref[MAX_QPATH];
-		Com_sprintf( ref, sizeof(ref), "MP_SVGAME_%s", string+3 );
-		SE_GetStringBuffer( ref, text, sizeof(text) );
-		return text;
-	}
-	return text;
-}*/
 
 /*
 =================
@@ -2707,13 +2698,6 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	// echo request from server
 	if(!Q_stricmp(c, "print")){
 		CL_PrintPacket( from, msg );
-		/*s = MSG_ReadString( msg );
-
-		s = CL_PrintPacket( s );
-		
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
-		Com_Printf( "%s", s );*/
-
 		return;
 	}
 
