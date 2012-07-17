@@ -300,7 +300,7 @@ RE_RotatedPic
 =============
 */
 void RE_RotatedPic( float x, float y, float w, float h,
-					float s1, float t1, float s2, float t2, float angle, qhandle_t hShader ) {
+					float s1, float t1, float s2, float t2, float angle, qboolean centered, qhandle_t hShader ) {
 	stretchPicCommand_t *cmd;
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
@@ -323,42 +323,7 @@ void RE_RotatedPic( float x, float y, float w, float h,
 	cmd->h = cmd->w;
 
 	cmd->angle = angle;
-	cmd->s1 = s1;
-	cmd->t1 = t1;
-	cmd->s2 = s2;
-	cmd->t2 = t2;
-}
-
-/*
-=============
-RE_RotatedPic2
-=============
-*/
-void RE_RotatedPic2( float x, float y, float w, float h,
-					float s1, float t1, float s2, float t2, float angle, qhandle_t hShader ) {
-	stretchPicCommand_t *cmd;
-
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
-	if ( !cmd ) {
-		return;
-	}
-	cmd->commandId = RC_ROTATED_PIC2;
-	cmd->shader = R_GetShaderByHandle( hShader );
-	cmd->x = x;
-	cmd->y = y;
-	cmd->w = w;
-	cmd->h = h;
-
-	// fixup
-	cmd->w /= 2;
-	cmd->h /= 2;
-	cmd->x += cmd->w;
-	cmd->y += cmd->h;
-	cmd->w = sqrt( ( cmd->w * cmd->w ) + ( cmd->h * cmd->h ) );
-	cmd->h = cmd->w;
-
-	cmd->angle = angle;
-	cmd->isRot2 = qtrue;
+	cmd->centered = centered;
 	cmd->s1 = s1;
 	cmd->t1 = t1;
 	cmd->s2 = s2;

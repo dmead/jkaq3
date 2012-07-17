@@ -930,6 +930,8 @@ const void *RB_StretchPic ( const void *data ) {
 RB_RotatedPic
 =============
 */
+
+// TOOD: Support Centered Pic or vice versa?
 const void *RB_RotatedPic( const void *data ) {
 	const stretchPicCommand_t   *cmd;
 	shader_t *shader;
@@ -1233,6 +1235,9 @@ void RB_ExecuteRenderCommands( const void *data ) {
 			break;
 		case RC_STRETCH_PIC:
 			data = RB_StretchPic( data );
+			break;
+		case RC_ROTATED_PIC:
+			data = RB_RotatedPic( data );
 			break;
 		case RC_DRAW_SURFS:
 			data = RB_DrawSurfs( data );
