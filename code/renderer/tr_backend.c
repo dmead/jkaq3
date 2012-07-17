@@ -376,6 +376,10 @@ void GL_State( unsigned long stateBits )
 			qglEnable( GL_ALPHA_TEST );
 			qglAlphaFunc( GL_GEQUAL, 0.5f );
 			break;
+		case GLS_ATEST_GE_120:
+			qglEnable( GL_ALPHA_TEST );
+			qglAlphaFunc( GL_GEQUAL, 0.75f );
+			break;
 		default:
 			assert( 0 );
 			break;
@@ -448,12 +452,100 @@ void RB_BeginDrawingView (void) {
 	// ensures that depth writes are enabled for the depth clear
 	GL_State( GLS_DEFAULT );
 	// clear relevant buffers
-	clearBits = GL_DEPTH_BUFFER_BIT;
+	//clearBits = GL_DEPTH_BUFFER_BIT;
+	clearBits = 0;
 
-	if ( r_measureOverdraw->integer || r_shadows->integer == 2 )
-	{
+	if ( r_measureOverdraw->integer || r_shadows->integer == 2 ) {
 		clearBits |= GL_STENCIL_BUFFER_BIT;
 	}
+	else if ( skyboxportal ) {
+		if ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL ) { // portal scene, clear whatever is necessary
+			clearBits |= GL_DEPTH_BUFFER_BIT;
+
+			if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) {  // fastsky: clear color
+
+				// try clearing first with the portal sky fog color, then the world fog color, then finally a default
+				clearBits |= GL_COLOR_BUFFER_BIT;
+#if 0
+				if ( glfogsettings[FOG_PORTALVIEW].registered ) {
+					qglClearColor( glfogsettings[FOG_PORTALVIEW].color[0], glfogsettings[FOG_PORTALVIEW].color[1], glfogsettings[FOG_PORTALVIEW].color[2], glfogsettings[FOG_PORTALVIEW].color[3] );
+				} else if ( glfogNum > FOG_NONE && glfogsettings[FOG_CURRENT].registered )      {
+					qglClearColor( glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3] );
+				} else {
+//					qglClearColor ( 1.0, 0.0, 0.0, 1.0 );	// red clear for testing portal sky clear
+					qglClearColor( 0.5, 0.5, 0.5, 1.0 );
+				}
+#endif
+				qglClearColor( 0.5, 0.5, 0.5, 1.0 );
+			} else {                                                    // rendered sky (either clear color or draw quake sky)
+#if 0
+				if ( glfogsettings[FOG_PORTALVIEW].registered ) {
+					qglClearColor( glfogsettings[FOG_PORTALVIEW].color[0], glfogsettings[FOG_PORTALVIEW].color[1], glfogsettings[FOG_PORTALVIEW].color[2], glfogsettings[FOG_PORTALVIEW].color[3] );
+
+					if ( glfogsettings[FOG_PORTALVIEW].clearscreen ) {    // portal fog requests a screen clear (distance fog rather than quake sky)
+						clearBits |= GL_COLOR_BUFFER_BIT;
+					}
+				}
+#endif
+			}
+		} else {                                        // world scene with portal sky, don't clear any buffers, just set the fog color if there is one
+			clearBits |= GL_DEPTH_BUFFER_BIT;   // this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
+
+#if 0
+			if ( glfogNum > FOG_NONE && glfogsettings[FOG_CURRENT].registered ) {
+				if ( backEnd.refdef.rdflags & RDF_UNDERWATER ) {
+					if ( glfogsettings[FOG_CURRENT].mode == GL_LINEAR ) {
+						clearBits |= GL_COLOR_BUFFER_BIT;
+					}
+
+				} else if ( !( r_portalsky->integer ) ) {    // portal skies have been manually turned off, clear bg color
+					clearBits |= GL_COLOR_BUFFER_BIT;
+				}
+
+				qglClearColor( glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3] );
+			} else if ( !( r_portalsky->integer ) ) {      // ydnar: portal skies have been manually turned off, clear bg color
+				clearBits |= GL_COLOR_BUFFER_BIT;
+				qglClearColor( 0.5, 0.5, 0.5, 1.0 );
+			}
+#endif
+		}
+	} else {                                              // world scene with no portal sky
+		clearBits |= GL_DEPTH_BUFFER_BIT;
+
+		// NERVE - SMF - we don't want to clear the buffer when no world model is specified
+		if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) {
+			clearBits &= ~GL_COLOR_BUFFER_BIT;
+		}
+		// -NERVE - SMF
+		else if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) {
+
+			clearBits |= GL_COLOR_BUFFER_BIT;
+
+#if 0
+
+			if ( glfogsettings[FOG_CURRENT].registered ) { // try to clear fastsky with current fog color
+				qglClearColor( glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3] );
+			} else {
+//				qglClearColor ( 0.0, 0.0, 1.0, 1.0 );	// blue clear for testing world sky clear
+				qglClearColor( 0.05, 0.05, 0.05, 1.0 );  // JPW NERVE changed per id req was 0.5s
+			}
+#endif
+		} else {        // world scene, no portal sky, not fastsky, clear color if fog says to, otherwise, just set the clearcolor
+			// TODO FOG
+#if 0
+			if ( glfogsettings[FOG_CURRENT].registered ) { // try to clear fastsky with current fog color
+				qglClearColor( glfogsettings[FOG_CURRENT].color[0], glfogsettings[FOG_CURRENT].color[1], glfogsettings[FOG_CURRENT].color[2], glfogsettings[FOG_CURRENT].color[3] );
+
+				if ( glfogsettings[FOG_CURRENT].clearscreen ) {   // world fog requests a screen clear (distance fog rather than quake sky)
+					clearBits |= GL_COLOR_BUFFER_BIT;
+				}
+			}
+#endif
+		}
+	}
+
+#if 0
+
 	if ( r_fastsky->integer && !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
 	{
 		clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
@@ -464,6 +556,17 @@ void RB_BeginDrawingView (void) {
 #endif
 	}
 	qglClear( clearBits );
+#endif
+
+	// ydnar: don't clear the color buffer when no world model is specified
+	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) {
+		clearBits &= ~GL_COLOR_BUFFER_BIT;
+	}
+
+
+	if ( clearBits ) {
+		qglClear( clearBits );
+	}
 
 	//
 	// set the modelview matrix for the viewer
@@ -522,6 +625,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	int				entityNum, oldEntityNum;
 	int				dlighted, oldDlighted;
 	qboolean		depthRange, oldDepthRange, isCrosshair, wasCrosshair;
+	qboolean		noDepth, oldNoDepth;
 	int				i;
 	drawSurf_t		*drawSurf;
 	int				oldSort;
@@ -540,9 +644,11 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	oldFogNum = -1;
 	oldDepthRange = qfalse;
 	wasCrosshair = qfalse;
+	oldNoDepth = qfalse;
 	oldDlighted = qfalse;
 	oldSort = -1;
 	depthRange = qfalse;
+	noDepth = qfalse;
 
 	backEnd.pc.c_surfaces += numDrawSurfs;
 
@@ -574,7 +680,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 		// change the modelview matrix if needed
 		//
 		if ( entityNum != oldEntityNum ) {
-			depthRange = isCrosshair = qfalse;
+			depthRange = isCrosshair = noDepth = qfalse;
 
 			if ( entityNum != ENTITYNUM_WORLD ) {
 				backEnd.currentEntity = &backEnd.refdef.entities[entityNum];
@@ -599,6 +705,15 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 					if(backEnd.currentEntity->e.renderfx & RF_CROSSHAIR)
 						isCrosshair = qtrue;
 				}
+
+				if(backEnd.currentEntity->e.renderfx & RF_NODEPTH)
+				{
+					// remove depth for force seeing
+					noDepth = qtrue;
+
+					if(backEnd.currentEntity->e.renderfx & RF_CROSSHAIR)
+						isCrosshair = qtrue;
+				}
 			} else {
 				backEnd.currentEntity = &tr.worldEntity;
 				backEnd.refdef.floatTime = originalTime;
@@ -615,7 +730,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			// change depthrange. Also change projection matrix so first person weapon does not look like coming
 			// out of the screen.
 			//
-			if (oldDepthRange != depthRange || wasCrosshair != isCrosshair)
+			if (oldDepthRange != depthRange || wasCrosshair != isCrosshair || oldNoDepth != noDepth)
 			{
 				if (depthRange)
 				{
@@ -646,6 +761,35 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 					if(!oldDepthRange)
 						qglDepthRange (0, 0.3);
 				}
+				else if (noDepth)
+				{
+					if(backEnd.viewParms.stereoFrame != STEREO_CENTER)
+					{
+						if(isCrosshair)
+						{
+							if(oldNoDepth)
+							{
+								// was not a crosshair but now is, change back proj matrix
+								qglMatrixMode(GL_PROJECTION);
+								qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
+								qglMatrixMode(GL_MODELVIEW);
+							}
+						}
+						else
+						{
+							viewParms_t temp = backEnd.viewParms;
+
+							R_SetupProjection(&temp, r_znear->value, qfalse);
+
+							qglMatrixMode(GL_PROJECTION);
+							qglLoadMatrixf(temp.projectionMatrix);
+							qglMatrixMode(GL_MODELVIEW);
+						}
+					}
+
+					if(!oldNoDepth)
+						qglDepthRange (0, 0);
+				}
 				else
 				{
 					if(!wasCrosshair && backEnd.viewParms.stereoFrame != STEREO_CENTER)
@@ -660,6 +804,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 				oldDepthRange = depthRange;
 				wasCrosshair = isCrosshair;
+				oldNoDepth = noDepth;
 			}
 
 			oldEntityNum = entityNum;
@@ -678,7 +823,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 	// go back to the world modelview matrix
 	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
-	if ( depthRange ) {
+	if ( depthRange || noDepth ) {
 		qglDepthRange (0, 1);
 	}
 

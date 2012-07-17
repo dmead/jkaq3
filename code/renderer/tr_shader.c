@@ -164,6 +164,10 @@ static unsigned NameToAFunc( const char *funcname )
 	{
 		return GLS_ATEST_GE_80;
 	}
+	else if ( !Q_stricmp( funcname, "GE192" ) )
+	{
+		return GLS_ATEST_GE_120;
+	}
 
 	ri.Printf( PRINT_WARNING, "WARNING: invalid alphaFunc name '%s' in shader '%s'\n", funcname, shader.name );
 	return 0;
@@ -293,6 +297,11 @@ static genFunc_t NameToGenFunc( const char *funcname )
 	{
 		return GF_NOISE;
 	}
+	//else if ( !Q_stricmp( funcname, "random" ) )
+	//{
+	//	// TODO
+	//	return GF_RANDOM;
+	//}
 
 	ri.Printf( PRINT_WARNING, "WARNING: invalid genfunc name '%s' in shader '%s'\n", funcname, shader.name );
 	return GF_SIN;
@@ -741,6 +750,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				return qfalse;
 			}
 			stage->bundle[0].imageAnimationSpeed = atof( token );
+			stage->bundle[0].isOneShot = qtrue;
 
 			// parse up to MAX_IMAGE_ANIMATIONS animations
 			while ( 1 ) {
@@ -760,7 +770,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 					}
 					stage->bundle[0].numImageAnimations++;
 				}
-				stage->bundle[0].isOneShot = qtrue;
 			}
 		}
 		else if ( !Q_stricmp( token, "videoMap" ) )
@@ -1068,9 +1077,21 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 
 			continue;
 		}
+		/* TODO DYNAMIC GLOW */
 		else if ( !Q_stricmp( token, "glow" ) )
 		{
 			stage->isGlow = qtrue;
+			continue;
+		}
+		/* TODO SURFACESPRITES */
+		else if ( !Q_stricmp( token, "surfaceSprites" ) )
+		{
+			SkipRestOfLine( text );
+			continue;
+		}
+		else if( !Q_stricmpn( token, "ss", 2 ) )
+		{
+			SkipRestOfLine( text );
 			continue;
 		}
 		else
@@ -1558,7 +1579,7 @@ static qboolean ParseShader( char **text )
 			tr.sunLight[1] = atof( token );
 			token = COM_ParseExt( text, qfalse );
 			tr.sunLight[2] = atof( token );
-			
+
 			VectorNormalize( tr.sunLight );
 
 			token = COM_ParseExt( text, qfalse );
@@ -1587,10 +1608,19 @@ static qboolean ParseShader( char **text )
 		}
 		else if ( !Q_stricmp( token, "clampTime" ) ) {
 			token = COM_ParseExt( text, qfalse );
-      if (token[0]) {
-        shader.clampTime = atof(token);
-      }
-    }
+			if (token[0]) {
+				shader.clampTime = atof(token);
+			}
+		}
+		else if ( !Q_stricmp( token, "lightColor" ) ) {
+			SkipRestOfLine( text );
+			continue;
+		}
+		else if ( !Q_stricmp( token, "surfacelight" ) || !Q_stricmp( token, "q3map_surfacelight" ) ) {
+			SkipRestOfLine( text );
+			continue;
+		}
+
 		// skip stuff that only the q3map needs
 		else if ( !Q_stricmpn( token, "q3map", 5 ) ) {
 			SkipRestOfLine( text );

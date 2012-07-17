@@ -349,6 +349,53 @@ void R_AddBrushModelSurfaces ( trRefEntity_t *ent ) {
 
 
 /*
+R_AddLeafSurfaces() - ydnar
+adds a leaf's drawsurfaces
+*/
+
+static void R_AddLeafSurfaces( mnode_t *node, int dlightBits ) {
+	int c;
+	msurface_t  *surf, **mark;
+
+
+	// add to count
+	tr.pc.c_leafs++;
+
+	// add to z buffer bounds
+	if ( node->mins[0] < tr.viewParms.visBounds[0][0] ) {
+		tr.viewParms.visBounds[0][0] = node->mins[0];
+	}
+	if ( node->mins[1] < tr.viewParms.visBounds[0][1] ) {
+		tr.viewParms.visBounds[0][1] = node->mins[1];
+	}
+	if ( node->mins[2] < tr.viewParms.visBounds[0][2] ) {
+		tr.viewParms.visBounds[0][2] = node->mins[2];
+	}
+
+	if ( node->maxs[0] > tr.viewParms.visBounds[1][0] ) {
+		tr.viewParms.visBounds[1][0] = node->maxs[0];
+	}
+	if ( node->maxs[1] > tr.viewParms.visBounds[1][1] ) {
+		tr.viewParms.visBounds[1][1] = node->maxs[1];
+	}
+	if ( node->maxs[2] > tr.viewParms.visBounds[1][2] ) {
+		tr.viewParms.visBounds[1][2] = node->maxs[2];
+	}
+
+	// add the individual surfaces
+	mark = node->firstmarksurface;
+	c = node->nummarksurfaces;
+	while ( c-- ) {
+		// the surface may have already been added if it
+		// spans multiple leafs
+		surf = *mark;
+		R_AddWorldSurface( surf, dlightBits );
+		mark++;
+	}
+}
+
+
+/*
 ================
 R_RecursiveWorldNode
 ================
@@ -450,6 +497,15 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits )
 		dlightBits = newDlights[1];
 	} while ( 1 );
 
+	// short circuit
+	if ( node->nummarksurfaces == 0 ) {
+		return;
+	}
+
+	R_AddLeafSurfaces( node, dlightBits );
+
+#if 0
+
 	{
 		// leaf node, so add mark surfaces
 		int			c;
@@ -489,6 +545,7 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits )
 			mark++;
 		}
 	}
+#endif
 
 }
 
@@ -626,6 +683,17 @@ static void R_MarkLeaves (void) {
 			continue;		// not visible
 		}
 
+		// ydnar: don't want to walk the entire bsp to add skybox surfaces
+		if ( tr.refdef.rdflags & RDF_SKYBOXPORTAL ) {
+			// this only happens once, as game/cgame know the origin of the skybox
+			// this also means the skybox portal cannot move, as this list is calculated once and never again
+			if ( tr.world->numSkyNodes < WORLD_MAX_SKY_NODES ) {
+				tr.world->skyNodes[ tr.world->numSkyNodes++ ] = leaf;
+			}
+			R_AddLeafSurfaces( leaf, 0 );
+			continue;
+		}
+
 		parent = leaf;
 		do {
 			if (parent->visframe == tr.visCount)
@@ -654,6 +722,32 @@ void R_AddWorldSurfaces (void) {
 	tr.currentEntityNum = ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
+	// clear out the visible min/max
+	ClearBounds( tr.viewParms.visBounds[0], tr.viewParms.visBounds[1] );
+
+	// perform frustum culling and add all the potentially visible surfaces
+	if ( tr.refdef.num_dlights > 32 ) {
+		tr.refdef.num_dlights = 32 ;
+	}
+
+	// render sky or world?
+	if ( tr.refdef.rdflags & RDF_SKYBOXPORTAL && tr.world->numSkyNodes > 0 ) {
+		int i;
+		mnode_t **node;
+
+		for ( i = 0, node = tr.world->skyNodes; i < tr.world->numSkyNodes; i++, node++ )
+			R_AddLeafSurfaces( *node, ( 1 << tr.refdef.num_dlights ) - 1 );    // no decals on skybox nodes
+	}
+	else {
+		// determine which leaves are in the PVS / areamask
+		R_MarkLeaves();
+
+		// perform frustum culling and add all the potentially visible surfaces
+		R_RecursiveWorldNode( tr.world->nodes, 15, ( 1 << tr.refdef.num_dlights ) - 1 );
+	}
+
+#if 0
+
 	// determine which leaves are in the PVS / areamask
 	R_MarkLeaves ();
 
@@ -665,4 +759,5 @@ void R_AddWorldSurfaces (void) {
 		tr.refdef.num_dlights = 32 ;
 	}
 	R_RecursiveWorldNode( tr.world->nodes, 15, ( 1 << tr.refdef.num_dlights ) - 1 );
+#endif
 }

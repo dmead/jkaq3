@@ -800,6 +800,12 @@ void RB_StageIteratorSky( void ) {
 		return;
 	}
 
+	// when portal sky exists, only render skybox for the portal sky scene
+	if ( skyboxportal && !( backEnd.refdef.rdflags & RDF_DRAWSKYBOX ) ) {
+	//if ( skyboxportal && !( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL ) ) {
+		return;
+	}
+
 	// go through all the polygons and project them onto
 	// the sky box to see which blocks on each side need
 	// to be drawn

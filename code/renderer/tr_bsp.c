@@ -1389,6 +1389,10 @@ static	void R_LoadNodesAndLeafs (lump_t *nodeLump, lump_t *leafLump) {
 	s_worldData.numnodes = numNodes + numLeafs;
 	s_worldData.numDecisionNodes = numNodes;
 
+	// ydnar: skybox optimization
+	s_worldData.numSkyNodes = 0;
+	s_worldData.skyNodes = ri.Hunk_Alloc( WORLD_MAX_SKY_NODES * sizeof( *s_worldData.skyNodes ), h_low );
+
 	// load nodes
 	for ( i=0 ; i<numNodes; i++, in++, out++)
 	{
@@ -1684,11 +1688,11 @@ void R_LoadLightGrid( lump_t *l, lump_t *larray ) {
 		w->lightGridBounds[i] = (maxs[i] - w->lightGridOrigin[i])/w->lightGridSize[i] + 1;
 	}
 
-	//numGridPoints = w->lightGridBounds[0] * w->lightGridBounds[1] * w->lightGridBounds[2];
-	lightArray = (void *)(fileBase + larray->fileofs);
-	numGridPoints = larray->filelen / sizeof(unsigned short);
-
-	if ( l->filelen != numGridPoints * 8 ) {
+	numGridPoints = w->lightGridBounds[0] * w->lightGridBounds[1] * w->lightGridBounds[2];
+	//lightArray = (void *)(fileBase + larray->fileofs);
+	//numGridPoints = larray->filelen / sizeof(unsigned short);
+	
+	if ( l->filelen != numGridPoints * sizeof(dgrid_t) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: light grid array mismatch\n" );
 		w->lightGridData = NULL;
 		return;

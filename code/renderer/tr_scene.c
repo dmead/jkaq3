@@ -35,6 +35,8 @@ int			r_firstScenePoly;
 
 int			r_numpolyverts;
 
+int			skyboxportal;
+
 
 /*
 ====================
@@ -219,7 +221,7 @@ void RE_AddRefEntityToScene( const refEntity_t *ent ) {
 		}
 		return;
 	}
-	if ( ent->reType < 0 || ent->reType >= RT_MAX_REF_ENTITY_TYPE ) {
+	if ( (int)ent->reType < 0 || ent->reType >= RT_MAX_REF_ENTITY_TYPE ) {
 		ri.Error( ERR_DROP, "RE_AddRefEntityToScene: bad reType %i", ent->reType );
 	}
 
@@ -327,6 +329,10 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	tr.refdef.time = fd->time;
 	tr.refdef.rdflags = fd->rdflags;
+
+	if ( fd->rdflags & RDF_SKYBOXPORTAL ) {
+		skyboxportal = 1;
+	}
 
 	// copy the areamask data over and note if it has changed, which
 	// will force a reset of the visible leafs even if the view hasn't moved

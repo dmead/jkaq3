@@ -143,7 +143,9 @@ typedef enum {
 	GF_SAWTOOTH, 
 	GF_INVERSE_SAWTOOTH, 
 
-	GF_NOISE
+	GF_NOISE,
+
+	GF_RANDOM
 
 } genFunc_t;
 
@@ -191,6 +193,7 @@ typedef enum {
 	CGEN_ONE_MINUS_VERTEX,
 	CGEN_WAVEFORM,			// programmatically generated
 	CGEN_LIGHTING_DIFFUSE,
+	CGEN_LIGHTING_DIFFUSE_ENTITY,
 	CGEN_FOG,				// standard fog
 	CGEN_CONST				// fixed color
 } colorGen_t;
@@ -728,6 +731,9 @@ typedef struct {
 	int			numSurfaces;
 } bmodel_t;
 
+// ydnar: optimization
+#define WORLD_MAX_SKY_NODES 32
+
 typedef struct {
 	char		name[MAX_QPATH];		// ie: maps/tim_dm2.bsp
 	char		baseName[MAX_QPATH];	// ie: tim_dm2
@@ -746,6 +752,9 @@ typedef struct {
 	int			numDecisionNodes;
 	mnode_t		*nodes;
 
+	int			numSkyNodes;
+	mnode_t		**skyNodes;     // ydnar: don't walk the entire bsp when rendering sky
+
 	int			numsurfaces;
 	msurface_t	*surfaces;
 
@@ -760,6 +769,7 @@ typedef struct {
 	vec3_t		lightGridInverseSize;
 	int			lightGridBounds[3];
 	byte		*lightGridData;
+	dgrid_t		*lightGrid;
 
 
 	int			numClusters;
@@ -1267,6 +1277,7 @@ void	GL_Cull( int cullType );
 #define GLS_ATEST_GT_0							0x10000000
 #define GLS_ATEST_LT_80							0x20000000
 #define GLS_ATEST_GE_80							0x40000000
+#define GLS_ATEST_GE_120						0x50000000
 #define		GLS_ATEST_BITS						0x70000000
 
 #define GLS_DEFAULT			GLS_DEPTHMASK_TRUE
@@ -1811,5 +1822,7 @@ int RE_Font_StrLenPixels( const char *text, const int iFontIndex, const float sc
 int RE_Font_StrLenChars( const char *text );
 int RE_Font_HeightPixels( const int iFontIndex, const float scale );
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale );
+
+extern int skyboxportal;
 
 #endif //TR_LOCAL_H
