@@ -942,6 +942,7 @@ fileHandle_t FS_FOpenFileWrite( const char *filename ) {
 FS_FOpenDLLWrite
 
 Like FS_FOpenFileWrite, but allows dll extension (for FS_CL_Extract) and writes to basepath then homepath
+Fixme: FS_FindVM won't detect if its saved in homepath
 ===========
 */
 fileHandle_t FS_FOpenDLLWrite( const char *filename ) {
@@ -1663,11 +1664,13 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 				}
 			}
 
+#if 0
 			if(FS_FOpenFileReadDir(qvmName, search, NULL, qfalse) > 0)
 			{
 				*startSearch = search;
 				return VMI_COMPILED;
 			}
+#endif
 		}
 		else if(search->pack)
 		{
@@ -1733,12 +1736,14 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 			}
 #endif
 
+#if 0
 			if(FS_FOpenFileReadDir(qvmName, search, NULL, qfalse) > 0)
 			{
 				*startSearch = search;
 
 				return VMI_COMPILED;
 			}
+#endif
 		}
 
 		search = search->next;
