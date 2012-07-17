@@ -1333,6 +1333,13 @@ SV_UpdateUserinfo_f
 ==================
 */
 static void SV_UpdateUserinfo_f( client_t *cl ) {
+#if 0
+	/* TODO */
+	if( cl->lastUserInfoChange > svs.time && cl->lastUserInfoCount > 5 ) {
+		SV_SendServerCommand( cl, "print \"@@@TOO_MANY_INFO\n\"" );
+		return;
+	}
+#endif
 	Q_strncpyz( cl->userinfo, Cmd_Argv(1), sizeof(cl->userinfo) );
 
 	SV_UserinfoChanged( cl );

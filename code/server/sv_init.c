@@ -457,6 +457,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	char		systemInfo[16384];
 	const char	*p;
 
+	/* Fixme: Not base client compatible */
 	if ( svs.clients && !com_errorEntered ) {
 		SV_MapChange( );
 	}
@@ -796,6 +797,7 @@ SV_MapChange
 Used by SV_SpawnServer to send a final message to all
 connected clients before the server changes maps.  The messages are sent immediately,
 not just stuck on the outgoing message list.
+FIXME: Not base client compatible
 Assumes svs.clients is valid and not com_errorEntered.
 ==================
 */

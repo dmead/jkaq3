@@ -96,6 +96,7 @@ void SV_SectorList_f( void ) {
 	}
 }
 
+
 /*
 ===============
 SV_CreateworldSector
@@ -137,6 +138,7 @@ static worldSector_t *SV_CreateworldSector( int depth, vec3_t mins, vec3_t maxs 
 
 	return anode;
 }
+
 
 /*
 ===============
@@ -355,6 +357,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 	gEnt->r.linked = qtrue;
 }
 
+
 /*
 ============================================================================
 
@@ -437,7 +440,6 @@ int SV_AreaEntities( const vec3_t mins, const vec3_t maxs, int *entityList, int 
 
 	return ap.count;
 }
-
 
 
 //===========================================================================
@@ -552,6 +554,10 @@ static void SV_ClipMoveToEntities( moveclip_t *clip ) {
 		// might intersect, so do an exact clip
 		clipHandle = SV_ClipHandleForEntity (touch);
 
+		if ( clipHandle == 0 ) {
+			continue;
+		}
+
 		origin = touch->r.currentOrigin;
 		angles = touch->r.currentAngles;
 
@@ -645,7 +651,6 @@ void SV_Trace( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, c
 }
 
 
-
 /*
 =============
 SV_PointContents
@@ -672,17 +677,16 @@ int SV_PointContents( const vec3_t p, int passEntityNum ) {
 		hit = SV_GentityNum( touch[i] );
 		// might intersect, so do an exact clip
 		clipHandle = SV_ClipHandleForEntity( hit );
-		angles = hit->s.angles;
+		angles = hit->r.currentAngles;
+		//angles = hit->s.angles;
 		if ( !hit->r.bmodel ) {
 			angles = vec3_origin;	// boxes don't rotate
 		}
 
-		c2 = CM_TransformedPointContents (p, clipHandle, hit->s.origin, angles);
+		c2 = CM_TransformedPointContents (p, clipHandle, hit->r.currentOrigin, angles);
 
 		contents |= c2;
 	}
 
 	return contents;
 }
-
-
