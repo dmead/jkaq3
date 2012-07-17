@@ -196,6 +196,7 @@
     <ClInclude Include="..\..\code\sys\win_resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\code\client\snd_as.c" />
     <ClCompile Include="..\..\code\libspeex\modes_wb.c" />
     <ClCompile Include="..\..\code\qcommon\stringed.c" />
     <ClCompile Include="..\..\code\renderer\tr_animation.c">

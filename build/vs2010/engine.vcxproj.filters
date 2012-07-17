@@ -935,6 +935,9 @@
     <ClCompile Include="..\..\code\renderer\tr_model_ghoul2.c">
       <Filter>code\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\client\snd_as.c">
+      <Filter>code\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\code\sys\win_resource.rc">
