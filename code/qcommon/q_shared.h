@@ -341,6 +341,12 @@ typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
 typedef vec_t vec5_t[5];
 
+typedef vec3_t axis_t[3];
+typedef vec_t matrix3x3_t[9];
+typedef vec4_t matrix3x4_t[3];
+typedef vec_t matrix_t[16]; // 4 x 4
+typedef vec_t quat_t[4];  // | x y z w |
+
 typedef	int	fixed4_t;
 typedef	int	fixed8_t;
 typedef	int	fixed16_t;

@@ -1356,5 +1356,14 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 
 	re.TakeVideoFrame = RE_TakeVideoFrame;
 
+	re.Ghoul2Valid = RE_Ghoul2Valid;
+	re.Ghoul2ModelOnIndex = RE_Ghoul2ModelOnIndex;
+	re.GetGLAName = RE_GetGLAName;
+	re.InitG2Model = RE_InitGhoul2Model;
+	re.CleanGhoul2 = RE_CleanGhoul2;
+	re.CopyGhoul2 = RE_CopyGhoul2;
+	re.CopyGhoul2Specific = RE_CopyGhoul2Specific;
+	re.DuplicateGhoul2 = RE_DuplicateGhoul2;
+
 	return &re;
 }

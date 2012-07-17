@@ -545,6 +545,56 @@ typedef struct {
         vec2_t                  texCoords;
 } glmVertexTexCoord_t;
 
+//ANIMSTATE
+typedef struct {
+	int			bonenum;
+	int			oldframe;
+	int			frame;
+	float		slerp;
+} mg_boneaanim_t;
+
+#define MG_AS_THIRDPERSONONLY 0x00000001
+#define MG_AS_NODRAW 0x00000002
+
+typedef struct {
+	unsigned int flags[1];
+} mg_surflist_t;
+
+typedef struct {
+	int			shaderIndex[1];
+} mg_surfshaders_t;
+
+#define MAX_ANIMSTATE_TRANSFORMS 8
+
+typedef struct mg_animstate_s {
+	int			index;
+	int			ent_owner;
+	int			numBones;
+	int			numAnims;
+	mg_boneaanim_t boneanim[MAX_ANIMSTATE_TRANSFORMS];
+	char		animName[64];
+	char		meshName[64];
+	int			numSurfs;
+	int			numAllocSurfs;
+	qboolean	sanitarySurfs;
+	int			skinHandle;
+	int			shaderHandle;
+	int			meshHandle; // handle to glm
+	int			animHandle; // handle to gla
+	/*
+	int			ofsOldframe;
+	int			ofsNewFrame;
+	int			ofsResFrame;
+	int			ofsPose;
+	*/
+	mgQuat_t *oldframe;
+	mgQuat_t *newframe;
+	mgQuat_t *resframe;
+	mgMatrix34_t *pose;
+	mg_surflist_t *surfList;
+	mg_surfshaders_t *shaderList;
+} mg_animstate_t;
+
 /*
 ==============================================================================
 

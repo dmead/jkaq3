@@ -2003,6 +2003,12 @@ static void FixRenderCommandList( int newShader ) {
 				curCmd = (const void *)(sp_cmd + 1);
 				break;
 				}
+			case RC_ROTATED_PIC:
+				{
+				const stretchPicCommand_t *sp_cmd = (const stretchPicCommand_t *)curCmd;
+				curCmd = (const void *)(sp_cmd + 1);
+				break;
+				}
 			case RC_DRAW_SURFS:
 				{
 				int i;

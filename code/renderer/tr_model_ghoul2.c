@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 #define LL( x ) x = LittleLong( x )
+#define LF( f ) f = LittleFloat( f )
 
 static qboolean GLM_CheckRange( glmHeader_t *header, int offset,
 			    int count, int size ) {
@@ -251,7 +252,7 @@ qboolean R_LoadGLM( model_t *mod, void *buffer, int filesize, const char *mod_na
 		Q_strcat( glm->animName, MAX_QPATH, ".gla" );
 		//Com_DPrintf ( "glm: trying to load animfile: '%s'\n", glm->animName );
 		//ri.Printf( PRINT_ALL, "glm: trying to load animfile: '%s'\n", glm->animName );
-		//glm->animIndex = RE_RegisterModel( glm->animName );
+		glm->animIndex = RE_RegisterModel( glm->animName );
 	}
 	else
 	{
@@ -261,38 +262,205 @@ qboolean R_LoadGLM( model_t *mod, void *buffer, int filesize, const char *mod_na
 	return qtrue;
 }
 
-#if 0
-qboolean R_LoadGLA( model_t *mod, void *buffer, int filesize, const char *mod_name ) {
-	glaHeader_t *header;
-	glaLOD_t *lod;
-	glaSurfHierarchy_t *surf_h;
-	int size;
-	int version;
-	int i;
+static qboolean GLA_CheckRange( glaHeader_t *header, int offset,
+			    int count, int size ) {
+	// return true if the range specified by offset, count and size
+	// doesn't fit into the file
+	return ( count <= 0 ||
+		 offset < 0 ||
+			  offset > header->ofsEnd ||
+		 offset + count * size < 0 ||
+					 offset + count * size > header->ofsEnd );
+}
 
-	if( filesize < sizeof( mdxmHeader_t ) ) {
+qboolean R_LoadGLA( model_t *mod, void *buffer, int filesize, const char *mod_name )
+{
+	int					i, j;
+	glaHeader_t			*header, *gla;
+	//glaSkelOffsets_t *skel_ofs;
+	glaSkel_t	*skel;
+	int numComps = 0;
+	glaCompBone_t *compBone;
+    //glmFrame_t			*frame;
+	/*
+	glmLOD_t			*lod;
+	glmLODSurfOffset_t	*lod_surf_ofs;
+	glmSurfHierarchy_t	*surfh;
+	glmVertexTexCoord_t *vcor;
+	glmSurface_t		*surf;
+	glmTriangle_t		*tri;
+	glmVertex_t			*v;
+	*/
+	int					version;
+	int					size;
+	vec4_t zrots[3];
+	//vec4_t finRot[3];
+	qboolean do_zrot = qtrue;
+	
+	zrots[0][0] = 0.0;
+	zrots[0][1] = -1.0;
+	zrots[0][2] = 0.0;
+	zrots[0][3] = 0.0;
+	zrots[1][0] = 1.0;
+	zrots[1][1] = 0.0;
+	zrots[1][2] = 0.0;
+	zrots[1][3] = 0.0;
+	zrots[2][0] = 0.0;
+	zrots[2][1] = 0.0;
+	zrots[2][2] = 1.0;
+	zrots[2][3] = 0.0;
+
+	if( filesize < sizeof( glaHeader_t ) ) {
 		return qfalse;
 	}
 
-	header = (mdxaHeader_t *)buffer;
+	header = (glaHeader_t *)buffer;
 
 	version = LittleLong( header->version );
 
-	if( version != MDXA_VERSION ) {
-		ri.Printf( PRINT_WARNING, "R_LoadMDXA: %s has wrong version (%i should be %i)\n", mod_name, version, MDXA_VERSION );
+	if( version != GLA_VERSION ) {
+		ri.Printf( PRINT_WARNING, "R_LoadGLA: %s has wrong version (%i should be %i)\n", mod_name, version, GLA_VERSION );
 		return qfalse;
 	}
 
 	size = LittleLong( header->ofsEnd );
 
 	if( size > filesize ) {
-		ri.Printf( PRINT_WARNING, "R_LoadMDXA: Header of %s is broken. Wrong filesize declared!\n", mod_name );
+		ri.Printf( PRINT_WARNING, "R_LoadGLA: Header of %s is broken. Wrong filesize declared!\n", mod_name );
 		return qfalse;
 	}
+	
+	mod->type = MOD_GLA;
+	size = LittleLong(header->ofsEnd);
+	mod->dataSize += size;
+	gla = mod->modelData = ri.Hunk_Alloc( size, h_low );
 
+	Com_Memcpy( gla, buffer, LittleLong(header->ofsEnd) );
+
+    LL(gla->ident);
+    LL(gla->version);
+	gla->fScale = LittleFloat( gla->fScale );
+    LL(gla->numFrames);
+    LL(gla->ofsFrames);
+    LL(gla->numBones);
+    LL(gla->ofsCompBonePool);
+    LL(gla->ofsSkel);
+    LL(gla->ofsEnd);
+	
+	/*
+	skel_ofs = (glaSkelOffsets_t *) ( (byte *)&gla + sizeof( glaHeader_t ));
+	for( i = 0; i < gla->numBones; i++ )
+	{
+		LL(skel_ofs->offsets[i]);
+	}
+	*/
+	
+#if 0
+	if ( GLA_CheckRange( gla, gla->ofsSkel, gla->numBones, sizeof( glaSkel_t ) ) ) {
+		return qfalse;
+	}
+#endif
+	
+	skel = (glaSkel_t *)((byte *)gla + gla->ofsSkel);
+	for( i = 0; i < gla->numBones; i++ )
+	{
+		ri.Printf( PRINT_DEVELOPER, "R_LoadGLA: bone %d, %s\n", i, skel->name );
+		LL(skel->flags);
+		LL(skel->parent);
+		/*
+		skel->BasePoseMat.matrix[0][0] = LittleFloat( skel->BasePoseMat.matrix[0][0] ) / gla->fScale;
+		skel->BasePoseMat.matrix[0][1] = LittleFloat( skel->BasePoseMat.matrix[0][1] ) / gla->fScale;
+		skel->BasePoseMat.matrix[0][2] = LittleFloat( skel->BasePoseMat.matrix[0][2] ) / gla->fScale;
+		skel->BasePoseMat.matrix[0][3] = LittleFloat( skel->BasePoseMat.matrix[0][3] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][0] = LittleFloat( skel->BasePoseMat.matrix[1][0] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][1] = LittleFloat( skel->BasePoseMat.matrix[1][1] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][2] = LittleFloat( skel->BasePoseMat.matrix[1][2] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][3] = LittleFloat( skel->BasePoseMat.matrix[1][3] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][0] = LittleFloat( skel->BasePoseMat.matrix[2][0] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][1] = LittleFloat( skel->BasePoseMat.matrix[2][1] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][2] = LittleFloat( skel->BasePoseMat.matrix[2][2] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][3] = LittleFloat( skel->BasePoseMat.matrix[2][3] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][0] = LittleFloat( skel->BasePoseMatInv.matrix[0][0] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][1] = LittleFloat( skel->BasePoseMatInv.matrix[0][1] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][2] = LittleFloat( skel->BasePoseMatInv.matrix[0][2] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][3] = LittleFloat( skel->BasePoseMatInv.matrix[0][3] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][0] = LittleFloat( skel->BasePoseMatInv.matrix[1][0] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][1] = LittleFloat( skel->BasePoseMatInv.matrix[1][1] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][2] = LittleFloat( skel->BasePoseMatInv.matrix[1][2] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][3] = LittleFloat( skel->BasePoseMatInv.matrix[1][3] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][0] = LittleFloat( skel->BasePoseMatInv.matrix[2][0] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][1] = LittleFloat( skel->BasePoseMatInv.matrix[2][1] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][2] = LittleFloat( skel->BasePoseMatInv.matrix[2][2] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][3] = LittleFloat( skel->BasePoseMatInv.matrix[2][3] ) / gla->fScale;
+		*/
+		skel->BasePoseMat.matrix[0][0] = LittleFloat( skel->BasePoseMat.matrix[0][0] ) / gla->fScale;
+		skel->BasePoseMat.matrix[0][1] = LittleFloat( skel->BasePoseMat.matrix[0][1] ) / gla->fScale;
+		skel->BasePoseMat.matrix[0][2] = LittleFloat( skel->BasePoseMat.matrix[0][2] ) / gla->fScale;
+		skel->BasePoseMat.matrix[0][3] = LittleFloat( skel->BasePoseMat.matrix[0][3] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][0] = LittleFloat( skel->BasePoseMat.matrix[1][0] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][1] = LittleFloat( skel->BasePoseMat.matrix[1][1] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][2] = LittleFloat( skel->BasePoseMat.matrix[1][2] ) / gla->fScale;
+		skel->BasePoseMat.matrix[1][3] = LittleFloat( skel->BasePoseMat.matrix[1][3] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][0] = LittleFloat( skel->BasePoseMat.matrix[2][0] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][1] = LittleFloat( skel->BasePoseMat.matrix[2][1] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][2] = LittleFloat( skel->BasePoseMat.matrix[2][2] ) / gla->fScale;
+		skel->BasePoseMat.matrix[2][3] = LittleFloat( skel->BasePoseMat.matrix[2][3] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][0] = LittleFloat( skel->BasePoseMatInv.matrix[0][0] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][1] = LittleFloat( skel->BasePoseMatInv.matrix[0][1] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][2] = LittleFloat( skel->BasePoseMatInv.matrix[0][2] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[0][3] = LittleFloat( skel->BasePoseMatInv.matrix[0][3] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][0] = LittleFloat( skel->BasePoseMatInv.matrix[1][0] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][1] = LittleFloat( skel->BasePoseMatInv.matrix[1][1] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][2] = LittleFloat( skel->BasePoseMatInv.matrix[1][2] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[1][3] = LittleFloat( skel->BasePoseMatInv.matrix[1][3] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][0] = LittleFloat( skel->BasePoseMatInv.matrix[2][0] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][1] = LittleFloat( skel->BasePoseMatInv.matrix[2][1] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][2] = LittleFloat( skel->BasePoseMatInv.matrix[2][2] ) / gla->fScale;
+		skel->BasePoseMatInv.matrix[2][3] = LittleFloat( skel->BasePoseMatInv.matrix[2][3] ) / gla->fScale;
+		/*
+		skel->BasePoseMat.matrix[0][0] /= gla->fScale;
+		skel->BasePoseMat.matrix[0][1] /= gla->fScale;
+		skel->BasePoseMat.matrix[0][2] /= gla->fScale;
+		skel->BasePoseMat.matrix[1][0] /= gla->fScale;
+		skel->BasePoseMat.matrix[1][1] /= gla->fScale;
+		skel->BasePoseMat.matrix[1][2] /= gla->fScale;
+		skel->BasePoseMat.matrix[2][0] /= gla->fScale;
+		skel->BasePoseMat.matrix[2][1] /= gla->fScale;
+		skel->BasePoseMat.matrix[2][2] /= gla->fScale;
+		skel->BasePoseMat.matrix[0][3] /= gla->fScale;
+		skel->BasePoseMat.matrix[1][3] /= gla->fScale;
+		skel->BasePoseMat.matrix[2][3] /= gla->fScale;
+		*/
+		if( do_zrot )
+		{
+			//	Matrix34VectorRotate( zrots, tempVert, outXyz );
+			//	Matrix34VectorRotate( zrots, tempNormal, outNormal );
+			//Matrix34Shuffle( skel->BasePoseMat.matrix );
+			//Matrix34Multiply( zrots, skel->BasePoseMat.matrix, finRot );
+			//Matrix34Copy( finRot, skel->BasePoseMat.matrix );
+		}
+		
+		LL(skel->numChildren);
+		for( j = 0; j < skel->numChildren; j++ )
+		{
+			LL(skel->children[j]);
+		}
+		skel = (glaSkel_t *)((byte *)&skel->children[skel->numChildren] );
+	}
+	
+	numComps = gla->ofsEnd - gla->ofsCompBonePool;
+	numComps /= 2;
+	//ri.Printf( PRINT_DEVELOPER, "gla -> numComps %d\n", numComps );
+	
+	compBone = (glaCompBone_t *)((byte *)gla + gla->ofsCompBonePool);
+	for( i = 0; i < numComps; i++ )
+	{
+		compBone->a[i] = LittleShort( compBone->a[i] );
+		//ri.Printf( PRINT_DEVELOPER, "comparr %d 0x%08x\n", i, compBone->a[i] );
+	}
+	//ri.Printf (PRINT_WARNING,"Read GLA Just Dandy!\n" );
 	return qtrue;
 }
-#endif
 
 /*==============================================================
   R_AddMyGhoulSurfaces
@@ -627,5 +795,7 @@ void RB_SurfaceMyGhoul( glmSurface_t *surface )
 		tess.texCoords[baseVertex + j][0][1] = t[j].texCoords[1];
 		// FIXME: fill in lightmapST for completeness?
 	}
-	tess.numVertexes+=numVerts;
+	tess.numVertexes += numVerts;
 }
+
+

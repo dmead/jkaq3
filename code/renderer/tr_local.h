@@ -813,6 +813,22 @@ void		R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs );
 
 void		R_Modellist_f (void);
 
+typedef struct CGhoul2Info_s {
+	mg_animstate_t	anims[4];
+	//model_t		*model[4];
+
+	//model_t		*anim;
+
+	int			modelFlags;
+	int			lodBias;
+
+	int			index;
+	int			ent_owner;
+
+	//char		modelName[MAX_QPATH];
+	//char		animName[MAX_QPATH];
+} CGhoul2Info_v;
+
 //====================================================
 extern	refimport_t		ri;
 
@@ -988,6 +1004,14 @@ typedef struct {
 	//
 	model_t					*models[MAX_MOD_KNOWN];
 	int						numModels;
+
+	// g2 anim instances
+//	mg_animstate_t			*animstates[MAX_MOD_KNOWN];
+//	int						numAnimStates;
+
+	// g2 api model instances
+	CGhoul2Info_v			*g2Instances[MAX_MOD_KNOWN];
+	int						numG2Instances;
 
 	int						numImages;
 	image_t					*images[MAX_DRAWIMAGES];
@@ -1255,6 +1279,14 @@ void		RE_BeginRegistration( glconfig_t *glconfig, glconfig2_t *glconfig2 );
 void		RE_LoadWorldMap( const char *mapname );
 void		RE_SetWorldVisData( const byte *vis );
 qhandle_t	RE_RegisterModel( const char *name );
+qboolean	RE_Ghoul2Valid( void *ptr );
+qboolean	RE_Ghoul2ModelOnIndex( void *ptr, int modelIndex );
+void		RE_GetGLAName( void *ptr, int modelindex, char *buffer );
+int			RE_InitGhoul2Model( void **ptr, const char *filename, int modelIndex, qhandle_t customSkin, qhandle_t customShader, int modelFlags, int lodBias );
+void		RE_CleanGhoul2( void **ptr );
+int			RE_CopyGhoul2(void *from, void *to, int modelIndex);
+void		RE_CopyGhoul2Specific(void *from, int modelFrom, void *to, int modelTo);
+void		RE_DuplicateGhoul2(void *from, void **to);
 qhandle_t	RE_RegisterSkin( const char *name );
 void		RE_Shutdown( qboolean destroyWindow );
 
@@ -1547,7 +1579,7 @@ void RB_MDRSurfaceAnim( md4Surface_t *surface );
 #endif
 qboolean R_LoadIQM (model_t *mod, void *buffer, int filesize, const char *name );
 qboolean R_LoadGLM (model_t *mod, void *buffer, int filesize, const char *name );
-//qboolean R_LoadGLA (model_t *mod, void *buffer, int filesize, const char *name );
+qboolean R_LoadGLA (model_t *mod, void *buffer, int filesize, const char *name );
 void R_AddIQMSurfaces( trRefEntity_t *ent );
 void RB_IQMSurfaceAnim( surfaceType_t *surface );
 int R_IQMLerpTag( orientation_t *tag, iqmData_t *data,

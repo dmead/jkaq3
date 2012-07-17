@@ -837,17 +837,33 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_R_INPVS:
 		return re.inPVS( VMA(1), VMA(2) );
 
+	case CG_G2_HAVEWEGHOULMODELS:
+		return qfalse;
+		//return re.Ghoul2Valid(VMA(1));
+
 	case CG_G2_GETGLANAME:
-		strcpy(VMA(3), "models/players/_humanoid/_humanoid");
+		re.GetGLAName(VMA(1), args[2], VMA(3));
+		//strcpy(VMA(3), "models/players/_humanoid/_humanoid");
 		return 0;
 
-	case CG_G2_HAVEWEGHOULMODELS:
-		return 1;
+	case CG_G2_INITGHOUL2MODEL:
+		return 0;
+		//return re.InitG2Model(VMA(1), VMA(2), args[3], args[4], args[5], args[6], args[7]);
 
 	case CG_G2_COPYGHOUL2INSTANCE:
-		return 1;
+		return 0;
+		//return re.CopyGhoul2(VMA(1), VMA(2), args[3]);
 
-	case CG_G2_INITGHOUL2MODEL:
+	case CG_G2_COPYSPECIFICGHOUL2MODEL:
+		//re.CopyGhoul2Specific(VMA(1), args[2], VMA(3), args[4]);
+		return 0;
+
+	case CG_G2_HASGHOUL2MODELONINDEX:
+		return qfalse;
+		//return re.Ghoul2ModelOnIndex(VMA(1), args[2]);
+
+	case CG_G2_DUPLICATEGHOUL2INSTANCE:
+		//re.DuplicateGhoul2(VMA(1), VMA(2));
 		return 0;
 
 	default:

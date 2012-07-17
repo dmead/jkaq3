@@ -68,6 +68,9 @@ typedef struct {
 } clSnapshot_t;
 
 
+typedef struct {
+	int				dummy;
+} clG2Model_t;
 
 /*
 =============================================================================
@@ -270,6 +273,10 @@ typedef struct {
 #ifdef LEGACY_PROTOCOL
 	qboolean compat;
 #endif
+
+	clG2Model_t		*models; // [512]
+
+	char			*mSharedMemory; // [MAX_CG_SHARED_BUFFER_SIZE] (2048)
 
 	// big stuff at end of structure so most offsets are 15 bits or less
 	netchan_t	netchan;

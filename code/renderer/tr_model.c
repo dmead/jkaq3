@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-#define	LL(x) x=LittleLong(x)
+#define	LL( x ) x = LittleLong( x )
 
 static qboolean R_LoadMD3(model_t *mod, int lod, void *buffer, const char *name );
 static qboolean R_LoadMD4(model_t *mod, void *buffer, const char *name );
@@ -193,7 +193,7 @@ qhandle_t R_RegisterIQM(const char *name, model_t *mod)
 
 /*
 ====================
-R_RegisterIQM
+R_RegisterGLM
 ====================
 */
 qhandle_t R_RegisterGLM(const char *name, model_t *mod)
@@ -219,6 +219,41 @@ qhandle_t R_RegisterGLM(const char *name, model_t *mod)
 	if(!loaded)
 	{
 		ri.Printf(PRINT_WARNING,"R_RegisterGLM: couldn't load glm file %s\n", name);
+		mod->type = MOD_BAD;
+		return 0;
+	}
+	
+	return mod->index;
+}
+
+/*
+====================
+R_RegisterGLA
+====================
+*/
+qhandle_t R_RegisterGLA(const char *name, model_t *mod)
+{
+	union {
+		unsigned *u;
+		void *v;
+	} buf;
+	qboolean loaded = qfalse;
+	int filesize;
+
+	filesize = ri.FS_ReadFile(name, (void **) &buf.v);
+	if(!buf.u)
+	{
+		mod->type = MOD_BAD;
+		return 0;
+	}
+	
+	loaded = R_LoadGLA(mod, buf.u, filesize, name);
+
+	ri.FS_FreeFile (buf.v);
+	
+	if(!loaded)
+	{
+		ri.Printf(PRINT_WARNING,"R_RegisterGLA: couldn't load gla file %s\n", name);
 		mod->type = MOD_BAD;
 		return 0;
 	}
@@ -284,6 +319,384 @@ model_t *R_AllocModel( void ) {
 	tr.numModels++;
 
 	return mod;
+}
+
+CGhoul2Info_v *R_InitGhoul2Instance( void ) {
+	CGhoul2Info_v *g2;
+
+	if ( tr.numG2Instances == MAX_MOD_KNOWN ) {
+		return NULL;
+	}
+
+	g2 = ri.Hunk_Alloc( sizeof( *tr.g2Instances[tr.numG2Instances] ), h_low );
+	g2->index = tr.numG2Instances;
+	tr.g2Instances[tr.numG2Instances] = g2;
+	tr.numG2Instances++;
+
+	return g2;
+}
+
+#if 0
+/*
+** R_AllocAnimState
+*/
+mg_animstate_t *R_AllocAnimState( void ) {
+	mg_animstate_t *as = 0;
+	
+	if ( tr.numAnimStates == MAX_MOD_KNOWN ) {
+		return NULL;
+	}
+
+	as = ri.Hunk_Alloc( sizeof( *tr.animstates[tr.numAnimStates] ), h_low );
+	as->index = tr.numAnimStates;
+	tr.animstates[tr.numAnimStates] = as;
+	tr.numAnimStates++;
+	//printf( "animAlloc index %d, numstates %d\n", as->index, tr.numAnimStates );
+	
+	return as;
+}
+
+mg_animstate_t *RE_AS_Fetch( qhandle_t index )
+{
+
+	mg_animstate_t *ts;
+	if ( index < 1 || index >= tr.numAnimStates ) {
+		//ri.Printf( PRINT_DEVELOPER, "animstate: request %d getting %d\n", index, 0 );
+		ts = tr.animstates[0];
+		return ts;
+	}
+	//printf( "index %d\n", index );
+	//ri.Printf( PRINT_DEVELOPER, "animstate: request %d getting %d\n", index, index );
+	ts = tr.animstates[index];
+	//printf( "Fetching animAlloc %d | %d\n", ts->index, ts->numBones );
+	return ts;
+	/*
+	int i=0;
+	for(i=0;i<tr.numAnimStates;i++)
+	{
+		ts = tr.animstates[i];
+		if( ts->ent_owner == index )
+		{
+			return ts;
+		}
+	}
+	*/
+}
+
+qhandle_t RE_AS_Create( qhandle_t modelIndex, int entitynum )
+{
+	mg_animstate_t *as;
+	model_t *mod;
+	model_t *mod_anims;
+	glmHeader_t *glm;
+	qhandle_t hModel;
+	qhandle_t as_found = 0;
+	glaHeader_t *anims;
+	int numSurfs;
+	
+	mod = R_GetModelByHandle( modelIndex );
+	if( mod->type == MOD_GLM )
+	{
+		glm = mod->modelData;
+		mod_anims = R_GetModelByHandle( glm->animIndex );
+		if( mod_anims->type == MOD_GLA )
+		{
+			anims = mod_anims->modelData;
+			numSurfs = glm->numSurfaces;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		return 0;
+	}
+	
+	for ( hModel = 1 ; hModel < tr.numAnimStates; hModel++ )
+	{
+		as = tr.animstates[hModel];
+		if ( as->ent_owner == entitynum )
+		{
+			if( (as->numBones == anims->numBones) && (numSurfs == as->numSurfs) )
+			{
+				ri.Printf( PRINT_ALL, "Same number of surfs, bones, keeping animState!\n" );
+				memset( as->surfList, 0, (4 * as->numSurfs) );
+				memset( as->shaderList, 0, (4 * as->numSurfs) );
+				return hModel;
+			}
+			else if( (as->numBones == anims->numBones) && (numSurfs != as->numSurfs) )
+			{
+				ri.Printf( PRINT_ALL, "Cleaning up animState, numSurfs doesn't match, but numBones does!\n" );
+				if( numSurfs > as->numAllocSurfs )
+				{
+					ri.Printf( PRINT_ALL, "animState numSurfs is less than the incoming model!\n" );
+					Z_Free( as->surfList );
+					Z_Free( as->shaderList );
+					as->sanitarySurfs = qfalse;
+				}
+				as_found = hModel;
+				as = tr.animstates[as_found];
+				R_SyncRenderThread();
+				if( numSurfs > as->numAllocSurfs )
+				{
+					as->surfList = Z_Malloc( 4*numSurfs+4 );
+					as->shaderList = Z_Malloc( 4*numSurfs+4 );
+					as->numAllocSurfs = numSurfs;
+				}
+				as->numSurfs = numSurfs;
+				memset( as->surfList, 0, (4 * as->numSurfs) );
+				memset( as->shaderList, 0, (4 * as->numSurfs) );
+				//Com_Printf( "AnimState (%d) Re-Inited, Owner %d\n", as->index, as->ent_owner );
+				return as->index;
+			}
+			else
+			{
+				Z_Free( as->pose );
+				Z_Free( as->resframe );
+				Z_Free( as->newframe );
+				Z_Free( as->oldframe );
+				Z_Free( as->surfList );
+				Z_Free( as->shaderList );
+				as->sanitarySurfs = qfalse;
+				as_found = hModel;
+			}
+		}
+	}
+	
+	if( !as_found )
+	{
+		as = R_AllocAnimState();
+	}
+	else
+	{
+		as = tr.animstates[as_found];
+	}
+	
+	R_SyncRenderThread();
+	
+	as->ent_owner = entitynum;
+	as->numBones = anims->numBones;
+	as->numSurfs = numSurfs;
+	as->boneanim[0].bonenum = 0;
+	as->boneanim[0].oldframe = 0;
+	as->boneanim[0].frame = 0;
+	as->boneanim[0].slerp = 0.0;
+	as->boneanim[1].bonenum = -1;
+	as->boneanim[1].oldframe = 0;
+	as->boneanim[1].frame = 0;
+	as->boneanim[1].slerp = 0.0;
+	//( 32 * anims->numBones +1 );
+	/*
+	as->oldframe = ri.Hunk_Alloc( ( (28*as->numBones)+4 ), h_low );
+	as->newframe = ri.Hunk_Alloc( ( (28*as->numBones)+4 ), h_low );
+	as->resframe = ri.Hunk_Alloc( ( (28*as->numBones)+4 ), h_low );
+	as->pose = ri.Hunk_Alloc( ( 48 * as->numBones +4 ), h_low );
+	as->surfList = ri.Hunk_Alloc( ( 4 * as->numSurfs +4 ), h_low );
+	*/
+	as->oldframe = Z_Malloc( 28*as->numBones+4 );
+	as->newframe = Z_Malloc( 28*as->numBones+4 );
+	as->resframe = Z_Malloc( 28*as->numBones+4 );
+	as->pose = Z_Malloc( 48*as->numBones+4 );
+	as->surfList = Z_Malloc( 4*as->numSurfs+4 );
+	as->shaderList = Z_Malloc( 4*as->numSurfs+4 );
+	as->numAllocSurfs = as->numSurfs;
+	memset( as->surfList, 0, (4 * as->numSurfs) );
+	memset( as->shaderList, 0, (4 * as->numSurfs) );
+	
+	ri.Printf( PRINT_DEVELOPER, "AnimState (%d) Created, Owner %d\n", as->index, as->ent_owner );
+	return as->index;
+}
+#endif
+
+qboolean RE_Ghoul2Valid( void *ptr ) {
+	if(ptr) {
+		CGhoul2Info_v *g2 = (CGhoul2Info_v *)ptr;
+		return g2 && (&g2->anims[0] || &g2->anims[1] || &g2->anims[2] || &g2->anims[3] );
+	}
+	return qfalse;
+}
+
+int	RE_CopyGhoul2(void *from, void *to, int modelIndex) {
+#if 0
+	CGhoul2Info_v *g2from = (CGhoul2Info_v *)from;
+	CGhoul2Info_v *g2to = (CGhoul2Info_v *)to;
+
+	if(g2from && g2to && (modelIndex >= 0 || modelIndex <= 3)) {
+		if(g2from->model[modelIndex]) {
+			g2to->model[modelIndex] = g2from->model[modelIndex];
+			Com_Memcpy(g2to->model[modelIndex], &g2from->model[modelIndex], sizeof(model_t));
+			return memcmp(g2to->model[modelIndex], &g2from->model[modelIndex], sizeof(model_t)) == 0;
+		}
+	}
+#endif
+	return 0;
+}
+void RE_CopyGhoul2Specific(void *from, int modelFrom, void *to, int modelTo) {
+#if 0
+	CGhoul2Info_v *g2from = (CGhoul2Info_v *)from;
+	CGhoul2Info_v *g2to = (CGhoul2Info_v *)to;
+
+	if(g2from && g2to && (modelFrom >= 0 || modelFrom <= 3) && (modelTo >= 0 || modelTo <= 3)) {
+		if(g2from->model[modelFrom]) {
+			g2to->model[modelTo] = g2from->model[modelFrom];
+			//Com_Memcpy(g2to->model[modelTo], &g2from->model[modelFrom], sizeof(model_t));
+		}
+	}
+#endif
+}
+void RE_DuplicateGhoul2(void *from, void **to) {
+#if 0
+	if( to ) {
+		CGhoul2Info_v *g2from = (CGhoul2Info_v *)from;
+		CGhoul2Info_v *g2to;
+		int i;
+
+		if ( ( g2to = R_InitGhoul2Instance() ) == NULL ) {
+			ri.Printf( PRINT_WARNING, "RE_DuplicateGhoul2: R_InitGhoul2Instance() failed\n");
+			*to = NULL;
+			return;
+		}
+
+		if(!g2from || !g2to) {
+			*to = NULL;
+			return;
+		}
+
+		for( i = 0; i < 4; i++ ) {
+			if(g2from->model[i]) {
+				g2to->model[i] = g2from->model[i];
+				//Com_Memcpy(g2to->model[i], &g2from->model[i], sizeof(model_t));
+			}
+		}
+
+		g2to->ent_owner = g2from->ent_owner;
+
+		*to = g2to;
+	}
+#endif
+}
+
+qboolean RE_Ghoul2ModelOnIndex( void *ptr, int modelIndex ) {
+	if(ptr && (modelIndex >= 0 || modelIndex <= 3)) {
+		CGhoul2Info_v *g2 = (CGhoul2Info_v *)ptr;
+		return &(g2->anims[modelIndex]) ? qtrue : qfalse;
+	}
+	return qfalse;
+}
+
+void RE_GetGLAName( void *ptr, int modelindex, char *buffer ) {
+	if( !ptr || !buffer || modelindex < 0 || modelindex > 3 )
+		return;
+
+	{
+		CGhoul2Info_v *g2 = (CGhoul2Info_v *)ptr;
+
+		if(g2->anims) {
+			mg_animstate_t *anim = &g2->anims[modelindex];
+
+			if(anim) {
+				Q_strncpyz(buffer, anim->animName, MAX_QPATH);
+				return;
+			}
+		}
+	}
+
+	*buffer = '\0';
+}
+
+void RE_CleanGhoul2( void **ptr ) {
+#if 0
+	if( ptr ) {
+		CGhoul2Info_v	*g2 = (CGhoul2Info_v *)(*ptr);
+
+		if(g2) {
+			g2->model[0] = NULL;
+			g2->model[1] = NULL;
+			g2->model[2] = NULL;
+			g2->model[3] = NULL;
+
+			g2->ent_owner = -1;
+			g2->index = -1;
+
+			// TODO FREE THE MODEL G2 PTR
+		}
+	}
+#endif
+}
+
+int RE_InitGhoul2Model( void **ptr, const char *filename, int modelIndex, qhandle_t customSkin, qhandle_t customShader, int modelFlags, int lodBias ) {
+	if( ptr ) {
+		CGhoul2Info_v	*g2;
+		qhandle_t		hG2, hModel;
+		model_t			*model;
+		int				k;
+		if ( !filename || !filename[0] ) {
+			ri.Printf( PRINT_ALL, "RE_InitGhoul2Model: NULL name\n" );
+			*ptr = NULL;
+			return 0;
+		}
+
+		if ( strlen( filename ) >= MAX_QPATH ) {
+			ri.Printf( PRINT_ALL, "Model name exceeds MAX_QPATH\n" );
+			*ptr = NULL;
+			return 0;
+		}
+
+		if ( modelIndex < 0 || modelIndex > 3 ) {
+			ri.Printf( PRINT_ALL, "Modelindex out of bounds\n" );
+			*ptr = NULL;
+			return 0;
+		}
+
+		//
+		// search the currently loaded models
+		//
+		for ( hG2 = 1 ; hG2 < tr.numG2Instances; hG2++ ) {
+			g2 = tr.g2Instances[hG2];
+			for ( k = 0; k < 4 ; k++ ) {
+				if ( k == modelIndex && &g2->anims[k] && !Q_stricmp( g2->anims[k].meshName, filename ) ) {
+					//if( g2->anims[k]->ent_owner == -1 ) {
+					//	*ptr = NULL;
+					//	return 0;
+					//}
+					*ptr = g2;
+					return hG2;
+				}
+			}
+		}
+
+		// allocate a new model_t
+
+		if ( ( g2 = R_InitGhoul2Instance() ) == NULL ) {
+			ri.Printf( PRINT_WARNING, "RE_InitGhoul2Model: R_InitGhoul2Instance() failed for '%s'\n", filename);
+			*ptr = NULL;
+			return 0;
+		}
+
+		hModel = RE_RegisterModel(filename);
+		model = R_GetModelByHandle(hModel);
+		if(hModel > 0 && model) {
+			glmHeader_t *glm = (glmHeader_t *)model->modelData;
+			if(glm) {
+				g2->anims[modelIndex].meshHandle = hModel;
+				Q_strncpyz(g2->anims[modelIndex].meshName, filename, sizeof(g2->anims[modelIndex].meshName));
+				g2->anims[modelIndex].animHandle = glm->animIndex;
+				Q_strncpyz(g2->anims[modelIndex].animName, glm->animName, sizeof(g2->anims[modelIndex].animName));
+			}
+		}
+		else {
+			*ptr = NULL;
+			return 0;
+		}
+
+		// make sure the render thread is stopped
+		R_SyncRenderThread();
+		*ptr = g2;
+		return hG2;
+	}
+	return 0;
 }
 
 /*
@@ -354,6 +767,15 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	Q_strncpyz( localName, name, MAX_QPATH );
 
 	ext = COM_GetExtension( localName );
+
+	// Ghoul 2 Anims, early out because we can't try loading something else
+	if( *ext && !Q_stricmp( ext, "gla" ) )
+	{
+		hModel = R_RegisterGLA( localName, mod );
+		if( hModel )
+			return mod->index;
+		return hModel;
+	}
 
 	if( *ext )
 	{
@@ -1249,9 +1671,11 @@ int R_LerpTag( orientation_t *tag, qhandle_t handle, int startFrame, int endFram
 		else
 #endif
 		if( model->type == MOD_IQM ) {
-			return R_IQMLerpTag( tag, model->modelData,
+			return R_IQMLerpTag( tag, (iqmData_t *) model->modelData,
 					startFrame, endFrame,
 					frac, tagName );
+		} else if( model->type == MOD_GLM ) {
+			//return R_
 		} else {
 
 			AxisClear( tag->axis );
@@ -1340,7 +1764,7 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs ) {
 	} else if(model->type == MOD_IQM) {
 		iqmData_t *iqmData;
 		
-		iqmData = model->modelData;
+		iqmData = (iqmData_t *)model->modelData;
 
 		if(iqmData->bounds)
 		{

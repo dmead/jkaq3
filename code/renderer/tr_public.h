@@ -107,6 +107,21 @@ typedef struct {
 	void	(*GetDistanceCull)( float *value );
 	qboolean (*inPVS)( const vec3_t p1, const vec3_t p2 );
 
+//	void	(*GetLightStyle)( int style, color4ub_t color );
+//	void	(*SetLightStyle)( int style, int color );
+
+	qboolean (*Ghoul2Valid)(void *ghoul2);
+	void	(*GetGLAName)(void *ghoul2, int modelIndex, char *fillBuf);
+	int		(*InitG2Model)(void **ghoul2Ptr, const char *fileName, int modelIndex, qhandle_t customSkin,
+						  qhandle_t customShader, int modelFlags, int lodBias);
+
+	void	(*CleanGhoul2)(void **ghoul2Ptr);
+
+	int		(*CopyGhoul2)(void *from, void *to, int modelIndex);
+	void	(*CopyGhoul2Specific)(void *from, int modelFrom, void *to, int modelTo);
+	void	(*DuplicateGhoul2)(void *from, void **to);
+	qboolean (*Ghoul2ModelOnIndex)(void *ghoul2, int modelIndex);
+
 	void (*TakeVideoFrame)( int h, int w, byte* captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
 } refexport_t;
 
