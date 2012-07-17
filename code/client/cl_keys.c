@@ -523,6 +523,11 @@ Field_CharEvent
 void Field_CharEvent( field_t *edit, int ch ) {
 	int		len;
 
+	// Someone is trying to enter in an alt code
+	if( keys[A_ALT].down && isdigit(ch) ) {
+		return;
+	}
+
 	if ( ch == 'v' - 'a' + 1 ) {	// ctrl-v is paste
 		Field_Paste( edit );
 		return;
@@ -619,6 +624,8 @@ void Console_Key (int key) {
 
 	// enter finishes the line
 	if ( key == A_ENTER || key == A_KP_ENTER ) {
+		/* JKA: If you want to make qui gon work, make a new version of Field_CompleteCommand that doesn't care about arguments beyond argv[0] */
+		Field_AutoComplete(&g_consoleField);
 		if( !con_allowChat->integer ) {
 			Com_Printf( "]%s\n", g_consoleField.buffer );
 

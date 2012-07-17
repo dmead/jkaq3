@@ -356,8 +356,17 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 	}
 
 	// Don't allow extended ASCII to generate characters
+	// Fixme JKA to support these, but the fakeascii doesn't exactly conform to 128-255 standard values
 	if( *buf & 0x80 )
 		*buf = '\0';
+
+	// jka: WTF hack for sillyness?
+	// this shouldn't even be necessary, as only /*-+ generate chars in ioq3...
+	// i realize you want to be able to have numpad support but eh im going for more ioq3 compat
+	// and technically the console allows for those anyway
+	if( (*key == A_KP_PERIOD || ( *key >= A_KP_0 && *key <= A_KP_9 ) ) && *buf ) {
+		*buf = '\0';
+	}
 
 	return (char *)buf;
 }
