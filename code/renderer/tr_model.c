@@ -587,6 +587,8 @@ qboolean RE_Ghoul2ModelOnIndex( void *ptr, int modelIndex ) {
 }
 
 void RE_GetGLAName( void *ptr, int modelindex, char *buffer ) {
+	Q_strncpyz(buffer, "models/players/_humanoid/_humanoid", MAX_QPATH);
+#if 0
 	if( !ptr || !buffer || modelindex < 0 || modelindex > 3 )
 		return;
 
@@ -604,6 +606,7 @@ void RE_GetGLAName( void *ptr, int modelindex, char *buffer ) {
 	}
 
 	*buffer = '\0';
+#endif
 }
 
 void RE_CleanGhoul2( void **ptr ) {
