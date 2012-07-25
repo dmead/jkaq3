@@ -1198,8 +1198,6 @@ void CL_ShutdownInput(void)
 #endif
 
 	Cmd_RemoveCommand("voicechat");
-
-	Cmd_RemoveCommand("voicechat");
 	Cmd_RemoveCommand("automap_toggle");
 	Cmd_RemoveCommand("automap_button");
 	Cmd_RemoveCommand("useGivenForce");
