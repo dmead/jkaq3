@@ -1126,6 +1126,9 @@ static void ComputeTexCoords( shaderStage_t *pStage ) {
 static void RB_IterateStagesGeneric( shaderCommands_t *input )
 {
 	int stage;
+	qboolean overridealpha, overridergb;
+	qboolean didanyoverride = qfalse;
+	int oldalphaGen = 0, oldrgbGen = 0;
 
 	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
@@ -1136,7 +1139,32 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 			break;
 		}
 
+		// Override the shader rgb tint if requested.
+		if(backEnd.currentEntity->e.renderfx & RF_RGB_TINT)
+		{
+			overridergb = qtrue;
+			oldrgbGen = pStage->rgbGen;
+			pStage->rgbGen = CGEN_ENTITY;
+		}
+		else
+			overridergb = qfalse;
+
+		// Override the shader alpha channel if requested.
+		if(backEnd.currentEntity->e.renderfx & RF_FORCE_ENT_ALPHA)
+		{
+			overridealpha = qtrue;
+			oldalphaGen = pStage->alphaGen;
+			pStage->alphaGen = AGEN_ENTITY;
+		}
+		else
+			overridealpha = qfalse;
+
 		ComputeColors( pStage );
+
+		if(overridergb)
+			pStage->rgbGen = (colorGen_t)oldrgbGen;
+		if(overridealpha)
+			pStage->alphaGen = (alphaGen_t)oldalphaGen;
 		ComputeTexCoords( pStage );
 
 		if ( !setArraysOnce )
@@ -1169,7 +1197,23 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 			else 
 				R_BindAnimatedImage( &pStage->bundle[0] );
 
-			GL_State( pStage->stateBits );
+			if(overridealpha && backEnd.currentEntity->e.shaderRGBA[3] < 0xFF && !(pStage->stateBits & GLS_ATEST_BITS))
+			{
+				GL_State((pStage->stateBits & ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_ATEST_BITS))  // remove the shader set values.
+					| GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_ATEST_GT_0); // Now add the default values.
+				didanyoverride = qtrue;
+			}
+
+			//if(overridergb && (backEnd.currentEntity->e.shaderRGBA[0] < 0xFF || backEnd.currentEntity->e.shaderRGBA[1] < 0xFF || backEnd.currentEntity->e.shaderRGBA[2] < 0xFF) && !(pStage->stateBits & GLS_ATEST_BITS))
+			//{
+			//	GL_State((pStage->stateBits & ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_ATEST_BITS))  // remove the shader set values.
+			//		| GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_ATEST_GT_0); // Now add the default values.
+			//	didanyoverride = qtrue;
+			//}
+
+			//else
+			if(!didanyoverride)
+				GL_State( pStage->stateBits );
 
 			//
 			// draw

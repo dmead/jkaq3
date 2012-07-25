@@ -1014,18 +1014,26 @@ See if a sprite is inside a fog volume
 int R_SpriteFogNum( trRefEntity_t *ent ) {
 	int				i, j;
 	fog_t			*fog;
+	float			radius;
 
 	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) {
 		return 0;
 	}
 
+	if ( ent->e.reType == RT_ORIENTED_QUAD ) {
+		radius = ent->e.data.sprite.radius;
+	}
+	else {
+		radius = ent->e.radius;
+	}
+
 	for ( i = 1 ; i < tr.world->numfogs ; i++ ) {
 		fog = &tr.world->fogs[i];
 		for ( j = 0 ; j < 3 ; j++ ) {
-			if ( ent->e.origin[j] - ent->e.radius >= fog->bounds[1][j] ) {
+			if ( ent->e.origin[j] - radius >= fog->bounds[1][j] ) {
 				break;
 			}
-			if ( ent->e.origin[j] + ent->e.radius <= fog->bounds[0][j] ) {
+			if ( ent->e.origin[j] + radius <= fog->bounds[0][j] ) {
 				break;
 			}
 		}
