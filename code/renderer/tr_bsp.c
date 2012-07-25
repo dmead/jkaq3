@@ -1671,7 +1671,7 @@ void R_LoadLightGrid( lump_t *l, lump_t *larray ) {
 	int		numGridPoints;
 	world_t	*w;
 	float	*wMins, *wMaxs;
-	unsigned short *lightArray;
+//	unsigned short *lightArray;
 
 	w = &s_worldData;
 

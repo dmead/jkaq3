@@ -19,38 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-
-// For FS_CL_ExtractFromPakFile and FS_FOpenFileRead_Filtered:
-/*
-===========================================================================
-
-Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
-
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
-
-Wolf ET Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wolf ET Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-
-===========================================================================
-*/
-
-
-
 /*****************************************************************************
  * name:		files.c
  *
@@ -81,7 +49,7 @@ The "base path" is the path to the directory holding all the game directories an
 the executable.  It defaults to ".", but can be overridden with a "+set fs_basepath c:\quake3"
 command line to allow code debugging in a different directory.  Basepath cannot
 be modified at all after startup.  Any files that are created (demos, screenshots,
-etc) will be created reletive to the base path, so base path should usually be writable.
+etc) will be created relative to the base path, so base path should usually be writable.
 
 The "home path" is the path used for all write access. On win32 systems we have "base path"
 == "home path", but on *nix systems the base installation is usually readonly, and
@@ -530,30 +498,6 @@ char *FS_BuildOSPath( const char *base, const char *game, const char *qpath ) {
 	return ospath[toggle];
 }
 
-
-/*
-===================
-FS_BuildDLLPath
-
-Qpath may have either forward or backwards slashes
-Base contains base+mod (use this only for when trying to get a netpath from a pk3's directory)
-===================
-*/
-char *FS_BuildDLLPath( const char *base,  const char *qpath ) {
-	char	temp[MAX_OSPATH];
-	static char ospath[2][MAX_OSPATH];
-	static int toggle;
-	
-	toggle ^= 1;		// flip-flop to allow two returns without clash
-
-	Com_sprintf( temp, sizeof(temp), "/%s", qpath );
-	FS_ReplaceSeparators( temp );
-	Com_sprintf( ospath[toggle], sizeof( ospath[0] ), "%s%s", base, temp );
-	
-	return ospath[toggle];
-}
-
-
 /*
 ============
 FS_CreatePath
@@ -939,56 +883,6 @@ fileHandle_t FS_FOpenFileWrite( const char *filename ) {
 
 /*
 ===========
-FS_FOpenDLLWrite
-
-Like FS_FOpenFileWrite, but allows dll extension (for FS_CL_Extract) and writes to basepath then homepath
-Fixme: FS_FindVM won't detect if its saved in homepath
-===========
-*/
-fileHandle_t FS_FOpenDLLWrite( const char *filename ) {
-	char			*ospath;
-	fileHandle_t	f;
-
-	if ( !fs_searchpaths ) {
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
-	}
-
-	f = FS_HandleForFile();
-	fsh[f].zipFile = qfalse;
-
-	ospath = FS_BuildOSPath( fs_basepath->string, fs_gamedir, filename );
-
-	if ( fs_debug->integer ) {
-		Com_Printf( "FS_FOpenDLLWrite: %s\n", ospath );
-	}
-
-	if( FS_CreatePath( ospath ) ) {
-		ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
-
-		if ( fs_debug->integer ) {
-			Com_Printf( "FS_FOpenDLLWrite: %s\n", ospath );
-		}
-		if( FS_CreatePath( ospath ) ) {
-			return 0;
-		}
-	}
-
-	// enabling the following line causes a recursive function call loop
-	// when running with +set logfile 1 +set developer 1
-	//Com_DPrintf( "writing to: %s\n", ospath );
-	fsh[f].handleFiles.file.o = fopen( ospath, "wb" );
-
-	Q_strncpyz( fsh[f].name, filename, sizeof( fsh[f].name ) );
-
-	fsh[f].handleSync = qfalse;
-	if (!fsh[f].handleFiles.file.o) {
-		f = 0;
-	}
-	return f;
-}
-
-/*
-===========
 FS_FOpenFileAppend
 
 ===========
@@ -1182,7 +1076,7 @@ extern qboolean		com_fullyInitialized;
 // see FS_FOpenFileRead_Filtered
 static int fs_filter_flag = 0;
 
-long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_t *file, qboolean uniqueFILE)
+long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_t *file, qboolean uniqueFILE, qboolean unpure)
 {
 	long			hash;
 	pack_t		*pak;
@@ -1331,22 +1225,10 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 						}
 					}
 
-#if 1
-					/* Should probably use shifted str str */
-					if(strstr(filename, "jampgame" ARCH_STRING DLL_EXT))
-						pak->referenced |= FS_QAGAME_REF;
 					if(strstr(filename, "cgame" ARCH_STRING DLL_EXT))
 						pak->referenced |= FS_CGAME_REF;
 					if(strstr(filename, "ui" ARCH_STRING DLL_EXT))
 						pak->referenced |= FS_UI_REF;
-#else
-					if(strstr(filename, "qagame.qvm"))
-						pak->referenced |= FS_QAGAME_REF;
-					if(strstr(filename, "cgame.qvm"))
-						pak->referenced |= FS_CGAME_REF;
-					if(strstr(filename, "ui.qvm"))
-						pak->referenced |= FS_UI_REF;
-#endif
 
 					if(uniqueFILE)
 					{
@@ -1394,12 +1276,13 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 		//   this test can make the search fail although the file is in the directory
 		// I had the problem on https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=8
 		// turned out I used FS_FileExists instead
-		if(fs_numServerPaks)
+		if(!unpure && fs_numServerPaks)
 		{
 			if(!FS_IsExt(filename, ".cfg", len) &&		// for config files
 				!FS_IsExt(filename, ".menu", len) &&		// menu files
 				!FS_IsExt(filename, ".game", len) &&		// menu files
 				!FS_IsExt(filename, ".dat", len) &&		// for journal files
+				!FS_IsExt(filename, ".fcf", len) &&		// for force config files
 				!FS_IsDemoExt(filename, len))			// demos
 			{
 				*file = 0;
@@ -1454,11 +1337,7 @@ long FS_FOpenFileRead(const char *filename, fileHandle_t *file, qboolean uniqueF
 
 	for(search = fs_searchpaths; search; search = search->next)
 	{
-		if ( search->pack && (fs_filter_flag & FS_EXCLUDE_PK3) )
-			continue;
-		if ( search->dir && (fs_filter_flag & FS_EXCLUDE_DIR) )
-			continue;
-		len = FS_FOpenFileReadDir(filename, search, file, uniqueFILE);
+		len = FS_FOpenFileReadDir(filename, search, file, uniqueFILE, qfalse);
 
 		if(file == NULL)
 		{
@@ -1482,125 +1361,6 @@ long FS_FOpenFileRead(const char *filename, fileHandle_t *file, qboolean uniqueF
 
 	return -1;
 }
-
-int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag ) {
-	int ret;
-
-	fs_filter_flag = filter_flag;
-	ret = FS_FOpenFileRead( qpath, file, uniqueFILE );
-	fs_filter_flag = 0;
-
-	return ret;
-}
-
-// TTimo
-// relevant to client only
-#if !defined( DEDICATED )
-/*
-==================
-FS_CL_ExtractFromPakFile
-
-NERVE - SMF - Extracts the latest file from a pak file.
-
-Compares packed file against extracted file. If no differences, does not copy.
-This is necessary for exe/dlls which may or may not be locked.
-
-NOTE TTimo:
-  fullpath gives the full OS path to the dll that will potentially be loaded
-	on win32 it's always in fs_basepath/<fs_game>/
-	on linux it can be in fs_homepath/<fs_game>/ or fs_basepath/<fs_game>/
-  the dll is extracted to fs_homepath (== fs_basepath on win32) if needed
-
-  the return value doesn't tell wether file was extracted or not, it just says wether it's ok to continue
-  (i.e. either the right file was extracted successfully, or it was already present)
-
-  cvar_lastVersion is the optional name of a CVAR_ARCHIVE used to store the wolf version for the last extracted .so
-  show_bug.cgi?id=463
-
-==================
-*/
-qboolean FS_CL_ExtractFromPakFile( const char *fullpath, const char *gamedir, const char *filename, const char *cvar_lastVersion ) {
-	int srcLength;
-	int destLength;
-	unsigned char   *srcData;
-	unsigned char   *destData;
-	qboolean needToCopy;
-	FILE            *destHandle;
-
-	needToCopy = qtrue;
-
-	// read in compressed file
-	srcLength = FS_ReadFile( filename, (void **)&srcData );
-
-	// if its not in the pak, we bail
-	if ( srcLength == -1 ) {
-		return qfalse;
-	}
-
-	// read in local file
-	destHandle = fopen( fullpath, "rb" );
-
-	// if we have a local file, we need to compare the two
-	if ( destHandle ) {
-		fseek( destHandle, 0, SEEK_END );
-		destLength = ftell( destHandle );
-		fseek( destHandle, 0, SEEK_SET );
-
-		if ( destLength > 0 ) {
-			destData = (unsigned char*)Z_Malloc( destLength );
-
-//			fread( destData, 1, destLength, destHandle );
-			fread( destData, destLength, 1, destHandle );
-
-			// compare files
-			if ( destLength == srcLength ) {
-				int i;
-
-				for ( i = 0; i < destLength; i++ ) {
-					if ( destData[i] != srcData[i] ) {
-						break;
-					}
-				}
-
-				if ( i == destLength ) {
-					needToCopy = qfalse;
-				}
-			}
-
-			Z_Free( destData ); // TTimo
-		}
-
-		fclose( destHandle );
-	}
-
-	// write file
-	if ( needToCopy ) {
-		fileHandle_t f;
-
-		// Com_DPrintf("FS_ExtractFromPakFile: FS_FOpenFileWrite '%s'\n", filename);
-		f = FS_FOpenDLLWrite( filename );
-		if ( !f ) {
-			Com_Printf( "Failed to open %s\n", filename );
-			return qfalse;
-		}
-
-		FS_Write( srcData, srcLength, f );
-
-		FS_FCloseFile( f );
-
-#ifdef __linux__
-		// show_bug.cgi?id=463
-		// need to keep track of what versions we extract
-		if ( cvar_lastVersion ) {
-			Cvar_Set( cvar_lastVersion, Cvar_VariableString( "version" ) );
-		}
-#endif
-	}
-
-	FS_FreeFile( srcData );
-	return qtrue;
-}
-#endif
 
 /*
 =================
@@ -1649,28 +1409,22 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 
 			if(enableDll)
 			{
-				// If this dll is the server dll, or if we're not on pure go ahead and try to load from directory right away
-				if(!Q_stricmp(name, "jampgame") || !fs_numServerPaks)
+				netpath = FS_BuildOSPath(dir->path, dir->gamedir, dllName);
+
+				if(FS_FileInPathExists(netpath))
 				{
-					netpath = FS_BuildOSPath(dir->path, dir->gamedir, dllName);
-
-					if(FS_FileInPathExists(netpath))
-					{
-						Q_strncpyz(found, netpath, foundlen);
-						*startSearch = search;
-
-						return VMI_NATIVE;
-					}
+					Q_strncpyz(found, netpath, foundlen);
+					*startSearch = search;
+					
+					return VMI_NATIVE;
 				}
 			}
 
-#if 0
-			if(FS_FOpenFileReadDir(qvmName, search, NULL, qfalse) > 0)
+			if(FS_FOpenFileReadDir(qvmName, search, NULL, qfalse, qfalse) > 0)
 			{
 				*startSearch = search;
 				return VMI_COMPILED;
 			}
-#endif
 		}
 		else if(search->pack)
 		{
@@ -1688,62 +1442,12 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 				}
 			}
 
-#if !defined( DEDICATED )
-			if(enableDll)
-			{
-				netpath = FS_BuildDLLPath( pack->pakPathname, dllName );
-
-				// server dll always loaded from directory
-				if(Q_strncmp(name, "jampgame", 8))
-				{
-					// if cgame or ui doesn't exist in directory, extract it
-					// fixme check in homepath too?
-					if(!FS_FileInPathExists(netpath))
-					{
-						Com_DPrintf("Try extracting dll file %s from %s.pk3\n", dllName, pack->pakBasename);
-						if(FS_CL_ExtractFromPakFile(netpath, pack->pakGamename, dllName, NULL))
-						{
-							// Fixme if it gets written to homepath then this will be invalid.
-							if(FS_FileInPathExists(netpath))
-							{
-								Q_strncpyz(found, netpath, foundlen);
-								*startSearch = search;
-
-								return VMI_NATIVE;
-							}
-						}
-					}
-					else if( fs_numServerPaks )
-					{
-						Com_DPrintf("Pure server dll file %s being checked against %s.pk3\n", dllName, pack->pakBasename);
-						if(FS_CL_ExtractFromPakFile(netpath, pack->pakGamename, dllName, NULL))
-						{
-							// Fixme if it gets written to homepath then this will be invalid.
-							if(FS_FileInPathExists(netpath))
-							{
-								Q_strncpyz(found, netpath, foundlen);
-								*startSearch = search;
-
-								return VMI_NATIVE;
-							}
-						}
-						else
-						{
-							Com_Error( ERR_DROP, "Game code(%s) failed Pure Server check", dllName );
-						}
-					}
-				}
-			}
-#endif
-
-#if 0
-			if(FS_FOpenFileReadDir(qvmName, search, NULL, qfalse) > 0)
+			if(FS_FOpenFileReadDir(qvmName, search, NULL, qfalse, qfalse) > 0)
 			{
 				*startSearch = search;
 
 				return VMI_COMPILED;
 			}
-#endif
 		}
 
 		search = search->next;
@@ -2043,7 +1747,7 @@ a null buffer will just return the file length without loading
 If searchPath is non-NULL search only in that specific search path
 ============
 */
-long FS_ReadFileDir(const char *qpath, void *searchPath, void **buffer)
+long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void **buffer)
 {
 	fileHandle_t	h;
 	searchpath_t	*search;
@@ -2116,7 +1820,7 @@ long FS_ReadFileDir(const char *qpath, void *searchPath, void **buffer)
 	else
 	{
 		// look for it in a specific search path only
-		len = FS_FOpenFileReadDir(qpath, search, &h, qfalse);
+		len = FS_FOpenFileReadDir(qpath, search, &h, qfalse, unpure);
 	}
 
 	if ( h == 0 ) {
@@ -2175,7 +1879,7 @@ a null buffer will just return the file length without loading
 */
 long FS_ReadFile(const char *qpath, void **buffer)
 {
-	return FS_ReadFileDir(qpath, NULL, buffer);
+	return FS_ReadFileDir(qpath, NULL, qfalse, buffer);
 }
 
 /*
@@ -2204,7 +1908,7 @@ void FS_FreeFile( void *buffer ) {
 ============
 FS_WriteFile
 
-Filename are reletive to the quake search path
+Filename are relative to the quake search path
 ============
 */
 void FS_WriteFile( const char *qpath, const void *buffer, int size ) {
@@ -3042,7 +2746,7 @@ qboolean FS_Which(const char *filename, void *searchPath)
 {
 	searchpath_t *search = searchPath;
 
-	if(FS_FOpenFileReadDir(filename, search, NULL, qfalse) > 0)
+	if(FS_FOpenFileReadDir(filename, search, NULL, qfalse, qfalse) > 0)
 	{
 		if(search->pack)
 		{
@@ -3180,12 +2884,6 @@ FS_idPak
 qboolean FS_idPak(char *pak, char *base, int numPaks)
 {
 	int i;
-
-	// Adding this because it makes more sense to have a binaries
-	// pk3 instead of throwing them into a new assets pk3.
-	if ( !FS_FilenameCompare(pak, va("%s/mp_bin", base)) ) {
-		return qtrue;
-	}
 
 	if ( !FS_FilenameCompare(pak, va("%s/bonus", base)) ) {
 		return qtrue;
@@ -3674,31 +3372,6 @@ static void FS_CheckPak0( void )
 	}
 }
 #endif
-
-/*
-=====================
-FS_GamePureChecksum
-
-Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-=====================
-*/
-const char *FS_GamePureChecksum( void ) {
-	static char	info[MAX_STRING_TOKENS];
-	searchpath_t *search;
-
-	info[0] = 0;
-
-	for ( search = fs_searchpaths ; search ; search = search->next ) {
-		// is the element a pak file?
-		if ( search->pack ) {
-			if (search->pack->referenced & FS_QAGAME_REF) {
-				Com_sprintf(info, sizeof(info), "%d", search->pack->checksum);
-			}
-		}
-	}
-
-	return info;
-}
 
 /*
 =====================

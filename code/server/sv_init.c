@@ -20,35 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// For SV_TouchCGameDLL:
-/*
-===========================================================================
-
-Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
-
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
-
-Wolf ET Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wolf ET Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-
-===========================================================================
-*/
-
 #include "server.h"
 
 
@@ -401,45 +372,6 @@ static void SV_ClearServer(void) {
 	Com_Memset (&sv, 0, sizeof(sv));
 }
 
-#if 0
-/*
-================
-SV_TouchCGame
-
-  touch the cgame.vm so that a pure client can load it if it's in a seperate pk3
-================
-*/
-static void SV_TouchCGame(void) {
-	fileHandle_t	f;
-	char filename[MAX_QPATH];
-
-	Com_sprintf( filename, sizeof(filename), "vm/%s.qvm", "cgame" );
-	FS_FOpenFileRead( filename, &f, qfalse );
-	if ( f ) {
-		FS_FCloseFile( f );
-	}
-}
-#endif
-
-/*
-================
-SV_TouchCGameDLL
-  touch the cgame DLL so that a pure client (with DLL sv_pure support) can load do the correct checks
-================
-*/
-void SV_TouchCGameDLL( void ) {
-	fileHandle_t f;
-	char filename[MAX_QPATH];
-
-	Com_sprintf(filename, sizeof(filename), "cgame" ARCH_STRING DLL_EXT);
-	FS_FOpenFileRead_Filtered( filename, &f, qfalse, FS_EXCLUDE_DIR );
-	if ( f ) {
-		FS_FCloseFile( f );
-	} else if ( sv_pure->integer ) { // ydnar: so we can work the damn game
-		Com_Error( ERR_DROP, "Failed to locate cgame DLL for pure server mode" );
-	}
-}
-
 /*
 ================
 SV_SpawnServer
@@ -649,9 +581,6 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	}
 	// the server sends these to the clients so they can figure
 	// out which pk3s should be auto-downloaded
-
-	// we want the server to reference the mp_bins pk3 that the client is expected to load from
-	SV_TouchCGameDLL();
 
 	p = FS_ReferencedPakChecksums();
 	Cvar_Set( "sv_referencedPaks", p );

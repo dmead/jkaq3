@@ -45,6 +45,9 @@ sent to that ip.
 ioquake3: we added a possibility for clients to add a challenge
 to their packets, to make it more difficult for malicious servers
 to hi-jack client connections.
+Also, the auth stuff is completely disabled for com_standalone games
+as well as IPv6 connections, since there is no way to use the
+v4-only auth server for these new types of connections.
 =================
 */
 void SV_GetChallenge(netadr_t from)
@@ -77,8 +80,8 @@ void SV_GetChallenge(netadr_t from)
 	// reject client if the gamename string sent by the client doesn't match ours
 	if (gameMismatch)
 	{
- 		NET_OutOfBandPrint(NS_SERVER, from, "print\nGame mismatch: This is a %s server\n",
- 			com_gamename->string);
+		NET_OutOfBandPrint(NS_SERVER, from, "print\nGame mismatch: This is a %s server\n",
+			com_gamename->string);
 		return;
 	}
 
@@ -857,7 +860,7 @@ int SV_WriteDownloadToClient(client_t *cl, msg_t *msg)
 			else if ( !(sv_allowDownload->integer & DLF_ENABLE) ||
 				(sv_allowDownload->integer & DLF_NO_UDP) ) {
 
-				Com_Printf("clientDownload: %d : \"%s\" download disabled", (int) (cl - svs.clients), cl->downloadName);
+				Com_Printf("clientDownload: %d : \"%s\" download disabled\n", (int) (cl - svs.clients), cl->downloadName);
 				if (sv_pure->integer) {
 					Com_sprintf(errorMessage, sizeof(errorMessage), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 										"You will need to get this file elsewhere before you "

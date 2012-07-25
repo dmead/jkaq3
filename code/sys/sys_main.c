@@ -140,7 +140,12 @@ Sys_PIDFileName
 */
 static char *Sys_PIDFileName( void )
 {
-	return va( "%s/%s", Sys_TempPath( ), PID_FILENAME );
+	const char *homePath = Sys_DefaultHomePath( );
+
+	if( *homePath != '\0' )
+		return va( "%s/%s", homePath, PID_FILENAME );
+
+	return NULL;
 }
 
 /*
@@ -155,6 +160,9 @@ qboolean Sys_WritePIDFile( void )
 	char      *pidFile = Sys_PIDFileName( );
 	FILE      *f;
 	qboolean  stale = qfalse;
+
+	if( pidFile == NULL )
+		return qfalse;
 
 	// First, check if the pid file is already there
 	if( ( f = fopen( pidFile, "r" ) ) != NULL )
@@ -204,7 +212,10 @@ static __attribute__ ((noreturn)) void Sys_Exit( int exitCode )
 	if( exitCode < 2 )
 	{
 		// Normal exit
-		remove( Sys_PIDFileName( ) );
+		char *pidFile = Sys_PIDFileName( );
+
+		if( pidFile != NULL )
+			remove( pidFile );
 	}
 
 	Sys_PlatformExit( );
@@ -549,10 +560,12 @@ void Sys_SigHandler( int signal )
 	else
 	{
 		signalcaught = qtrue;
+		VM_Forced_Unload_Start();
 #ifndef DEDICATED
 		CL_Shutdown(va("Received signal %d", signal), qtrue, qtrue);
 #endif
 		SV_Shutdown(va("Received signal %d", signal) );
+		VM_Forced_Unload_Done();
 	}
 
 	if( signal == SIGTERM || signal == SIGINT )
@@ -610,7 +623,7 @@ int main( int argc, char **argv )
 	// Concatenate the command line for passing to Com_Init
 	for( i = 1; i < argc; i++ )
 	{
-		const qboolean containsSpaces = strchr(argv[i], ' ') != NULL;
+		const qboolean containsSpaces = ( strchr(argv[i], ' ') != NULL ) ? qtrue : qfalse;
 		if (containsSpaces)
 			Q_strcat( commandLine, sizeof( commandLine ), "\"" );
 

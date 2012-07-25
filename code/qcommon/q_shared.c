@@ -839,11 +839,12 @@ int Q_isalpha( int c )
 qboolean Q_isanumber( const char *s )
 {
 	char *p;
+	double UNUSED_VAR d;
 
 	if( *s == '\0' )
 		return qfalse;
 
-	strtod( s, &p );
+	d = strtod( s, &p );
 
 	return *p == '\0';
 }
@@ -1484,7 +1485,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 Com_CharIsOneOfCharset
 ==================
 */
-qboolean Com_CharIsOneOfCharset( char c, char *set )
+static qboolean Com_CharIsOneOfCharset( char c, char *set )
 {
 	int i;
 

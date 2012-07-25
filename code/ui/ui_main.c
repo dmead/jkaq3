@@ -11151,7 +11151,7 @@ static void UI_StopServerRefresh( void )
 					uiInfo.serverStatus.numPlayersOnServers);
 	count = trap_LAN_GetServerCount(UI_SourceForLAN());
 	if (count - uiInfo.serverStatus.numDisplayServers > 0) {
-		Com_Printf("%d servers not listed due to filters, packet loss, or pings higher than %d\n",
+		Com_Printf("%d servers not listed (filtered out by game browser settings) or pings higher than %d\n",
 						count - uiInfo.serverStatus.numDisplayServers,
 						(int) trap_Cvar_VariableValue("cl_maxPing"));
 	}

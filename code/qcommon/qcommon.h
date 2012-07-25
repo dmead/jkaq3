@@ -358,7 +358,7 @@ void	VM_Free( vm_t *vm );
 void	VM_Clear(void);
 void	VM_Forced_Unload_Start(void);
 void	VM_Forced_Unload_Done(void);
-vm_t	*VM_Restart( vm_t *vm );
+vm_t	*VM_Restart(vm_t *vm, qboolean unpure);
 
 intptr_t		QDECL VM_Call( vm_t *vm, int callNum, ... );
 
@@ -586,7 +586,6 @@ issues.
 #define FS_GENERAL_REF	0x01
 #define FS_UI_REF		0x02
 #define FS_CGAME_REF	0x04
-#define FS_QAGAME_REF	0x08
 // number of jk3 paks that will never be autodownloaded from base
 #define NUM_RV_PAKS		4
 
@@ -645,10 +644,6 @@ long		FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFI
 // It is generally safe to always set uniqueFILE to true, because the majority of
 // file IO goes through FS_ReadFile, which Does The Right Thing already.
 
-#define FS_EXCLUDE_DIR 0x1
-#define FS_EXCLUDE_PK3 0x2
-int		FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag );
-
 int		FS_FileIsInPAK(const char *filename, int *pChecksum );
 // returns 1 if a file is in the PAK file, otherwise -1
 
@@ -661,7 +656,7 @@ int		FS_Read( void *buffer, int len, fileHandle_t f );
 void	FS_FCloseFile( fileHandle_t f );
 // note: you can't just fclose from another DLL, due to MS libc issues
 
-long	FS_ReadFileDir(const char *qpath, void *searchPath, void **buffer);
+long	FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void **buffer);
 long	FS_ReadFile(const char *qpath, void **buffer);
 // returns the length of the file
 // a null buffer will just return the file length without loading
@@ -697,9 +692,6 @@ int		FS_Seek( fileHandle_t f, long offset, int origin );
 // seek on a file (doesn't work for zip files!!!!!!!!)
 
 qboolean FS_FilenameCompare( const char *s1, const char *s2 );
-
-const char *FS_GamePureChecksum( void );
-// Returns the checksum of the pk3 from which the server loaded the qagame.qvm
 
 const char *FS_LoadedPakNames( void );
 const char *FS_LoadedPakChecksums( void );
@@ -793,7 +785,7 @@ typedef enum {
 	SE_NONE = 0,		// evTime is still valid
 	SE_KEY,			// evValue is a key code, evValue2 is the down flag
 	SE_CHAR,		// evValue is an ascii char
-	SE_MOUSE,		// evValue and evValue2 are reletive signed x / y moves
+	SE_MOUSE,		// evValue and evValue2 are relative signed x / y moves
 	SE_JOYSTICK_AXIS,	// evValue is an axis number and evValue2 is the current state (-127 to 127)
 	SE_CONSOLE		// evPtr is a char*
 } sysEventType_t;
@@ -915,7 +907,7 @@ temp file loading
 
 */
 
-#if defined(_DEBUG) && !defined(BSPC)
+#if !defined(NDEBUG) && !defined(BSPC)
 	#define ZONE_DEBUG
 #endif
 
@@ -945,7 +937,6 @@ void *Hunk_AllocateTempMemory( int size );
 void Hunk_FreeTempMemory( void *buf );
 int	Hunk_MemoryRemaining( void );
 void Hunk_Log( void);
-void Hunk_Trash( void );
 
 void Com_TouchMemory( void );
 
@@ -1054,15 +1045,7 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
-typedef enum {
-	AXIS_SIDE,
-	AXIS_FORWARD,
-	AXIS_UP,
-	AXIS_ROLL,
-	AXIS_YAW,
-	AXIS_PITCH,
-	MAX_JOYSTICK_AXIS
-} joystickAxis_t;
+#define MAX_JOYSTICK_AXIS 16
 
 void	Sys_Init (void);
 
@@ -1127,7 +1110,6 @@ char    *Sys_DefaultAppPath(void);
 
 void  Sys_SetDefaultHomePath(const char *path);
 char	*Sys_DefaultHomePath(void);
-const char	*Sys_TempPath(void);
 const char *Sys_Dirname( char *path );
 const char *Sys_Basename( char *path );
 char *Sys_ConsoleInput(void);

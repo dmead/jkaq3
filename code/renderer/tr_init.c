@@ -33,6 +33,10 @@ glstate_t	glState;
 
 static void GfxInfo_f( void );
 
+#ifdef USE_RENDERER_DLOPEN
+cvar_t  *com_altivec;
+#endif
+
 cvar_t	*r_flareSize;
 cvar_t	*r_flareFade;
 cvar_t	*r_flareCoeff;
@@ -210,9 +214,6 @@ static void InitOpenGL( void )
 
 	// init command buffers and SMP
 	R_InitCommandBuffers();
-
-	// print info
-	GfxInfo_f();
 
 	// set default state
 	GL_SetDefaultState();
@@ -982,6 +983,10 @@ R_Register
 */
 void R_Register( void ) 
 {
+	#ifdef USE_RENDERER_DLOPEN
+	com_altivec = ri.Cvar_Get("com_altivec", "1", CVAR_ARCHIVE);
+	#endif	
+
 	//
 	// latched and archived variables
 	//
@@ -1160,6 +1165,8 @@ void R_Init( void ) {
 	}
 	Com_Memset( tess.constantColor255, 255, sizeof( tess.constantColor255 ) );
 
+	R_NoiseInit();
+
 	//
 	// init function tables
 	//
@@ -1169,6 +1176,7 @@ void R_Init( void ) {
 		tr.squareTable[i]	= ( i < FUNCTABLE_SIZE/2 ) ? 1.0f : -1.0f;
 		tr.sawToothTable[i] = (float)i / FUNCTABLE_SIZE;
 		tr.inverseSawToothTable[i] = 1.0f - tr.sawToothTable[i];
+		tr.noiseTable[i] = R_NoiseGet4f(0, 0, 0, i);
 
 		if ( i < FUNCTABLE_SIZE / 2 )
 		{
@@ -1188,8 +1196,6 @@ void R_Init( void ) {
 	}
 
 	R_InitFogTable();
-
-	R_NoiseInit();
 
 	R_Register();
 
@@ -1231,6 +1237,8 @@ void R_Init( void ) {
 	if ( err != GL_NO_ERROR )
 		ri.Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
 
+	// print info
+	GfxInfo_f();
 	ri.Printf( PRINT_ALL, "----- finished R_Init -----\n" );
 }
 

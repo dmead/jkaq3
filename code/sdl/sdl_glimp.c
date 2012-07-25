@@ -747,6 +747,12 @@ success:
 	// http://bugzilla.icculus.org/show_bug.cgi?id=4316
 	glConfig.deviceSupportsGamma = SDL_SetGamma( 1.0f, 1.0f, 1.0f ) >= 0;
 
+	if ( -1 == r_ignorehwgamma->integer)
+		glConfig.deviceSupportsGamma = 1;
+
+	if ( 1 == r_ignorehwgamma->integer)
+		glConfig.deviceSupportsGamma = 0;
+
 	// get our config strings
 	Q_strncpyz( vendor_string, (char *) qglGetString (GL_VENDOR), sizeof( vendor_string ) );
 	Q_strncpyz( renderer_string, (char *) qglGetString (GL_RENDERER), sizeof( renderer_string ) );

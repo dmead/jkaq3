@@ -53,7 +53,7 @@ char *Sys_DefaultHomePath(void)
 {
 	char *p;
 
-	if( !*homePath )
+	if( !*homePath && com_homepath != NULL )
 	{
 		if( ( p = getenv( "HOME" ) ) != NULL )
 		{
@@ -77,23 +77,6 @@ char *Sys_DefaultHomePath(void)
 
 	return homePath;
 }
-
-#ifndef MACOS_X
-/*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	const char *TMPDIR = getenv( "TMPDIR" );
-
-	if( TMPDIR == NULL || TMPDIR[ 0 ] == '\0' )
-		return "/tmp";
-	else
-		return TMPDIR;
-}
-#endif
 
 /*
 ================
@@ -810,8 +793,8 @@ void Sys_GLimpInit( void )
 
 void Sys_SetFloatEnv(void)
 {
-	// rounding towards 0
-	fesetround(FE_TOWARDZERO);
+	// rounding toward nearest
+	fesetround(FE_TONEAREST);
 }
 
 /*

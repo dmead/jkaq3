@@ -1041,6 +1041,7 @@ typedef struct {
 	float					triangleTable[FUNCTABLE_SIZE];
 	float					sawToothTable[FUNCTABLE_SIZE];
 	float					inverseSawToothTable[FUNCTABLE_SIZE];
+	float					noiseTable[FUNCTABLE_SIZE];
 	float					fogTable[FOG_TABLE_SIZE];
 
 	// JKA: variable to determine if current shader uses 'notc'
@@ -1202,6 +1203,7 @@ extern cvar_t	*r_marksOnTriangleMeshes;
 //====================================================================
 
 float R_NoiseGet4f( float x, float y, float z, float t );
+int R_RandomOn( float t );
 void  R_NoiseInit( void );
 
 void R_SwapBuffers( int );

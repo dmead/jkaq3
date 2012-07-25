@@ -371,6 +371,7 @@ Kick a user off of the server
 */
 static void SV_Kick_f( void ) {
 	client_t *cl;
+	int i;
 
 	// make sure server is running
 	if( !com_sv_running->integer ) {
@@ -379,17 +380,41 @@ static void SV_Kick_f( void ) {
 	}
 
 	if( Cmd_Argc() != 2 ) {
-		Com_Printf( "Usage: kick <player name>\n" );
+		Com_Printf( "Usage: kick <player name>\nkick all = kick everyone\nkick allbots = kick all bots\n" );
 		return;
 	}
 
 	cl = SV_GetPlayerByHandle();
 	if( !cl ) {
+		if ( !Q_stricmp(Cmd_Argv(1), "all") ) {
+			for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
+				if ( !cl->state ) {
+					continue;
+				}
+				if( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
+					continue;
+				}
+				SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
+				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
+			}
+		}
+		else if ( !Q_stricmp(Cmd_Argv(1), "allbots") ) {
+			for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
+				if ( !cl->state ) {
+					continue;
+				}
+				if( cl->netchan.remoteAddress.type != NA_BOT ) {
+					continue;
+				}
+				SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
+				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
+			}
+		}
 		return;
 	}
 
 	if( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
-		Com_Printf( "Cannot kick host player\n" );
+		SV_SendServerCommand(NULL, "print \"%s\"", SV_StringEdString("CANNOT_KICK_HOST"));
 		return;
 	}
 
@@ -455,6 +480,40 @@ static void SV_KickAll_f( void ) {
 		SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
+}
+
+/*
+==================
+SV_KickNum_f
+
+Kick a user off of the server
+==================
+*/
+static void SV_KickNum_f( void ) {
+	client_t	*cl;
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
+	if ( Cmd_Argc() != 2 ) {
+		Com_Printf( "Usage: %s <client number>\n", Cmd_Argv( 0 ) );
+		return;
+	}
+
+	cl = SV_GetPlayerByNum();
+	if ( !cl ) {
+		return;
+	}
+	if( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
+		SV_SendServerCommand(NULL, "print \"%s\"", SV_StringEdString("CANNOT_KICK_HOST"));
+		return;
+	}
+
+	SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
+	cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 }
 
 /*
@@ -950,40 +1009,6 @@ static void SV_ExceptDel_f(void)
 }
 
 /*
-==================
-SV_KickNum_f
-
-Kick a user off of the server
-==================
-*/
-static void SV_KickNum_f( void ) {
-	client_t	*cl;
-
-	// make sure server is running
-	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
-		return;
-	}
-
-	if ( Cmd_Argc() != 2 ) {
-		Com_Printf( "Usage: %s <client number>\n", Cmd_Argv( 0 ) );
-		return;
-	}
-
-	cl = SV_GetPlayerByNum();
-	if ( !cl ) {
-		return;
-	}
-	if( cl->netchan.remoteAddress.type == NA_LOOPBACK ) {
-		SV_SendServerCommand(NULL, "print \"%s\"", SV_StringEdString("CANNOT_KICK_HOST"));
-		return;
-	}
-
-	SV_DropClient( cl, SV_StringEdString("WAS_KICKED") );
-	cl->lastPacketTime = svs.time;	// in case there is a funny zombie
-}
-
-/*
 ================
 SV_Status_f
 ================
@@ -1089,6 +1114,45 @@ static void SV_ConSay_f(void) {
 	strcat(text, p);
 
 	SV_SendServerCommand(NULL, "chat \"%s\"", text);
+}
+
+/*
+==================
+SV_ConTell_f
+==================
+*/
+static void SV_ConTell_f(void) {
+	char	*p;
+	char	text[1024];
+	client_t	*cl;
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
+	if ( Cmd_Argc() < 3 ) {
+		Com_Printf ("Usage: tell <client number> <text>\n");
+		return;
+	}
+
+	cl = SV_GetPlayerByNum();
+	if ( !cl ) {
+		return;
+	}
+
+	strcpy (text, "console_tell: ");
+	p = Cmd_ArgsFrom(2);
+
+	if ( *p == '"' ) {
+		p++;
+		p[strlen(p)-1] = 0;
+	}
+
+	strcat(text, p);
+
+	SV_SendServerCommand(cl, "chat \"%s\"", text);
 }
 
 
@@ -1208,7 +1272,7 @@ static void SV_ForceToggle_f( void ) {
 ===========
 SV_DumpUser_f
 
-Examine all a users info strings FIXME: move to game
+Examine all a users info strings
 ===========
 */
 static void SV_DumpUser_f( void ) {
@@ -1297,6 +1361,7 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand ("killserver", SV_KillServer_f);
 	if( com_dedicated->integer ) {
 		Cmd_AddCommand ("say", SV_ConSay_f);
+		Cmd_AddCommand ("tell", SV_ConTell_f);
 	}
 	
 	Cmd_AddCommand("rehashbans", SV_RehashBans_f);
