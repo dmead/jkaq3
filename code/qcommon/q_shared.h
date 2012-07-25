@@ -37,10 +37,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define GAMENAME_FOR_MASTER		"JediAcademy"	// must NOT contain whitespace
 //  #define LEGACY_PROTOCOL	// You probably don't need this for your standalone game
 #else
-  #define PRODUCT_NAME			"jamp"
+  #define PRODUCT_NAME			"iojamp"
   #define BASEGAME			"base"
-  #define CLIENT_WINDOW_TITLE     	"Jedi Knight(r): Jedi Academy (MP)"
-  #define CLIENT_WINDOW_MIN_TITLE 	"jamp"
+  #define CLIENT_WINDOW_TITLE     	"iojamp"
+  #define CLIENT_WINDOW_MIN_TITLE 	"iojamp"
   #define HOMEPATH_NAME_UNIX		".jkamp"
   #define HOMEPATH_NAME_WIN		"JediAcademyMP"
   #define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
@@ -48,10 +48,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define LEGACY_PROTOCOL
 #endif
 
+#ifdef DPMASTER
 // Heartbeat for dpmaster protocol. You shouldn't change this unless you know what you're doing
-//#define HEARTBEAT_FOR_MASTER		"DarkPlaces"
+#define HEARTBEAT_FOR_MASTER		"DarkPlaces"
+#else
 // Heartbeat for jk3 protocol. You shouldn't change this unless you know what you're doing
 #define HEARTBEAT_FOR_MASTER		"QuakeArena-1"
+#endif
 
 #ifndef PRODUCT_VERSION
   #define PRODUCT_VERSION "2.0"

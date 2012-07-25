@@ -902,7 +902,25 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
 	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
 	ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-	ri.Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
+	{
+		char *p, *token;
+
+		p = extensions_string;
+
+		ri.Printf( PRINT_ALL, "GL_EXTENSIONS: " );
+
+		while ( 1 ) {	
+			token = COM_ParseExt( &p, qfalse );
+
+			if ( !*token ) {
+				break;
+			}
+
+			ri.Printf( PRINT_ALL, "%s ", token );
+		}
+
+		ri.Printf( PRINT_ALL, "\n" );
+	}
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.maxActiveTextures );
 	ri.Printf( PRINT_ALL, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
