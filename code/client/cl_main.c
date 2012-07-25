@@ -3063,7 +3063,7 @@ void CL_InitRenderer( void ) {
 
 	// Draw loading screen the first time the game starts.
 	/* Borrowed from TurtleArena */
-	if( !com_fullyInitialized || com_gameRestarting ) {
+	if( !com_fullyInitialized ) {
 		CL_DrawLoadingScreen();
 	}
 

@@ -204,18 +204,6 @@ void CL_CgameError( const char *string ) {
 	Com_Error( ERR_DROP, "%s", string );
 }
 
-void CL_VM_Malloc( void **ptr, int size ) {
-	if( ptr != NULL ) {
-		*ptr = malloc( size );
-	}
-}
-
-void CL_VM_Free( void **ptr ) {
-	if( ptr != NULL ) {
-		free( *ptr );
-		*ptr = NULL;
-	}
-}
 
 /*
 =====================
@@ -825,10 +813,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	  CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 	  return 0;
 
-	case CG_SET_SHARED_BUFFER:
-		clc.mSharedMemory = VMA(1);
-		return 0;
-
 	case CG_R_REMAP_SHADER:
 		re.RemapShader( VMA(1), VMA(2), VMA(3) );
 		return 0;
@@ -950,29 +934,16 @@ void CL_InitCGame( void ) {
 	Con_ClearNotify ();
 }
 
-/* Returns true if the command is okay */
-qboolean CL_InterceptCommand( char *buffer ) {
-	qboolean ret = qtrue;
+/*
+qboolean CL_InterceptCommand( void ) {
 	TCGIncomingConsoleCommand tcc;
-	TCGIncomingConsoleCommand *diff;
-
-	if ( !cgvm || !clc.mSharedMemory ) {
-		*buffer = '\0';
-		return ret;
-	}
 
 	Q_strncpyz(tcc.conCommand, Cmd_Cmd(), 1024);
-	Com_Memcpy(clc.mSharedMemory, &tcc, sizeof(tcc));
+	// stick a pointer to a tcc object into the client shared buffer
 
-	ret = VM_Call( cgvm, CG_INCOMING_CONSOLE_COMMAND );
-
-	diff = (TCGIncomingConsoleCommand *)clc.mSharedMemory;
-
-	if( ret && Q_stricmp(diff->conCommand, tcc.conCommand) ) {
-		Q_strncpyz(buffer, diff->conCommand, sizeof(diff->conCommand));
-	}
-	return ret;
+	return VM_Call( cgvm, CG_INCOMING_CONSOLE_COMMAND );
 }
+*/
 
 
 /*
