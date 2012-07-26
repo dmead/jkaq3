@@ -816,6 +816,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				depthFuncBits = 0;
 			}
+			if ( !Q_stricmp( token, "disable" ) )
+			{
+				depthFuncBits = 0;
+			}
 			else if ( !Q_stricmp( token, "equal" ) )
 			{
 				depthFuncBits = GLS_DEPTHFUNC_EQUAL;
@@ -932,6 +936,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			else if ( !Q_stricmp( token, "lightingDiffuse" ) )
 			{
 				stage->rgbGen = CGEN_LIGHTING_DIFFUSE;
+			}
+			else if ( !Q_stricmp( token, "lightingDiffuseEntity" ) )
+			{
+				stage->rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY;
 			}
 			else if ( !Q_stricmp( token, "oneMinusVertex" ) )
 			{
@@ -1127,7 +1135,8 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 	// decide which agens we can skip
 	if ( stage->alphaGen == AGEN_IDENTITY ) {
 		if ( stage->rgbGen == CGEN_IDENTITY
-			|| stage->rgbGen == CGEN_LIGHTING_DIFFUSE ) {
+			|| stage->rgbGen == CGEN_LIGHTING_DIFFUSE
+			|| stage->rgbGen == CGEN_LIGHTING_DIFFUSE_ENTITY ) {
 			stage->alphaGen = AGEN_SKIP;
 		}
 	}
@@ -1792,7 +1801,7 @@ static void ComputeStageIteratorFunc( void )
 	//
 	if ( shader.numUnfoggedPasses == 1 )
 	{
-		if ( stages[0].rgbGen == CGEN_LIGHTING_DIFFUSE )
+		if ( stages[0].rgbGen == CGEN_LIGHTING_DIFFUSE || stages[0].rgbGen == CGEN_LIGHTING_DIFFUSE_ENTITY )
 		{
 			if ( stages[0].alphaGen == AGEN_IDENTITY )
 			{
