@@ -635,8 +635,9 @@ void R_AddMyGhoulSurfaces( trRefEntity_t *ent ) {
   RB_SurfaceMyGhoul
     Called when a MyGhoul surf is asked to render.
 ==============================================================*/
-void RB_SurfaceMyGhoul( glmSurface_t *surface )
+void RB_SurfaceMyGhoul( surfaceType_t *surface )
 {
+	glmSurface_t	*surf = (glmSurface_t *)surface;
 //	int				i, j, k;
 	int				j, k;
 	int				*triangles;
@@ -676,11 +677,11 @@ void RB_SurfaceMyGhoul( glmSurface_t *surface )
 	zrots[2][2] = 1.0;
 	zrots[2][3] = 0.0;
 	
-	header = (glmHeader_t *)((byte *)surface + surface->ofsHeader);
-	RB_CHECKOVERFLOW( surface->numVerts, surface->numTriangles * 3 );
+	header = (glmHeader_t *)((byte *)surf + surf->ofsHeader);
+	RB_CHECKOVERFLOW( surf->numVerts, surf->numTriangles * 3 );
 	
-	triangles = (int *) ((byte *)surface + surface->ofsTriangles);
-	indexes = surface->numTriangles * 3;
+	triangles = (int *) ((byte *)surf + surf->ofsTriangles);
+	indexes = surf->numTriangles * 3;
 	baseIndex = tess.numIndexes;
 	baseVertex = tess.numVertexes;
 	
@@ -721,9 +722,9 @@ void RB_SurfaceMyGhoul( glmSurface_t *surface )
 	
 	//animated = 0;
 	
-	numVerts = surface->numVerts;
-	v = (glmVertex_t *)((byte *)surface + surface->ofsVerts);
-	triangles = (int *)((byte *)surface + surface->ofsBoneReferences );
+	numVerts = surf->numVerts;
+	v = (glmVertex_t *)((byte *)surf + surf->ofsVerts);
+	triangles = (int *)((byte *)surf + surf->ofsBoneReferences );
 	
 	for( k=0; k<numVerts; k++, outXyz+=4, outNormal+=4 )
 	{
@@ -788,7 +789,7 @@ void RB_SurfaceMyGhoul( glmSurface_t *surface )
 		v = (glmVertex_t *) ( (byte *)v + 32 );
 	}
 	
-	t = (glmVertexTexCoord_t *)((byte *)surface + surface->ofsVerts + (numVerts*32));
+	t = (glmVertexTexCoord_t *)((byte *)surf + surf->ofsVerts + (numVerts*32));
 	for ( j = 0; j < numVerts; j++ )
 	{
 		tess.texCoords[baseVertex + j][0][0] = t[j].texCoords[0];

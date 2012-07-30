@@ -1599,7 +1599,7 @@ int R_IQMLerpTag( orientation_t *tag, iqmData_t *data,
                   int startFrame, int endFrame,
                   float frac, const char *tagName );
 
-void RB_SurfaceMyGhoul( glmSurface_t *surface );
+void RB_SurfaceMyGhoul( surfaceType_t *surface );
 void R_AddMyGhoulSurfaces( trRefEntity_t *ent );
 
 /*
