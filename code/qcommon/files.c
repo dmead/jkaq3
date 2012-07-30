@@ -1073,9 +1073,6 @@ Returns filesize and an open FILE pointer.
 */
 extern qboolean		com_fullyInitialized;
 
-// see FS_FOpenFileRead_Filtered
-static int fs_filter_flag = 0;
-
 long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_t *file, qboolean uniqueFILE, qboolean unpure)
 {
 	long			hash;
