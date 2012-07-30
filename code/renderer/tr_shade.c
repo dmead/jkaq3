@@ -234,13 +234,13 @@ static void R_BindAnimatedImage( textureBundle_t *bundle ) {
 	if ( bundle->isOneShot ) {
 		if (backEnd.currentEntity && (backEnd.currentEntity->e.renderfx & RF_SETANIMINDEX)) {
 			int frame = backEnd.currentEntity->e.skinNum;
-			if( frame >= 0 && frame <= bundle->numImageAnimations ) {
+			if( frame >= 0 && frame <= bundle->numImageAnimations-1 ) {
 				GL_Bind( bundle->image[frame] );
 				return;
 			}
 		}
 		if( bundle->didOneShot ) {
-			GL_Bind( bundle->image[bundle->numImageAnimations] );
+			GL_Bind( bundle->image[bundle->numImageAnimations-1] );
 			return;
 		}
 	}
