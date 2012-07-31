@@ -346,6 +346,11 @@ qboolean R_LoadGLA( model_t *mod, void *buffer, int filesize, const char *mod_na
     LL(gla->ofsCompBonePool);
     LL(gla->ofsSkel);
     LL(gla->ofsEnd);
+
+	if ( gla->numFrames < 1 ) {
+		ri.Printf( PRINT_WARNING, "R_LoadGLA: %s has no frames\n", mod_name );
+		return qfalse;
+	}
 	
 	/*
 	skel_ofs = (glaSkelOffsets_t *) ( (byte *)&gla + sizeof( glaHeader_t ));
