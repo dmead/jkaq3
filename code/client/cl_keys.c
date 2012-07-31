@@ -624,9 +624,10 @@ void Console_Key (int key) {
 
 	// enter finishes the line
 	if ( key == A_ENTER || key == A_KP_ENTER ) {
-		/* JKA: If you want to make qui gon work, make a new version of Field_CompleteCommand that doesn't care about arguments beyond argv[0] */
-		Field_AutoComplete(&g_consoleField);
 		if( !con_allowChat->integer ) {
+			/* JKA: If you want to make qui gon work, make a new version of Field_CompleteCommand that doesn't care about arguments beyond argv[0] */
+			//Field_AutoComplete(&g_consoleField);
+
 			Com_Printf( "]%s\n", g_consoleField.buffer );
 
 			if( !g_consoleField.buffer[0] ) {
@@ -778,9 +779,7 @@ In game talk message
 ================
 */
 void Message_Key( int key ) {
-
 	char	buffer[MAX_STRING_CHARS];
-
 
 	if (key == A_ESCAPE) {
 		Key_SetCatcher( Key_GetCatcher( ) & ~KEYCATCH_MESSAGE );
