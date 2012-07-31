@@ -274,7 +274,6 @@ CL_GetServerCommand
 Set up argc/argv for the given command
 ===================
 */
-char *CL_PrintPacket( const char *string );
 qboolean CL_GetServerCommand( int serverCommandNumber ) {
 	char	*s;
 	char	*cmd;
@@ -311,7 +310,7 @@ rescan:
 		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
 		if ( argc >= 2 ) {
-			msg = CL_PrintPacket( Cmd_Argv( 1 ) );
+			msg = Cmd_Argv( 1 );
 			Com_Error( ERR_SERVERDISCONNECT, "%s - %s", SE_GetString("MP_SVGAME_SERVER_DISCONNECTED"), msg );
 		}
 		else {
