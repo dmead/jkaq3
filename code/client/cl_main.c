@@ -3623,8 +3623,8 @@ void CL_Init( void ) {
 
 	Cvar_Set( "cl_running", "1" );
 
-#ifdef USE_GUID
 	CL_GenerateQKey();
+#ifdef USE_GUID
 	Cvar_Get( "cl_guid", "", CVAR_USERINFO | CVAR_ROM );
 	CL_UpdateGUID( NULL, 0 );
 #endif
