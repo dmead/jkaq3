@@ -374,6 +374,27 @@ static void SV_ClearServer(void) {
 
 /*
 ================
+SV_TouchCGame
+
+  touch the cgamex86.dll so that a pure client can load it if it's in a seperate pk3
+================
+*/
+static void SV_TouchCGame(void) {
+	fileHandle_t	f;
+	char filename[MAX_QPATH];
+
+	Com_sprintf( filename, sizeof(filename), "cgame" ARCH_STRING ".dll" );
+	FS_FOpenFileRead( filename, &f, qfalse );
+	if ( f ) {
+		FS_FCloseFile( f );
+	}
+	else if ( sv_pure->integer ) {
+		Com_Error( ERR_DROP, "Failed to locate cgame DLL for pure server mode" );
+	}
+}
+
+/*
+================
 SV_SpawnServer
 
 Change the server to a new map, taking all connected
@@ -579,6 +600,10 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 		Cvar_Set( "sv_paks", "" );
 		Cvar_Set( "sv_pakNames", "" );
 	}
+
+	// we want the server to reference the assets3 pk3 that the client is expected to load from
+	SV_TouchCGame();
+
 	// the server sends these to the clients so they can figure
 	// out which pk3s should be auto-downloaded
 
