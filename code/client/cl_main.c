@@ -4165,8 +4165,14 @@ void CL_GlobalServers_f( void ) {
 		}
 	}
 	else
+#ifdef DPMASTER
 		Com_sprintf(command, sizeof(command), "getservers %s %s",
 			com_gamename->string, Cmd_Argv(2));
+#else
+		// Jedi Academy master only wants this, no gamename
+		Com_sprintf(command, sizeof(command), "getservers %s",
+			Cmd_Argv(2));
+#endif
 
 	for (i=3; i < count; i++)
 	{
