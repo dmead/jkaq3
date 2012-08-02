@@ -2509,12 +2509,17 @@ CL_PrintPacket
 void CL_PrintPacket( netadr_t from, msg_t *msg ) {
 	char *s;
 	int len;
+	//static char reference[MAX_QPATH];
 	s = MSG_ReadString( msg );
 
 	len = strlen( s );
 
 	if( len > 3 && s[0] == '@' && s[1] == '@' && s[2] == '@' ) {
-		s = SE_GetString( va("MP_SVGAME_%s", s+3) );
+		//Com_sprintf(reference, sizeof(reference), "MP_SVGAME_%s", s+3);
+		//s = SE_GetString( reference );
+		//if(*reference)
+		//	strcpy(s, reference);
+		//loc = SE_GetString( va("MP_SVGAME_%s", s+3) );
 	}
 	Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	Com_Printf( "%s", s );
