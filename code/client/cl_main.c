@@ -2514,9 +2514,9 @@ void CL_PrintPacket( netadr_t from, msg_t *msg ) {
 	len = strlen( s );
 
 	if( len > 3 && s[0] == '@' && s[1] == '@' && s[2] == '@' ) {
-		s = SE_GetString( s+3 );
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
+		s = SE_GetString( va("MP_SVGAME_%s", s+3) );
 	}
+	Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	Com_Printf( "%s", s );
 }
 
