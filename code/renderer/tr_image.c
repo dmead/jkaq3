@@ -785,10 +785,12 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	}
 	if ( !strncmp( name, "*lightmap", 9 ) ) {
 		isLightmap = qtrue;
-		noTC = qtrue;
+		if ( r_ext_compress_lightmaps->value == 0 ) {
+			noTC = qtrue;
+		}
 	}
 
-	if( r_ext_compressed_textures->value && tr.allowCompression == qfalse ) {
+	if ( r_ext_compress_textures->value && tr.allowCompression == qfalse ) {
 		noTC = qtrue;
 	}
 
