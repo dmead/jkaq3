@@ -2704,6 +2704,12 @@ void Com_Init( char *commandLine ) {
 	// make sure single player is off by default
 	Cvar_Set("ui_singlePlayerActive", "0");
 
+#ifdef USE_RAW_INPUT_MOUSE
+	if (Cvar_VariableIntegerValue("in_mouse") == 3) {
+		Cbuf_AddText( "in_restart;" );
+	}
+#endif
+
 	com_fullyInitialized = qtrue;
 
 	// always set the cvar, but only print the info if it makes sense.
