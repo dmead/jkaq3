@@ -586,7 +586,20 @@ static void Upload32( unsigned *data,
 		if(r_greyscale->integer)
 			internalFormat = GL_LUMINANCE;
 		else
-			internalFormat = GL_RGB;
+		{
+			if ( !noTC && glConfig.textureCompression == TC_S3TC_ARB )
+			{
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			}
+			else if ( !noTC && glConfig.textureCompression == TC_S3TC )
+			{
+				internalFormat = GL_RGB4_S3TC;
+			}
+			else
+			{
+				internalFormat = GL_RGB;
+			}
+		}
 	}
 	else
 	{
@@ -659,7 +672,11 @@ static void Upload32( unsigned *data,
 			}
 			else
 			{
-				if ( r_texturebits->integer == 16 )
+				if ( !noTC && glConfig.textureCompression == TC_S3TC_ARB )
+				{
+					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				}
+				else if ( r_texturebits->integer == 16 )
 				{
 					internalFormat = GL_RGBA4;
 				}

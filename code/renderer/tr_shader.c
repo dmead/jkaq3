@@ -2519,7 +2519,6 @@ static char *FindShaderInShaderText( const char *shadername ) {
 	return NULL;
 }
 
-
 /*
 ==================
 R_FindShaderByName
@@ -2557,7 +2556,6 @@ shader_t *R_FindShaderByName( const char *name ) {
 
 	return tr.defaultShader;
 }
-
 
 /*
 ===============
@@ -2733,7 +2731,6 @@ shader_t *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 	return FinishShader();
 }
 
-
 qhandle_t RE_RegisterShaderFromImage(const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage) {
 	int			i, hash;
 	shader_t	*sh;
@@ -2839,7 +2836,6 @@ qhandle_t RE_RegisterShaderFromImage(const char *name, int lightmapIndex, image_
   return sh->index; 
 }
 
-
 /* 
 ====================
 RE_RegisterShader
@@ -2873,7 +2869,6 @@ qhandle_t RE_RegisterShaderLightMap( const char *name, int lightmapIndex ) {
 	return sh->index;
 }
 
-
 /* 
 ====================
 RE_RegisterShader
@@ -2906,7 +2901,6 @@ qhandle_t RE_RegisterShader( const char *name ) {
 
 	return sh->index;
 }
-
 
 /*
 ====================
@@ -3176,9 +3170,7 @@ static void ScanAndLoadShaderFiles( void )
 	}
 
 	return;
-
 }
-
 
 /*
 ====================
@@ -3208,7 +3200,7 @@ static void CreateInternalShaders( void ) {
 
 static void CreateExternalShaders( void ) {
 	tr.projectionShadowShader = R_FindShader( "projectionShadow", LIGHTMAP_NONE, qtrue );
-	tr.flareShader = R_FindShader( "flareShader", LIGHTMAP_NONE, qtrue );
+	tr.flareShader = R_FindShader( "gfx/misc/flare", LIGHTMAP_NONE, qtrue );
 
 	// Hack to make fogging work correctly on flares. Fog colors are calculated
 	// in tr_flare.c already.

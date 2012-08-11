@@ -976,6 +976,7 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ] );
 	ri.Printf( PRINT_ALL, "texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0] );
 	ri.Printf( PRINT_ALL, "compressed textures: %s\n", enablestrings[glConfig.textureCompression!=TC_NONE] );
+	ri.Printf( PRINT_ALL, "compressed lightmaps: %s\n", enablestrings[r_ext_compress_lightmaps->value != 0] );
 	if ( r_vertexLight->integer || glConfig2.hardwareType == GLHW_PERMEDIA2 )
 	{
 		ri.Printf( PRINT_ALL, "HACK: using vertex lightmap approximation\n" );
