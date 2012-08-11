@@ -1665,13 +1665,12 @@ R_LoadLightGrid
 
 ================
 */
-void R_LoadLightGrid( lump_t *l, lump_t *larray ) {
+void R_LoadLightGrid( lump_t *l ) {
 	int		i;
 	vec3_t	maxs;
 	int		numGridPoints;
 	world_t	*w;
 	float	*wMins, *wMaxs;
-//	unsigned short *lightArray;
 
 	w = &s_worldData;
 
@@ -1689,14 +1688,12 @@ void R_LoadLightGrid( lump_t *l, lump_t *larray ) {
 	}
 
 	numGridPoints = w->lightGridBounds[0] * w->lightGridBounds[1] * w->lightGridBounds[2];
-	//lightArray = (void *)(fileBase + larray->fileofs);
-	//numGridPoints = larray->filelen / sizeof(unsigned short);
 	
-	if ( l->filelen != numGridPoints * sizeof(dgrid_t) ) {
-		ri.Printf( PRINT_WARNING, "WARNING: light grid array mismatch\n" );
-		w->lightGridData = NULL;
-		return;
-	}
+	//if ( l->filelen != numGridPoints * 8 ) {
+	//	ri.Printf( PRINT_WARNING, "WARNING: light grid array mismatch\n" );
+	//	w->lightGridData = NULL;
+	//	return;
+	//}
 
 	w->lightGridData = ri.Hunk_Alloc( l->filelen, h_low );
 	Com_Memcpy( w->lightGridData, (void *)(fileBase + l->fileofs), l->filelen );
@@ -1706,6 +1703,10 @@ void R_LoadLightGrid( lump_t *l, lump_t *larray ) {
 		R_ColorShiftLightingBytes( &w->lightGridData[i*8], &w->lightGridData[i*8] );
 		R_ColorShiftLightingBytes( &w->lightGridData[i*8+3], &w->lightGridData[i*8+3] );
 	}
+}
+
+void R_LoadLightArray( lump_t *l ) {
+
 }
 
 void R_GetDistanceCull( float *value ) {
@@ -1908,7 +1909,8 @@ void RE_LoadWorldMap( const char *name ) {
 	R_LoadSubmodels (&header->lumps[LUMP_MODELS]);
 	R_LoadVisibility( &header->lumps[LUMP_VISIBILITY] );
 	R_LoadEntities( &header->lumps[LUMP_ENTITIES] );
-	R_LoadLightGrid( &header->lumps[LUMP_LIGHTGRID], &header->lumps[LUMP_LIGHTARRAY] );
+	R_LoadLightGrid( &header->lumps[LUMP_LIGHTGRID] );
+	R_LoadLightArray( &header->lumps[LUMP_LIGHTARRAY] );
 
 	s_worldData.dataSize = (byte *)ri.Hunk_Alloc(0, h_low) - startMarker;
 
