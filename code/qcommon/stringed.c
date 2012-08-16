@@ -169,6 +169,8 @@ void SE_Load( const char *title, const char *language ) {
 
 	text_p = langfile.c;
 
+	COM_BeginParseSession( language );
+
 	do {
 		token = COM_Parse( &text_p );
 		if ( !strcmp( "ENDMARKER", token ) ) {
@@ -190,7 +192,7 @@ void SE_Load( const char *title, const char *language ) {
 			continue;
 		}
 		if ( !strcmp( "REFERENCE", token ) ) {
-			token = COM_Parse( &text_p );
+			token = COM_ParseExt( &text_p, qfalse );
 			Q_strncpyz( reference, va("%s_%s", title, token), MAX_QPATH );
 			token = COM_Parse( &text_p );
 			if ( !strcmp( "NOTES", token ) ) {
@@ -203,12 +205,12 @@ void SE_Load( const char *title, const char *language ) {
 #endif
 				token = COM_Parse( &text_p ); // look for LANG_ENGLISH
 				if ( !strcmp( "LANG_ENGLISH", token ) ) {
-					token = COM_Parse( &text_p );
+					token = COM_ParseExt( &text_p, qfalse );
 					Q_strncpyz( translated, token, MAX_TRANS_STRING );
 				}
 			}
 			else if ( !strcmp( "LANG_ENGLISH", token ) ) {
-				token = COM_Parse( &text_p );
+				token = COM_ParseExt( &text_p, qfalse );
 				Q_strncpyz( translated, token, MAX_TRANS_STRING );
 			}
 
@@ -232,6 +234,8 @@ void SE_Load( const char *title, const char *language ) {
 			continue;
 		}
 	} while ( token );
+
+	COM_BeginParseSession( "" );
 
 	FS_FreeFile( langfile.v );
 }
