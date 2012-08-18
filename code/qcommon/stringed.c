@@ -26,6 +26,167 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* TODO: This only loads on firsttime Com_Init, so a filesystem restart or cvar change wont cause a reload*/
 
+// Need larger buffer for credits and a few others
+static	char	se_token[BIG_INFO_STRING];
+static	char	se_parsename[MAX_TOKEN_CHARS];
+static	int		se_lines;
+
+char *SE_ParseExt( char **data_p, qboolean allowLineBreaks );
+
+void SE_BeginParseSession( const char *name )
+{
+	se_lines = 0;
+	Com_sprintf(se_parsename, sizeof(se_parsename), "%s", name);
+}
+
+int SE_GetCurrentParseLine( void )
+{
+	return se_lines;
+}
+
+char *SE_Parse( char **data_p )
+{
+	return SE_ParseExt( data_p, qtrue );
+}
+
+void SE_ParseError( char *format, ... )
+{
+	va_list argptr;
+	static char string[4096];
+
+	va_start (argptr, format);
+	Q_vsnprintf (string, sizeof(string), format, argptr);
+	va_end (argptr);
+
+	Com_Printf("ERROR: %s, line %d: %s\n", se_parsename, se_lines, string);
+}
+
+void SE_ParseWarning( char *format, ... )
+{
+	va_list argptr;
+	static char string[4096];
+
+	va_start (argptr, format);
+	Q_vsnprintf (string, sizeof(string), format, argptr);
+	va_end (argptr);
+
+	Com_Printf("WARNING: %s, line %d: %s\n", se_parsename, se_lines, string);
+}
+
+static char *SE_SkipWhitespace( char *data, qboolean *hasNewLines ) {
+	int c;
+
+	while( (c = *data) <= ' ') {
+		if( !c ) {
+			return NULL;
+		}
+		if( c == '\n' ) {
+			se_lines++;
+			*hasNewLines = qtrue;
+		}
+		data++;
+	}
+
+	return data;
+}
+
+char *SE_ParseExt( char **data_p, qboolean allowLineBreaks )
+{
+	char *in, *out;
+
+	se_token[0] = 0;
+
+	if( !*data_p ) return se_token;
+
+	in = *data_p;
+	out = se_token;
+
+	if( *in && *in <= '/' ) // skip lot of conditions if *in is regular char
+	{
+		// ignore while whitespace or newline
+		while( *in && *in <= ' ' ) {
+			if( *in++ == '\n') {
+				se_lines++;
+				if( !allowLineBreaks ) {
+					*data_p = in;
+					return se_token;
+				}
+			}
+		}
+
+		// skip comments
+		while( *in == '/' ) {
+			in++;
+			if( *in == '/' ) {
+				in++;
+				while( *in && *in != '\n' ) in++;  // ignore until newline
+				if( *in ) in++;
+			}
+			else if( *in == '*' ) {
+				in++;
+				while( *in && ( *in != '*' || in[1] != '/' ) ) in++;  // ignore until comment close
+				if( *in ) in += 2;
+			}
+			else {
+				*out++ = '/';
+				break;
+			}
+			while( *in && *in <= ' ' ) {
+				if( *in++ == '\n') {
+					se_lines++;
+					if( !allowLineBreaks ) {
+						*data_p = in;
+						return se_token;
+					}
+				}
+			}
+		}
+
+		// handle quoted strings
+		if( *in == '"' ) {
+			in++;
+			while( *in && *in != '"' ) {
+				if( (out-se_token) >= BIG_INFO_STRING-2 ) {
+					SE_ParseWarning( "Token exceeded %d chars, truncated.", BIG_INFO_STRING-2 );
+					break;
+				}
+				*out++ = *in++;
+			}
+			if( *in ) in++;
+			*out = '\0';
+			*data_p = in;
+			return se_token;
+		}
+	}
+
+	// parse a regular word
+	while( *in > ' ' ) {
+		if( (out-se_token) >= BIG_INFO_STRING-1 ) {
+			SE_ParseWarning( "Token exceeded %d chars, truncated.", BIG_INFO_STRING-2 );
+			break;
+		}
+		*out++ = *in++;
+	}
+	*out = '\0';
+	*data_p = ( *in ? in : NULL );	// next text point or NULL if end of text reached
+	return se_token;
+}
+
+void SE_SkipRestOfLine ( char **data ) {
+	char	*p;
+	int		c;
+
+	p = *data;
+	while ( (c = *p++) != 0 ) {
+		if ( c == '\n' ) {
+			se_lines++;
+			break;
+		}
+	}
+
+	*data = p;
+}
+
 static	cvar_t		*se_debug;
 static	cvar_t		*se_language;
 
@@ -169,48 +330,42 @@ void SE_Load( const char *title, const char *language ) {
 
 	text_p = langfile.c;
 
-	COM_BeginParseSession( language );
+	SE_BeginParseSession( language );
 
 	do {
-		token = COM_Parse( &text_p );
+		token = SE_Parse( &text_p );
 		if ( !strcmp( "ENDMARKER", token ) ) {
 			break;
 		}
 		if ( !strcmp( "VERSION", token ) ) {
 			//token = COM_Parse( &text_p );
-			SkipRestOfLine( &text_p );
+			SE_SkipRestOfLine( &text_p );
 			continue;
 		}
 		if ( !strcmp( "CONFIG", token ) ) {
 			//token = COM_Parse( &text_p );
-			SkipRestOfLine( &text_p );
+			SE_SkipRestOfLine( &text_p );
 			continue;
 		}
 		if ( !strcmp( "FILENOTES", token ) ) {
 			//token = COM_Parse( &text_p );
-			SkipRestOfLine( &text_p );
+			SE_SkipRestOfLine( &text_p );
 			continue;
 		}
 		if ( !strcmp( "REFERENCE", token ) ) {
-			token = COM_ParseExt( &text_p, qfalse );
+			token = SE_ParseExt( &text_p, qfalse );
 			Q_strncpyz( reference, va("%s_%s", title, token), MAX_QPATH );
-			token = COM_Parse( &text_p );
+			token = SE_Parse( &text_p );
 			if ( !strcmp( "NOTES", token ) ) {
-				SkipRestOfLine( &text_p );
-#if 0
-				token = COM_Parse( &text_p ); // skip over notes
-				// Fixme MENUS_FORCEDESC_LIGHT and MENUSFORCEDESC_DARK have "'s inside of their notes section gay fucks :(
-				if(token && !*token)
-					token = COM_Parse( &text_p ); // skip over notes
-#endif
-				token = COM_Parse( &text_p ); // look for LANG_ENGLISH
+				SE_SkipRestOfLine( &text_p );
+				token = SE_Parse( &text_p ); // look for LANG_ENGLISH
 				if ( !strcmp( "LANG_ENGLISH", token ) ) {
-					token = COM_ParseExt( &text_p, qfalse );
+					token = SE_ParseExt( &text_p, qfalse );
 					Q_strncpyz( translated, token, MAX_TRANS_STRING );
 				}
 			}
 			else if ( !strcmp( "LANG_ENGLISH", token ) ) {
-				token = COM_ParseExt( &text_p, qfalse );
+				token = SE_ParseExt( &text_p, qfalse );
 				Q_strncpyz( translated, token, MAX_TRANS_STRING );
 			}
 
@@ -235,7 +390,7 @@ void SE_Load( const char *title, const char *language ) {
 		}
 	} while ( token );
 
-	COM_BeginParseSession( "" );
+	SE_BeginParseSession( "" );
 
 	FS_FreeFile( langfile.v );
 }
