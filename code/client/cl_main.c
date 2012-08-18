@@ -3205,6 +3205,7 @@ void CL_InitRef( void ) {
 #endif
 	ri.Hunk_AllocateTempMemory = Hunk_AllocateTempMemory;
 	ri.Hunk_FreeTempMemory = Hunk_FreeTempMemory;
+	ri.Hunk_MemoryRemaining = Hunk_MemoryRemaining;
 
 	ri.CM_ClusterPVS = CM_ClusterPVS;
 	ri.CM_DrawDebugSurface = CM_DrawDebugSurface;

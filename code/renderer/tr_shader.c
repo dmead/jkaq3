@@ -3097,7 +3097,7 @@ static void LoadShaderFromBuffer( char *buff )
 		if( nameLength >= MAX_SHADERNAME_LENGTH ) {
 			strncpy( shadername, name, MAX_SHADERNAME_LENGTH );
 			shadername[MAX_SHADERNAME_LENGTH] = '\0';
-			Com_DPrintf( "Warning: Shader name too long '%s'...\n", shadername );
+			ri.Printf( PRINT_DEVELOPER, "Warning: Shader name too long '%s'...\n", shadername );
 			continue;
 		}
 
@@ -3373,8 +3373,8 @@ void R_InitShaders( void ) {
 #ifdef USE_NEW_SHADER_HASH
 	// drakkar - profiling shader parse session
 	COM_BeginParseSession( "R_InitShaders" );
-	time = Sys_Milliseconds();
-	mem = Hunk_MemoryRemaining();
+	time = ri.Milliseconds();
+	mem = ri.Hunk_MemoryRemaining();
 	fileShaderCount = 0;
 	shaderCount = 0;
 	// !drakkar
@@ -3393,15 +3393,15 @@ void R_InitShaders( void ) {
 
 #ifdef USE_NEW_SHADER_HASH
 // drakkar - print profiling info
-	time = Sys_Milliseconds() - time;
-	mem = mem - Hunk_MemoryRemaining();
+	time = ri.Milliseconds() - time;
+	mem = mem - ri.Hunk_MemoryRemaining();
 	ri.Printf( PRINT_ALL, "-------------------------\n" );
 	ri.Printf( PRINT_ALL, "%d shader files read \n", fileShaderCount );
 	ri.Printf( PRINT_ALL, "%d shaders found\n", shaderCount );
 	ri.Printf( PRINT_ALL, "%d code lines\n", COM_GetCurrentParseLine() );	
 	ri.Printf( PRINT_ALL, "%.2f MB shader data\n", mem/1024.0f/1024.0f );
 	ri.Printf( PRINT_ALL, "%.3f seconds\n", time/1000.0f );
-	ri.Printf( PRINT_ALL, "-------------------------\n\n" );
+	ri.Printf( PRINT_ALL, "-------------------------\n" );
 	COM_BeginParseSession( "" );
 	// !drakkar
 #endif
