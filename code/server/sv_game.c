@@ -562,12 +562,10 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 		botlib_export->ea.EA_Attack( args[1] );
 		return 0;
 	case BOTLIB_EA_ALT_ATTACK:
-		// TODO
-		botlib_export->ea.EA_Attack( args[1] );
+		botlib_export->ea.EA_Alt_Attack( args[1] );
 		return 0;
 	case BOTLIB_EA_FORCEPOWER:
-		// TODO
-		//botlib_export->ea.EA_ForcePower( args[1] );
+		botlib_export->ea.EA_ForcePower( args[1] );
 		return 0;
 	case BOTLIB_EA_USE:
 		botlib_export->ea.EA_Use( args[1] );
