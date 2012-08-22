@@ -91,6 +91,8 @@ Doing that because I couldn't get to RAWINPUT through SDL_SYSWMEVENT //run
 http://lists.libsdl.org/pipermail/sdl-libsdl.org/2005-February/048704.html
 */
 
+int rawMouseButtonMap[5] = {A_MOUSE1, A_MOUSE2, A_MOUSE3, A_MOUSE4, A_MOUSE5};
+
 static LONG WINAPI RawWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -104,9 +106,9 @@ static LONG WINAPI RawWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			if (mouseActive) {
 				for (i=0; i<5; i++) {
 					if (ri.data.mouse.ulButtons & (1<<(i*2))) {
-						Com_QueueEvent(0, SE_KEY, A_MOUSE1+i, qtrue, 0, NULL);
+						Com_QueueEvent(0, SE_KEY, rawMouseButtonMap[i], qtrue, 0, NULL);
 					} else if (ri.data.mouse.ulButtons & (1<<(i*2+1))) {
-						Com_QueueEvent(0, SE_KEY, A_MOUSE1+i, qfalse, 0, NULL);
+						Com_QueueEvent(0, SE_KEY, rawMouseButtonMap[i], qfalse, 0, NULL);
 					}
 				}
 				if (ri.data.mouse.lLastX || ri.data.mouse.lLastY) {
