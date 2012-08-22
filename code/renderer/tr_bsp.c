@@ -1668,9 +1668,12 @@ R_LoadLightGrid
 void R_LoadLightGrid( lump_t *l ) {
 	int		i;
 	vec3_t	maxs;
-	int		numGridPoints;
 	world_t	*w;
 	float	*wMins, *wMaxs;
+	//dgrid_t	*in;
+	//bgridpoint_t *gridPoint;
+
+	ri.Printf(PRINT_ALL, "...loading light grid\n");
 
 	w = &s_worldData;
 
@@ -1687,7 +1690,22 @@ void R_LoadLightGrid( lump_t *l ) {
 		w->lightGridBounds[i] = (maxs[i] - w->lightGridOrigin[i])/w->lightGridSize[i] + 1;
 	}
 
-	numGridPoints = w->lightGridBounds[0] * w->lightGridBounds[1] * w->lightGridBounds[2];
+	w->numLightGridPoints = w->lightGridBounds[0] * w->lightGridBounds[1] * w->lightGridBounds[2];
+
+	ri.Printf(PRINT_ALL, "grid size (%i %i %i)\n", (int)w->lightGridSize[0], (int)w->lightGridSize[1],
+				  (int)w->lightGridSize[2]);
+	ri.Printf(PRINT_ALL, "grid bounds (%i %i %i)\n", (int)w->lightGridBounds[0], (int)w->lightGridBounds[1],
+				  (int)w->lightGridBounds[2]);
+
+	if(l->filelen != w->numLightGridPoints * sizeof(dgrid_t))
+	{
+		ri.Printf(PRINT_WARNING, "WARNING: light grid mismatch\n");
+		w->lightGridData = NULL;
+		//w->lightGrid = NULL;
+		return;
+	}
+
+#if 0
 	
 	//if ( l->filelen != numGridPoints * 8 ) {
 	//	ri.Printf( PRINT_WARNING, "WARNING: light grid array mismatch\n" );
@@ -1703,6 +1721,7 @@ void R_LoadLightGrid( lump_t *l ) {
 		R_ColorShiftLightingBytes( &w->lightGridData[i*8], &w->lightGridData[i*8] );
 		R_ColorShiftLightingBytes( &w->lightGridData[i*8+3], &w->lightGridData[i*8+3] );
 	}
+#endif
 }
 
 void R_LoadLightArray( lump_t *l ) {
@@ -1820,18 +1839,19 @@ qboolean R_GetEntityToken( char *buffer, int size ) {
 	/* JKA:
 	CGame calls this when it should restart its entry point; CG_SpawnCGameOnlyEnts
 	*/
-	if( buffer == NULL && size == -1 ) {
-		s_worldData.entityParsePoint = s_worldData.entityString;
-		return qfalse;
-	}
-
-	s = COM_Parse( &s_worldData.entityParsePoint );
-	Q_strncpyz( buffer, s, size );
-	if ( !s_worldData.entityParsePoint || !s[0] ) {
-		s_worldData.entityParsePoint = s_worldData.entityString;
-		return qfalse;
-	} else {
+	if( size == -1 ) {
+		tr.world->entityParsePoint = tr.world->entityString;
 		return qtrue;
+	}
+	else {
+		s = COM_Parse( &s_worldData.entityParsePoint );
+		Q_strncpyz( buffer, s, size );
+		if ( !s_worldData.entityParsePoint || !s[0] ) {
+			s_worldData.entityParsePoint = s_worldData.entityString;
+			return qfalse;
+		} else {
+			return qtrue;
+		}
 	}
 }
 
@@ -1866,7 +1886,7 @@ void RE_LoadWorldMap( const char *name ) {
 	tr.worldMapLoaded = qtrue;
 
 	// load it
-    ri.FS_ReadFile( name, &buffer.v );
+	ri.FS_ReadFile( name, &buffer.v );
 	if ( !buffer.b ) {
 		ri.Error (ERR_DROP, "RE_LoadWorldMap: %s not found", name);
 	}
