@@ -867,6 +867,14 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 		strcpy(VMA(3), "models/players/_humanoid/_humanoid");
 		return 0;
 
+	case G_ICARUS_VALIDENT:
+		//qboolean trap_ICARUS_ValidEnt( gentity_t *ent )
+		return qtrue;
+
+	case G_ICARUS_ISINITIALIZED:
+		//qboolean trap_ICARUS_IsInitialized( int entID )
+		return qtrue;
+
 	default:
 		return 0;
 		//Com_Error( ERR_DROP, "Bad game system trap: %ld", (long int) args[0] );
