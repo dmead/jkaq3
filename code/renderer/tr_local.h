@@ -775,10 +775,13 @@ typedef struct {
 	vec3_t		lightGridSize;
 	vec3_t		lightGridInverseSize;
 	int			lightGridBounds[3];
-	byte		*lightGridData;
-	//bgridpoint_t	*lightGridData;
-	//dgrid_t		*lightGrid;
+	dgrid_t		*lightGridData;
 	int			numLightGridPoints;
+	dgrid_t		**lightGridArray;
+	int			numLightGridArrayItems;
+
+	float		ambientScale;
+	vec3_t		ambientColor;
 
 
 	int			numClusters;
@@ -949,6 +952,11 @@ typedef struct {
 	trRefEntity_t	entity2D;	// currentEntity will point at this when doing 2D rendering
 } backEndState_t;
 
+typedef struct
+{
+	float rgb[3];						// 0.0 - 2.0
+} lightstyle_t;
+
 /*
 ** trGlobals_t 
 **
@@ -992,6 +1000,8 @@ typedef struct {
 
 	int						numLightmaps;
 	image_t					**lightmaps;
+
+	lightstyle_t			lightStyles[MAX_LIGHT_STYLES];
 
 	trRefEntity_t			*currentEntity;
 	trRefEntity_t			worldEntity;		// point currentEntity at this when rendering world
@@ -1052,6 +1062,8 @@ typedef struct {
 	float					inverseSawToothTable[FUNCTABLE_SIZE];
 	float					noiseTable[FUNCTABLE_SIZE];
 	float					fogTable[FOG_TABLE_SIZE];
+
+	float					sinTableByte[256];
 
 	// JKA: variable to determine if current shader uses 'notc'
 	qboolean				allowCompression;

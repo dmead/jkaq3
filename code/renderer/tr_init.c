@@ -1217,6 +1217,9 @@ void R_Init( void ) {
 		}
 	}
 
+	for( i = 0; i < 256; i++ )
+		tr.sinTableByte[i] = sin( (float)i / 255.0 * M_TWOPI );
+
 	R_InitFogTable();
 
 	R_Register();

@@ -23,6 +23,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
+/*
+* R_InitLightStyles
+*/
+void R_InitLightStyles( void )
+{
+	int i;
+
+	for( i = 0; i < MAX_LIGHT_STYLES; i++ )
+	{
+		tr.lightStyles[i].rgb[0] = 1;
+		tr.lightStyles[i].rgb[1] = 1;
+		tr.lightStyles[i].rgb[2] = 1;
+	}
+}
+
 #define	DLIGHT_AT_RADIUS		16
 // at the edge of a dlight's influence, this amount of light will be added
 
@@ -118,6 +133,23 @@ extern	cvar_t	*r_directedScale;
 extern	cvar_t	*r_debugLight;
 
 /*
+* R_LatLongToNorm
+*/
+void R_LatLongToNorm( const byte latlong[2], vec3_t out )
+{
+	float sin_a, sin_b, cos_a, cos_b;
+
+	cos_a = tr.sinTableByte[( latlong[0] + 64 ) & 255];
+	sin_a = tr.sinTableByte[latlong[0]];
+	cos_b = tr.sinTableByte[( latlong[1] + 64 ) & 255];
+	sin_b = tr.sinTableByte[latlong[1]];
+
+	VectorSet( out, cos_b * sin_a, sin_b * sin_a, cos_a );
+}
+
+#define bound( a, b, c ) ( ( a ) >= ( c ) ? ( a ) : ( b ) < ( a ) ? ( a ) : ( b ) > ( c ) ? ( c ) : ( b ) )
+
+/*
 =================
 R_SetupEntityLightingGrid
 
@@ -125,13 +157,22 @@ R_SetupEntityLightingGrid
 */
 static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 	vec3_t	lightOrigin;
-	int		pos[3];
-	int		i, j;
-	byte	*gridData;
-	float	frac[3];
-	int		gridStep[3];
+	//int		pos[3];
+
+	//byte	*gridData;
+	//float	frac[3];
+	//int		gridStep[3];
 	vec3_t	direction;
-	float	totalFactor;
+	//float	totalFactor;
+
+	int		i, j;
+	int		k, s;
+	int		vi[3], elem[4];
+	float	t[8];
+	vec3_t	vf, vf2, tdir;
+	vec_t	*gridSize;
+	int		*gridBounds;
+	static dgrid_t lightarray[8];
 
 	if ( ent->e.renderfx & RF_LIGHTING_ORIGIN ) {
 		// seperate lightOrigins are needed so an object that is
@@ -143,6 +184,93 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 	}
 
 	VectorSubtract( lightOrigin, tr.world->lightGridOrigin, lightOrigin );
+
+	gridSize = tr.world->lightGridSize;
+	gridBounds = tr.world->lightGridBounds;
+
+	for( i = 0; i < 3; i++ )
+	{
+		vf[i] = lightOrigin[i] * tr.world->lightGridInverseSize[i];
+		vi[i] = (int)vf[i];
+		vf[i] = vf[i] - floor( vf[i] );
+		vf2[i] = 1.0f - vf[i];
+	}
+
+	elem[0] = vi[2] * gridBounds[3] + vi[1] * gridBounds[0] + vi[0];
+	elem[1] = elem[0] + gridBounds[0];
+	elem[2] = elem[0] + gridBounds[3];
+	elem[3] = elem[2] + gridBounds[0];
+
+	for( i = 0; i < 4; i++ )
+	{
+		lightarray[i*2+0] = *tr.world->lightGridArray[bound( 0, elem[i]+0, tr.world->numLightGridArrayItems-1)];
+		lightarray[i*2+1] = *tr.world->lightGridArray[bound( 0, elem[i]+1, tr.world->numLightGridArrayItems-1)];
+	}
+
+	VectorClear( ent->ambientLight );
+	VectorClear( ent->directedLight );
+	VectorClear( direction );
+
+	for( i = 0; i < 4; i++ )
+	{
+		R_LatLongToNorm( lightarray[i*2].latLong, tdir );
+		VectorScale( tdir, t[i*2], tdir );
+		for( k = 0; k < MAXLIGHTMAPS && ( s = lightarray[i*2].styles[k] ) != 255; k++ )
+		{
+			direction[0] += tr.lightStyles[s].rgb[0] * tdir[0];
+			direction[1] += tr.lightStyles[s].rgb[1] * tdir[1];
+			direction[2] += tr.lightStyles[s].rgb[2] * tdir[2];
+		}
+
+		R_LatLongToNorm( lightarray[i*2+1].latLong, tdir );
+		VectorScale( tdir, t[i*2+1], tdir );
+		for( k = 0; k < MAXLIGHTMAPS && ( s = lightarray[i*2+1].styles[k] ) != 255; k++ )
+		{
+			direction[0] += tr.lightStyles[s].rgb[0] * tdir[0];
+			direction[1] += tr.lightStyles[s].rgb[1] * tdir[1];
+			direction[2] += tr.lightStyles[s].rgb[2] * tdir[2];
+		}
+	}
+
+	for( j = 0; j < 3; j++ )
+	{
+		//if( ambient )
+		{
+			for( i = 0; i < 4; i++ )
+			{
+				for( k = 0; k < MAXLIGHTMAPS; k++ )
+				{
+					if( ( s = lightarray[i*2].styles[k] ) != 255 )
+						ent->ambientLight[j] += t[i*2] * lightarray[i*2].ambientLight[k][j] * tr.lightStyles[s].rgb[j];
+					if( ( s = lightarray[i*2+1].styles[k] ) != 255 )
+						ent->ambientLight[j] += t[i*2+1] * lightarray[i*2+1].ambientLight[k][j] * tr.lightStyles[s].rgb[j];
+				}
+			}
+		}
+		//if( diffuse || radius )
+		{
+			for( i = 0; i < 4; i++ )
+			{
+				for( k = 0; k < MAXLIGHTMAPS; k++ )
+				{
+					if( ( s = lightarray[i*2].styles[k] ) != 255 )
+						ent->directedLight[j] += t[i*2] * lightarray[i*2].directLight[k][j] * tr.lightStyles[s].rgb[j];
+					if( ( s = lightarray[i*2+1].styles[k] ) != 255 )
+						ent->directedLight[j] += t[i*2+1] * lightarray[i*2+1].directLight[k][j] * tr.lightStyles[s].rgb[j];
+				}
+			}
+		}
+	}
+
+	VectorScale( ent->ambientLight, r_ambientScale->value, ent->ambientLight );
+	VectorScale( ent->directedLight, r_directedScale->value, ent->directedLight );
+
+	VectorNormalize2( direction, ent->lightDir );
+
+#if 0
+
+
+
 	for ( i = 0 ; i < 3 ; i++ ) {
 		float	v;
 
@@ -239,6 +367,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 	VectorScale( ent->directedLight, r_directedScale->value, ent->directedLight );
 
 	VectorNormalize2( direction, ent->lightDir );
+#endif
 }
 
 
@@ -308,7 +437,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent ) {
 
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
 	if ( !(refdef->rdflags & RDF_NOWORLDMODEL ) 
-		&& tr.world->lightGridData ) {
+		&& tr.world->lightGridData && tr.world->numLightGridPoints ) {
 		R_SetupEntityLightingGrid( ent );
 	} else {
 		ent->ambientLight[0] = ent->ambientLight[1] = 
