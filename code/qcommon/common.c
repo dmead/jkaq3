@@ -73,6 +73,7 @@ cvar_t	*com_version;
 cvar_t	*com_blood;
 cvar_t	*com_buildScript;	// for automated data building scripts
 cvar_t	*com_introPlayed;
+cvar_t	*com_nomodcompat;	// set to 1 to indicate modules are run by the new engine.
 cvar_t	*com_bootlogo;
 cvar_t	*cl_paused;
 cvar_t	*sv_paused;
@@ -92,7 +93,7 @@ cvar_t	*com_protocol;
 cvar_t	*com_legacyprotocol;
 #endif
 cvar_t	*com_basegame;
-cvar_t  *com_homepath;
+cvar_t	*com_homepath;
 cvar_t	*com_busyWait;
 
 #if idx64
@@ -2642,7 +2643,8 @@ void Com_Init( char *commandLine ) {
 	Cvar_Get("com_errorMessage", "", CVAR_ROM | CVAR_NORESTART);
 
 	com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE);
-	com_bootlogo    = Cvar_Get( "com_bootlogo", "1", CVAR_ARCHIVE );
+	com_nomodcompat = Cvar_Get( "com_nomodcompat", "1", CVAR_ROM);
+	com_bootlogo    = Cvar_Get( "com_bootlogo", "1", CVAR_ARCHIVE);
 
 	s = va("%s %s %s", Q3_VERSION, PLATFORM_STRING, __DATE__ );
 	com_version = Cvar_Get ("version", s, CVAR_ROM | CVAR_SERVERINFO );
