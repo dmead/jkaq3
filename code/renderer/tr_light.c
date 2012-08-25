@@ -23,9 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-/*
-* R_InitLightStyles
-*/
 void R_InitLightStyles( void )
 {
 	int i;
@@ -132,9 +129,6 @@ extern	cvar_t	*r_ambientScale;
 extern	cvar_t	*r_directedScale;
 extern	cvar_t	*r_debugLight;
 
-/*
-* R_LatLongToNorm
-*/
 void R_LatLongToNorm( const byte latlong[2], vec3_t out )
 {
 	float sin_a, sin_b, cos_a, cos_b;

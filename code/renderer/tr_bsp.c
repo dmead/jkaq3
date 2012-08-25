@@ -1676,8 +1676,6 @@ void R_LoadLightGrid( lump_t *l ) {
 	float	*wMins, *wMaxs;
 	dgrid_t	*in, *out;
 
-	ri.Printf(PRINT_ALL, "...loading light grid\n");
-
 	w = &s_worldData;
 
 	w->lightGridInverseSize[0] = 1.0f / w->lightGridSize[0];
@@ -1692,11 +1690,6 @@ void R_LoadLightGrid( lump_t *l ) {
 		maxs[i] = w->lightGridSize[i] * floor( wMaxs[i] / w->lightGridSize[i] );
 		w->lightGridBounds[i] = (maxs[i] - w->lightGridOrigin[i])/w->lightGridSize[i] + 1;
 	}
-
-	ri.Printf(PRINT_ALL, "grid size (%i %i %i)\n", (int)w->lightGridSize[0], (int)w->lightGridSize[1],
-				  (int)w->lightGridSize[2]);
-	ri.Printf(PRINT_ALL, "grid bounds (%i %i %i)\n", (int)w->lightGridBounds[0], (int)w->lightGridBounds[1],
-				  (int)w->lightGridBounds[2]);
 
 	in = (void *)(fileBase + l->fileofs);
 	if(l->filelen % sizeof(*in))
@@ -1729,126 +1722,13 @@ void R_LoadLightArray( lump_t *l ) {
 	w->lightGridArray = out;
 	w->numLightGridArrayItems = count;
 
-	for( i = 0; i < count; i++, in++, out++ )
-	{
+	for ( i = 0 ; i < count ; i++, in++, out++ ) {
 		index = LittleShort( *in );
 		if( index >= (unsigned)w->numLightGridPoints ) {
 			ri.Error(ERR_DROP, "LoadMap: funny grid index(%i):%i in %s", i, index, s_worldData.name);
 		}
 		*out = w->lightGridData + index;
 	}
-#if 0
-	int		i, j, k;
-	world_t	*w;
-	dgrid_t	*in;
-	bgridpoint_t *gridPoint;
-	float	lat, lng;
-	int		gridStep[3];
-	int		pos[3];
-	float	posFloat[3];
-
-	w = &s_worldData;
-
-	if ( l->filelen != w->numLightGridPoints * sizeof(unsigned short) ) {
-		ri.Printf( PRINT_WARNING, "WARNING: light grid array mismatch\n" );
-		w->lightGridData = NULL;
-		return;
-	}
-
-#if 0
-
-	in = (void *)(fileBase + l->fileofs);
-	if(l->filelen % sizeof(unsigned short))
-		ri.Error(ERR_DROP, "LoadMap: funny lump size in %s", s_worldData.name);
-
-	gridPoint = ri.Hunk_Alloc(w->numLightGridPoints * sizeof(*gridPoint), h_low);
-	w->lightGridData = gridPoint;
-
-	for(i = 0; i < w->numLightGridPoints; i++, in++, gridPoint++)
-	{
-		byte		tmpAmbient[4];
-		byte		tmpDirected[4];
-
-		if(!in)
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: i=%i in is NULL\n", i);
-		}
-
-		if(!gridPoint)
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: i=%i gridPoint is NULL\n", i);
-		}
-
-		tmpAmbient[0] = in->ambientLight[0][0];
-		tmpAmbient[1] = in->ambientLight[0][1];
-		tmpAmbient[2] = in->ambientLight[0][2];
-		tmpAmbient[3] = 255;
-
-		tmpDirected[0] = in->directLight[0][0];
-		tmpDirected[1] = in->directLight[0][1];
-		tmpDirected[2] = in->directLight[0][2];
-		tmpDirected[3] = 255;
-
-		R_ColorShiftLightingBytes(tmpAmbient, tmpAmbient);
-		R_ColorShiftLightingBytes(tmpDirected, tmpDirected);
-
-		for(j = 0; j < 3; j++)
-		{
-			gridPoint->ambientColor[j] = tmpAmbient[j] * (1.0f / 255.0f);
-			gridPoint->directedColor[j] = tmpDirected[j] * (1.0f / 255.0f);
-		}
-
-		gridPoint->ambientColor[3] = 1.0f;
-		gridPoint->directedColor[3] = 1.0f;
-
-		// standard spherical coordinates to cartesian coordinates conversion
-		
-		// decode X as cos( lat ) * sin( long )
-		// decode Y as sin( lat ) * sin( long )
-		// decode Z as cos( long )
-
-		// RB: having a look in NormalToLatLong used by q3map2 shows the order of latLong
-
-		// Lat = 0 at (1,0,0) to 360 (-1,0,0), encoded in 8-bit sine table format
-		// Lng = 0 at (0,0,1) to 180 (0,0,-1), encoded in 8-bit sine table format
-
-		lat = DEG2RAD(in->latLong[1] * (360.0f / 255.0f));
-		lng = DEG2RAD(in->latLong[0] * (360.0f / 255.0f));
-
-		gridPoint->direction[0] = cos(lat) * sin(lng);
-		gridPoint->direction[1] = sin(lat) * sin(lng);
-		gridPoint->direction[2] = cos(lng);
-	}
-
-	// calculate grid point positions
-	gridStep[0] = 1;
-	gridStep[1] = w->lightGridBounds[0];
-	gridStep[2] = w->lightGridBounds[0] * w->lightGridBounds[1];
-
-	for(i = 0; i < w->lightGridBounds[0]; i += 1)
-	{
-		for(j = 0; j < w->lightGridBounds[1]; j += 1)
-		{
-			for(k = 0; k < w->lightGridBounds[2]; k += 1)
-			{
-				pos[0] = i;
-				pos[1] = j;
-				pos[2] = k;
-
-				posFloat[0] = i * w->lightGridSize[0];
-				posFloat[1] = j * w->lightGridSize[1];
-				posFloat[2] = k * w->lightGridSize[2];
-
-				gridPoint = w->lightGridData + pos[0] * gridStep[0] + pos[1] * gridStep[1] + pos[2] * gridStep[2];
-
-				VectorAdd(posFloat, w->lightGridOrigin, gridPoint->origin);
-			}
-		}
-	}
-
-	ri.Printf(PRINT_ALL, "%i light grid points created\n", w->numLightGridPoints);
-#endif
-#endif
 }
 
 void R_GetDistanceCull( float *value ) {
@@ -1962,9 +1842,6 @@ R_GetEntityToken
 qboolean R_GetEntityToken( char *buffer, int size ) {
 	const char	*s;
 
-	/* JKA:
-	CGame calls this when it should restart its entry point; CG_SpawnCGameOnlyEnts
-	*/
 	if( size == -1 ) {
 		tr.world->entityParsePoint = tr.world->entityString;
 		return qtrue;
