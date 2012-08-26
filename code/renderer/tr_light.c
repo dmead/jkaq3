@@ -177,8 +177,6 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 		VectorCopy( ent->e.origin, lightOrigin );
 	}
 
-	/* FIXME THIS CAUSES NEGATIVE LARGE NUMBERS IN THE ENT->*LIGHT STUFFS!? WRAP? */
-
 	gridSize = tr.world->lightGridSize;
 	gridMins = tr.world->lightGridMins;
 	gridBounds = tr.world->lightGridBounds;
@@ -201,6 +199,15 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 		lightarray[i*2+0] = *tr.world->lightGridArray[bound( 0, elem[i]+0, tr.world->numLightGridArrayItems-1)];
 		lightarray[i*2+1] = *tr.world->lightGridArray[bound( 0, elem[i]+1, tr.world->numLightGridArrayItems-1)];
 	}
+
+	t[0] = vf2[0] * vf2[1] * vf2[2];
+	t[1] = vf[0] * vf2[1] * vf2[2];
+	t[2] = vf2[0] * vf[1] * vf2[2];
+	t[3] = vf[0] * vf[1] * vf2[2];
+	t[4] = vf2[0] * vf2[1] * vf[2];
+	t[5] = vf[0] * vf2[1] * vf[2];
+	t[6] = vf2[0] * vf[1] * vf[2];
+	t[7] = vf[0] * vf[1] * vf[2];
 
 	VectorClear( ent->ambientLight );
 	VectorClear( ent->directedLight );
