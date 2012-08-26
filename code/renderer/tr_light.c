@@ -164,7 +164,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 	int		vi[3], elem[4];
 	float	t[8];
 	vec3_t	vf, vf2, tdir;
-	vec_t	*gridSize;
+	vec_t	*gridSize, *gridMins;
 	int		*gridBounds;
 	static dgrid_t lightarray[8];
 
@@ -177,14 +177,15 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 		VectorCopy( ent->e.origin, lightOrigin );
 	}
 
-	VectorSubtract( lightOrigin, tr.world->lightGridOrigin, lightOrigin );
+	/* FIXME THIS CAUSES NEGATIVE LARGE NUMBERS IN THE ENT->*LIGHT STUFFS!? WRAP? */
 
 	gridSize = tr.world->lightGridSize;
+	gridMins = tr.world->lightGridMins;
 	gridBounds = tr.world->lightGridBounds;
 
 	for( i = 0; i < 3; i++ )
 	{
-		vf[i] = lightOrigin[i] * tr.world->lightGridInverseSize[i];
+		vf[i] = ( lightOrigin[i] - gridMins[i] ) / gridSize[i];
 		vi[i] = (int)vf[i];
 		vf[i] = vf[i] - floor( vf[i] );
 		vf2[i] = 1.0f - vf[i];
@@ -263,7 +264,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 
 #if 0
 
-
+	//VectorSubtract( lightOrigin, tr.world->lightGridOrigin, lightOrigin );
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		float	v;

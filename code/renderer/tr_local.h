@@ -771,6 +771,16 @@ typedef struct {
 	int			numfogs;
 	fog_t		*fogs;
 
+	vec3_t		lightGridSize;
+	vec3_t		lightGridMins;
+	int			lightGridBounds[4];
+	dgrid_t		*lightGridData;
+	int			numLightGridPoints;
+	dgrid_t		**lightGridArray;
+	int			numLightGridArrayItems;
+
+#if 0
+
 	vec3_t		lightGridOrigin;
 	vec3_t		lightGridSize;
 	vec3_t		lightGridInverseSize;
@@ -779,6 +789,8 @@ typedef struct {
 	int			numLightGridPoints;
 	dgrid_t		**lightGridArray;
 	int			numLightGridArrayItems;
+
+#endif
 
 	float		ambientScale;
 	vec3_t		ambientColor;

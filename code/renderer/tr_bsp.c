@@ -1671,25 +1671,40 @@ R_LoadLightGrid
 */
 void R_LoadLightGrid( lump_t *l ) {
 	int		i, count;
-	vec3_t	maxs;
 	world_t	*w;
 	float	*wMins, *wMaxs;
 	dgrid_t	*in, *out;
 
 	w = &s_worldData;
+	wMins = w->bmodels[0].bounds[0];
+	wMaxs = w->bmodels[0].bounds[1];
+
+	for( i = 0; i < 3; i++ )
+	{
+		vec3_t maxs;
+
+		w->lightGridMins[i] = w->lightGridSize[i] * ceil( ( wMins[i] + 1 ) / w->lightGridSize[i] );
+		maxs[i] = w->lightGridSize[i] *floor( ( wMaxs[i] - 1 ) / w->lightGridSize[i] );
+		w->lightGridBounds[i] = ( maxs[i] - w->lightGridMins[i] ) / w->lightGridSize[i];
+		w->lightGridBounds[i] = MAX( w->lightGridBounds[i], 0 ) + 1;
+	}
+	w->lightGridBounds[3] = w->lightGridBounds[1] * w->lightGridBounds[0];
+
+#if 0
 
 	w->lightGridInverseSize[0] = 1.0f / w->lightGridSize[0];
 	w->lightGridInverseSize[1] = 1.0f / w->lightGridSize[1];
 	w->lightGridInverseSize[2] = 1.0f / w->lightGridSize[2];
 
-	wMins = w->bmodels[0].bounds[0];
-	wMaxs = w->bmodels[0].bounds[1];
+
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		w->lightGridOrigin[i] = w->lightGridSize[i] * ceil( wMins[i] / w->lightGridSize[i] );
 		maxs[i] = w->lightGridSize[i] * floor( wMaxs[i] / w->lightGridSize[i] );
 		w->lightGridBounds[i] = (maxs[i] - w->lightGridOrigin[i])/w->lightGridSize[i] + 1;
 	}
+
+#endif
 
 	in = (void *)(fileBase + l->fileofs);
 	if(l->filelen % sizeof(*in))
