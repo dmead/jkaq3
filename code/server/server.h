@@ -111,6 +111,7 @@ typedef struct {
 	int				areabytes;
 	byte			areabits[MAX_MAP_AREA_BYTES];		// portalarea visibility bits
 	playerState_t	ps;
+	playerState_t	vps; //vehicle I'm riding's playerstate (if applicable) -rww
 	int				num_entities;
 	int				first_entity;		// into the circular sv_packet_entities[]
 										// the entities MUST be in increasing state number
