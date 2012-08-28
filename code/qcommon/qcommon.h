@@ -752,6 +752,8 @@ void Field_AutoComplete( field_t *edit );
 void Field_CompleteKeyname( void );
 void Field_CompleteFilename( const char *dir,
 		const char *ext, qboolean stripExt, qboolean allowNonPureFilesOnDisk );
+void Field_CompletePlayerID( void );
+void Field_CompletePlayerName( void );
 void Field_CompleteCommand( char *cmd,
 		qboolean doCommands, qboolean doCvars );
 
@@ -1032,6 +1034,9 @@ void SV_PacketEvent( netadr_t from, msg_t *msg );
 int SV_FrameMsec(void);
 qboolean SV_GameCommand( void );
 int SV_SendQueuedPackets(void);
+
+void SV_PlayerIDCompletion( void(*callback)(const char *s) );
+void SV_PlayerNameCompletion( void(*callback)(const char *s) );
 
 //
 // UI interface

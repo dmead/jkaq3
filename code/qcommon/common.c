@@ -3307,6 +3307,28 @@ void Field_CompleteFilename( const char *dir,
 		FS_FilenameCompletion( dir, ext, stripExt, PrintMatches, allowNonPureFilesOnDisk );
 }
 
+void Field_CompletePlayerID( void )
+{
+	matchCount = 0;
+	shortestMatch[ 0 ] = 0;
+
+	SV_PlayerIDCompletion( FindMatches );
+
+	if( !Field_Complete( ) )
+		SV_PlayerIDCompletion( PrintMatches );
+}
+
+void Field_CompletePlayerName( void )
+{
+	matchCount = 0;
+	shortestMatch[ 0 ] = 0;
+
+	SV_PlayerNameCompletion( FindMatches );
+
+	if( !Field_Complete( ) )
+		SV_PlayerNameCompletion( PrintMatches );
+}
+
 /*
 ===============
 Field_CompleteCommand
