@@ -141,8 +141,6 @@ void R_LatLongToNorm( const byte latlong[2], vec3_t out )
 	VectorSet( out, cos_b * sin_a, sin_b * sin_a, cos_a );
 }
 
-#define bound( a, b, c ) ( ( a ) >= ( c ) ? ( a ) : ( b ) < ( a ) ? ( a ) : ( b ) > ( c ) ? ( c ) : ( b ) )
-
 /*
 =================
 R_SetupEntityLightingGrid
@@ -196,8 +194,8 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 
 	for( i = 0; i < 4; i++ )
 	{
-		lightarray[i*2+0] = *tr.world->lightGridArray[bound( 0, elem[i]+0, tr.world->numLightGridArrayItems-1)];
-		lightarray[i*2+1] = *tr.world->lightGridArray[bound( 0, elem[i]+1, tr.world->numLightGridArrayItems-1)];
+		lightarray[i*2+0] = *tr.world->lightGridArray[BOUND( 0, elem[i]+0, tr.world->numLightGridArrayItems-1)];
+		lightarray[i*2+1] = *tr.world->lightGridArray[BOUND( 0, elem[i]+1, tr.world->numLightGridArrayItems-1)];
 	}
 
 	t[0] = vf2[0] * vf2[1] * vf2[2];

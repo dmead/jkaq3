@@ -722,6 +722,10 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 #define MIN(x,y) ((x)<(y)?(x):(y))
 #endif
 
+#ifndef BOUND
+#define BOUND( a, b, c ) ( ( a ) >= ( c ) ? ( a ) : ( b ) < ( a ) ? ( a ) : ( b ) > ( c ) ? ( c ) : ( b ) )
+#endif
+
 //=============================================
 
 float Com_Clamp( float min, float max, float value );
