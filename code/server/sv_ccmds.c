@@ -109,6 +109,11 @@ void SV_PlayerIDCompletion( void(*callback)(const char *s) ) {
 	client_t *cl;
 	int i;
 
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		return;
+	}
+
 	for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ )
 	{
 		if ( !cl->state ) {
@@ -128,6 +133,11 @@ void SV_PlayerNameCompletion( void(*callback)(const char *s) ) {
 	int i;
 	char cleanName[64];
 
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		return;
+	}
+
 	for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ )
 	{
 		if ( !cl->state ) {
@@ -135,7 +145,10 @@ void SV_PlayerNameCompletion( void(*callback)(const char *s) ) {
 		}
 		Q_strncpyz( cleanName, cl->name, sizeof(cleanName) );
 		Q_CleanStr( cleanName );
-		callback( cleanName );
+		if(strstr(cleanName, " "))
+			callback( va("\"%s\"", cleanName ) );
+		else
+			callback( cleanName );
 	}
 }
 
@@ -1404,7 +1417,7 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand ("kicknum", SV_KickNum_f);
 	Cmd_SetCommandCompletionFunc( "kicknum", SV_CompletePlayerID );
 	Cmd_AddCommand ("clientkick", SV_KickNum_f);
-	Cmd_SetCommandCompletionFunc( "clientkick", SV_CompletePlayerName );
+	Cmd_SetCommandCompletionFunc( "clientkick", SV_CompletePlayerID );
 	Cmd_AddCommand ("status", SV_Status_f);
 	Cmd_AddCommand ("serverinfo", SV_Serverinfo_f);
 	Cmd_AddCommand ("systeminfo", SV_Systeminfo_f);
