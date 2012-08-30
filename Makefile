@@ -94,7 +94,7 @@ endif
 export CROSS_COMPILING
 
 ifndef VERSION
-VERSION=1.36
+VERSION=2.0
 endif
 
 ifndef CLIENTBIN
@@ -1967,7 +1967,6 @@ $(B)/$(SERVERBIN)$(FULLBINEXT): $(Q3DOBJ)
 
 Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/cg_main.o \
-  $(B)/$(BASEGAME)/cgame/cg_main.o \
   $(B)/$(BASEGAME)/cgame/bg_g2_utils.o \
   $(B)/$(BASEGAME)/cgame/bg_lib.o \
   $(B)/$(BASEGAME)/cgame/bg_misc.o \
@@ -2038,7 +2037,6 @@ $(B)/$(BASEGAME)/vm/cgame.qvm: $(Q3CGVMOBJ) $(CGDIR)/cg_syscalls.asm $(Q3ASM)
 #############################################################################
 
 MPCGOBJ_ = \
-  $(B)/$(MISSIONPACK)/cgame/cg_main.o \
   $(B)/$(MISSIONPACK)/cgame/cg_main.o \
   $(B)/$(MISSIONPACK)/cgame/bg_g2_utils.o \
   $(B)/$(MISSIONPACK)/cgame/bg_lib.o \
@@ -2112,7 +2110,6 @@ $(B)/$(MISSIONPACK)/vm/cgame.qvm: $(MPCGVMOBJ) $(CGDIR)/cg_syscalls.asm $(Q3ASM)
 #############################################################################
 
 Q3GOBJ_ = \
-  $(B)/$(BASEGAME)/game/g_main.o \
   $(B)/$(BASEGAME)/game/g_main.o \
   $(B)/$(BASEGAME)/game/ai_main.o \
   $(B)/$(BASEGAME)/game/ai_util.o \
@@ -2219,7 +2216,6 @@ $(B)/$(BASEGAME)/vm/jampgame.qvm: $(Q3GVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 #############################################################################
 
 MPGOBJ_ = \
-  $(B)/$(MISSIONPACK)/game/g_main.o \
   $(B)/$(MISSIONPACK)/game/g_main.o \
   $(B)/$(MISSIONPACK)/game/ai_main.o \
   $(B)/$(MISSIONPACK)/game/ai_util.o \
