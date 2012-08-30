@@ -42,13 +42,13 @@ ifndef BUILD_GAME_SO
   BUILD_GAME_SO    =
 endif
 ifndef BUILD_GAME_QVM
-  BUILD_GAME_QVM   =
+  BUILD_GAME_QVM   = 0
 endif
 ifndef BUILD_BASEGAME
   BUILD_BASEGAME =
 endif
 ifndef BUILD_MISSIONPACK
-  BUILD_MISSIONPACK=
+  BUILD_MISSIONPACK= 0
 endif
 
 ifneq ($(PLATFORM),darwin)
@@ -98,15 +98,15 @@ VERSION=1.36
 endif
 
 ifndef CLIENTBIN
-CLIENTBIN=ioquake3
+CLIENTBIN=iojamp
 endif
 
 ifndef SERVERBIN
-SERVERBIN=ioq3ded
+SERVERBIN=iojampded
 endif
 
 ifndef BASEGAME
-BASEGAME=baseq3
+BASEGAME=base
 endif
 
 ifndef BASEGAME_CFLAGS
@@ -225,7 +225,6 @@ CGDIR=$(MOUNT_DIR)/cgame
 BLIBDIR=$(MOUNT_DIR)/botlib
 NDIR=$(MOUNT_DIR)/null
 UIDIR=$(MOUNT_DIR)/ui
-Q3UIDIR=$(MOUNT_DIR)/q3_ui
 JPDIR=$(MOUNT_DIR)/jpeg-8c
 SPEEXDIR=$(MOUNT_DIR)/libspeex
 ZDIR=$(MOUNT_DIR)/zlib
@@ -358,7 +357,7 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu"))
   THREAD_LIBS=-lpthread
   LIBS=-ldl -lm
 
-  CLIENT_LIBS=$(SDL_LIBS)
+  CLIENT_LIBS=$(SDL_LIBS) -lmad
   RENDERER_LIBS = $(SDL_LIBS) -lGL
 
   ifeq ($(USE_OPENAL),1)
@@ -451,6 +450,7 @@ ifeq ($(PLATFORM),darwin)
 
   ifeq ($(USE_LOCAL_HEADERS),1)
     BASE_CFLAGS += -I$(SDLHDIR)/include
+    CLIENT_CFLAGS += -Icode/mad
   endif
 
   # We copy sdlmain before ranlib'ing it so that subversion doesn't think
@@ -568,23 +568,25 @@ ifeq ($(PLATFORM),mingw32)
   RENDERER_LIBS += -lmingw32
   
   ifeq ($(USE_LOCAL_HEADERS),1)
-    CLIENT_CFLAGS += -I$(SDLHDIR)/include
+    CLIENT_CFLAGS += -I$(SDLHDIR)/include -Icode/mad
     ifeq ($(ARCH), x86)
     CLIENT_LIBS += $(LIBSDIR)/win32/libSDLmain.a \
-                      $(LIBSDIR)/win32/libSDL.dll.a
+                      $(LIBSDIR)/win32/libSDL.dll.a \
+                      $(LIBSDIR)/win32/libmad.a
     RENDERER_LIBS += $(LIBSDIR)/win32/libSDLmain.a \
                       $(LIBSDIR)/win32/libSDL.dll.a
     SDLDLL=SDL.dll
     else
     CLIENT_LIBS += $(LIBSDIR)/win64/libSDLmain.a \
-                      $(LIBSDIR)/win64/libSDL64.dll.a
+                      $(LIBSDIR)/win64/libSDL64.dll.a \
+                      $(LIBSDIR)/win64/libmad.a
     RENDERER_LIBS += $(LIBSDIR)/win64/libSDLmain.a \
                       $(LIBSDIR)/win64/libSDL64.dll.a
     SDLDLL=SDL64.dll
     endif
   else
     CLIENT_CFLAGS += $(SDL_CFLAGS)
-    CLIENT_LIBS += $(SDL_LIBS)
+    CLIENT_LIBS += $(SDL_LIBS) -lmad
     RENDERER_LIBS += $(SDL_LIBS)
     SDLDLL=SDL.dll
   endif
@@ -877,13 +879,13 @@ ifneq ($(BUILD_GAME_SO),0)
   ifneq ($(BUILD_BASEGAME),0)
     TARGETS += \
 	$(B)/$(BASEGAME)/cgame$(SHLIBNAME) \
-	$(B)/$(BASEGAME)/qagame$(SHLIBNAME) \
+	$(B)/$(BASEGAME)/jampgame$(SHLIBNAME) \
 	$(B)/$(BASEGAME)/ui$(SHLIBNAME)
   endif
   ifneq ($(BUILD_MISSIONPACK),0)
     TARGETS += \
     $(B)/$(MISSIONPACK)/cgame$(SHLIBNAME) \
-    $(B)/$(MISSIONPACK)/qagame$(SHLIBNAME) \
+    $(B)/$(MISSIONPACK)/jampgame$(SHLIBNAME) \
     $(B)/$(MISSIONPACK)/ui$(SHLIBNAME)
   endif
 endif
@@ -893,12 +895,12 @@ ifneq ($(BUILD_GAME_QVM),0)
     ifneq ($(BUILD_BASEGAME),0)
       TARGETS += \
       $(B)/$(BASEGAME)/vm/cgame.qvm \
-      $(B)/$(BASEGAME)/vm/qagame.qvm \
+      $(B)/$(BASEGAME)/vm/jampgame.qvm \
       $(B)/$(BASEGAME)/vm/ui.qvm
 	endif
     ifneq ($(BUILD_MISSIONPACK),0)
       TARGETS += \
-      $(B)/$(MISSIONPACK)/vm/qagame.qvm \
+      $(B)/$(MISSIONPACK)/vm/jampgame.qvm \
       $(B)/$(MISSIONPACK)/vm/cgame.qvm \
       $(B)/$(MISSIONPACK)/vm/ui.qvm
     endif
@@ -992,6 +994,7 @@ BASE_CFLAGS += -Wformat=2 -Wno-format-zero-length -Wformat-security -Wno-format-
 BASE_CFLAGS += -Wstrict-aliasing=2 -Wmissing-format-attribute
 BASE_CFLAGS += -Wdisabled-optimization
 BASE_CFLAGS += -Werror-implicit-function-declaration
+BASE_CFLAGS += -D_JK2
 
 ifeq ($(V),1)
 echo_cmd=@:
@@ -1045,7 +1048,7 @@ endef
 
 define DO_UI_CC
 $(echo_cmd) "UI_CC $<"
-$(Q)$(CC) $(BASEGAME_CFLAGS) -DUI $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
+$(Q)$(CC) $(BASEGAME_CFLAGS) -DUI -DUI_EXPORTS $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
 $(Q)$(DO_QVM_DEP)
 endef
 
@@ -1069,7 +1072,7 @@ endef
 
 define DO_UI_CC_MISSIONPACK
 $(echo_cmd) "UI_CC_MISSIONPACK $<"
-$(Q)$(CC) $(MISSIONPACK_CFLAGS) -DUI $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
+$(Q)$(CC) $(MISSIONPACK_CFLAGS) -DUI -DUI_EXPORTS $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
 $(Q)$(DO_QVM_DEP)
 endef
 
@@ -1399,6 +1402,7 @@ Q3OBJ = \
   $(B)/client/net_chan.o \
   $(B)/client/net_ip.o \
   $(B)/client/huffman.o \
+  $(B)/client/stringed.o \
   \
   $(B)/client/snd_adpcm.o \
   $(B)/client/snd_dma.o \
@@ -1410,6 +1414,7 @@ Q3OBJ = \
   $(B)/client/snd_codec.o \
   $(B)/client/snd_codec_wav.o \
   $(B)/client/snd_codec_ogg.o \
+  $(B)/client/snd_codec_mp3.o \
   \
   $(B)/client/qal.o \
   $(B)/client/snd_openal.o \
@@ -1498,6 +1503,7 @@ Q3ROBJ = \
   $(B)/renderer/tr_marks.o \
   $(B)/renderer/tr_mesh.o \
   $(B)/renderer/tr_model.o \
+  $(B)/renderer/tr_model_ghoul2.o \
   $(B)/renderer/tr_model_iqm.o \
   $(B)/renderer/tr_noise.o \
   $(B)/renderer/tr_scene.o \
@@ -1799,6 +1805,7 @@ Q3DOBJ = \
   $(B)/ded/net_chan.o \
   $(B)/ded/net_ip.o \
   $(B)/ded/huffman.o \
+  $(B)/ded/stringed.o \
   \
   $(B)/ded/q_math.o \
   $(B)/ded/q_shared.o \
@@ -1960,10 +1967,18 @@ $(B)/$(SERVERBIN)$(FULLBINEXT): $(Q3DOBJ)
 
 Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/cg_main.o \
-  $(B)/$(BASEGAME)/cgame/bg_misc.o \
-  $(B)/$(BASEGAME)/cgame/bg_pmove.o \
-  $(B)/$(BASEGAME)/cgame/bg_slidemove.o \
+  $(B)/$(BASEGAME)/cgame/cg_main.o \
+  $(B)/$(BASEGAME)/cgame/bg_g2_utils.o \
   $(B)/$(BASEGAME)/cgame/bg_lib.o \
+  $(B)/$(BASEGAME)/cgame/bg_misc.o \
+  $(B)/$(BASEGAME)/cgame/bg_panimate.o \
+  $(B)/$(BASEGAME)/cgame/bg_pmove.o \
+  $(B)/$(BASEGAME)/cgame/bg_saber.o \
+  $(B)/$(BASEGAME)/cgame/bg_saberLoad.o \
+  $(B)/$(BASEGAME)/cgame/bg_saga.o \
+  $(B)/$(BASEGAME)/cgame/bg_slidemove.o \
+  $(B)/$(BASEGAME)/cgame/bg_vehicleLoad.o \
+  $(B)/$(BASEGAME)/cgame/bg_weapons.o \
   $(B)/$(BASEGAME)/cgame/cg_consolecmds.o \
   $(B)/$(BASEGAME)/cgame/cg_draw.o \
   $(B)/$(BASEGAME)/cgame/cg_drawtools.o \
@@ -1971,19 +1986,40 @@ Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/cg_ents.o \
   $(B)/$(BASEGAME)/cgame/cg_event.o \
   $(B)/$(BASEGAME)/cgame/cg_info.o \
+  $(B)/$(BASEGAME)/cgame/cg_light.o \
   $(B)/$(BASEGAME)/cgame/cg_localents.o \
   $(B)/$(BASEGAME)/cgame/cg_marks.o \
-  $(B)/$(BASEGAME)/cgame/cg_particles.o \
+  $(B)/$(BASEGAME)/cgame/cg_newDraw.o \
   $(B)/$(BASEGAME)/cgame/cg_players.o \
   $(B)/$(BASEGAME)/cgame/cg_playerstate.o \
   $(B)/$(BASEGAME)/cgame/cg_predict.o \
+  $(B)/$(BASEGAME)/cgame/cg_saga.o \
   $(B)/$(BASEGAME)/cgame/cg_scoreboard.o \
   $(B)/$(BASEGAME)/cgame/cg_servercmds.o \
   $(B)/$(BASEGAME)/cgame/cg_snapshot.o \
+  $(B)/$(BASEGAME)/cgame/cg_strap.o \
+  $(B)/$(BASEGAME)/cgame/cg_turret.o \
   $(B)/$(BASEGAME)/cgame/cg_view.o \
+  $(B)/$(BASEGAME)/cgame/cg_weaponinit.o \
   $(B)/$(BASEGAME)/cgame/cg_weapons.o \
+  $(B)/$(BASEGAME)/cgame/fx_blaster.o \
+  $(B)/$(BASEGAME)/cgame/fx_bowcaster.o \
+  $(B)/$(BASEGAME)/cgame/fx_bryarpistol.o \
+  $(B)/$(BASEGAME)/cgame/fx_demp2.o \
+  $(B)/$(BASEGAME)/cgame/fx_disruptor.o \
+  $(B)/$(BASEGAME)/cgame/fx_flechette.o \
+  $(B)/$(BASEGAME)/cgame/fx_force.o \
+  $(B)/$(BASEGAME)/cgame/fx_heavyrepeater.o \
+  $(B)/$(BASEGAME)/cgame/fx_rocketlauncher.o \
   \
-  $(B)/$(BASEGAME)/qcommon/q_math.o \
+  $(B)/$(BASEGAME)/cgame/AnimalNPC.o \
+  $(B)/$(BASEGAME)/cgame/FighterNPC.o \
+  $(B)/$(BASEGAME)/cgame/SpeederNPC.o \
+  $(B)/$(BASEGAME)/cgame/WalkerNPC.o \
+  \
+  $(B)/$(BASEGAME)/cgame/ui_shared.o \
+  \
+  $(B)/$(BASEGAME)/game/q_math.o \
   $(B)/$(BASEGAME)/qcommon/q_shared.o
 
 Q3CGOBJ = $(Q3CGOBJ_) $(B)/$(BASEGAME)/cgame/cg_syscalls.o
@@ -2003,32 +2039,59 @@ $(B)/$(BASEGAME)/vm/cgame.qvm: $(Q3CGVMOBJ) $(CGDIR)/cg_syscalls.asm $(Q3ASM)
 
 MPCGOBJ_ = \
   $(B)/$(MISSIONPACK)/cgame/cg_main.o \
-  $(B)/$(MISSIONPACK)/cgame/bg_misc.o \
-  $(B)/$(MISSIONPACK)/cgame/bg_pmove.o \
-  $(B)/$(MISSIONPACK)/cgame/bg_slidemove.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_main.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_g2_utils.o \
   $(B)/$(MISSIONPACK)/cgame/bg_lib.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_misc.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_panimate.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_pmove.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_saber.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_saberLoad.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_saga.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_slidemove.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_vehicleLoad.o \
+  $(B)/$(MISSIONPACK)/cgame/bg_weapons.o \
   $(B)/$(MISSIONPACK)/cgame/cg_consolecmds.o \
-  $(B)/$(MISSIONPACK)/cgame/cg_newdraw.o \
   $(B)/$(MISSIONPACK)/cgame/cg_draw.o \
   $(B)/$(MISSIONPACK)/cgame/cg_drawtools.o \
   $(B)/$(MISSIONPACK)/cgame/cg_effects.o \
   $(B)/$(MISSIONPACK)/cgame/cg_ents.o \
   $(B)/$(MISSIONPACK)/cgame/cg_event.o \
   $(B)/$(MISSIONPACK)/cgame/cg_info.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_light.o \
   $(B)/$(MISSIONPACK)/cgame/cg_localents.o \
   $(B)/$(MISSIONPACK)/cgame/cg_marks.o \
-  $(B)/$(MISSIONPACK)/cgame/cg_particles.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_newDraw.o \
   $(B)/$(MISSIONPACK)/cgame/cg_players.o \
   $(B)/$(MISSIONPACK)/cgame/cg_playerstate.o \
   $(B)/$(MISSIONPACK)/cgame/cg_predict.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_saga.o \
   $(B)/$(MISSIONPACK)/cgame/cg_scoreboard.o \
   $(B)/$(MISSIONPACK)/cgame/cg_servercmds.o \
   $(B)/$(MISSIONPACK)/cgame/cg_snapshot.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_strap.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_turret.o \
   $(B)/$(MISSIONPACK)/cgame/cg_view.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_weaponinit.o \
   $(B)/$(MISSIONPACK)/cgame/cg_weapons.o \
-  $(B)/$(MISSIONPACK)/ui/ui_shared.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_blaster.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_bowcaster.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_bryarpistol.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_demp2.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_disruptor.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_flechette.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_force.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_heavyrepeater.o \
+  $(B)/$(MISSIONPACK)/cgame/fx_rocketlauncher.o \
   \
-  $(B)/$(MISSIONPACK)/qcommon/q_math.o \
+  $(B)/$(MISSIONPACK)/cgame/AnimalNPC.o \
+  $(B)/$(MISSIONPACK)/cgame/FighterNPC.o \
+  $(B)/$(MISSIONPACK)/cgame/SpeederNPC.o \
+  $(B)/$(MISSIONPACK)/cgame/WalkerNPC.o \
+  \
+  $(B)/$(MISSIONPACK)/cgame/ui_shared.o \
+  \
+  $(B)/$(MISSIONPACK)/game/q_math.o \
   $(B)/$(MISSIONPACK)/qcommon/q_shared.o
 
 MPCGOBJ = $(MPCGOBJ_) $(B)/$(MISSIONPACK)/cgame/cg_syscalls.o
@@ -2050,48 +2113,104 @@ $(B)/$(MISSIONPACK)/vm/cgame.qvm: $(MPCGVMOBJ) $(CGDIR)/cg_syscalls.asm $(Q3ASM)
 
 Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/g_main.o \
-  $(B)/$(BASEGAME)/game/ai_chat.o \
-  $(B)/$(BASEGAME)/game/ai_cmd.o \
-  $(B)/$(BASEGAME)/game/ai_dmnet.o \
-  $(B)/$(BASEGAME)/game/ai_dmq3.o \
+  $(B)/$(BASEGAME)/game/g_main.o \
   $(B)/$(BASEGAME)/game/ai_main.o \
-  $(B)/$(BASEGAME)/game/ai_team.o \
-  $(B)/$(BASEGAME)/game/ai_vcmd.o \
-  $(B)/$(BASEGAME)/game/bg_misc.o \
-  $(B)/$(BASEGAME)/game/bg_pmove.o \
-  $(B)/$(BASEGAME)/game/bg_slidemove.o \
+  $(B)/$(BASEGAME)/game/ai_util.o \
+  $(B)/$(BASEGAME)/game/ai_wpnav.o \
+  $(B)/$(BASEGAME)/game/AnimalNPC.o \
+  $(B)/$(BASEGAME)/game/bg_g2_utils.o \
   $(B)/$(BASEGAME)/game/bg_lib.o \
+  $(B)/$(BASEGAME)/game/bg_misc.o \
+  $(B)/$(BASEGAME)/game/bg_panimate.o \
+  $(B)/$(BASEGAME)/game/bg_pmove.o \
+  $(B)/$(BASEGAME)/game/bg_saber.o \
+  $(B)/$(BASEGAME)/game/bg_saberLoad.o \
+  $(B)/$(BASEGAME)/game/bg_saga.o \
+  $(B)/$(BASEGAME)/game/bg_slidemove.o \
+  $(B)/$(BASEGAME)/game/bg_vehicleLoad.o \
+  $(B)/$(BASEGAME)/game/bg_weapons.o \
+  $(B)/$(BASEGAME)/game/FighterNPC.o \
   $(B)/$(BASEGAME)/game/g_active.o \
   $(B)/$(BASEGAME)/game/g_arenas.o \
   $(B)/$(BASEGAME)/game/g_bot.o \
   $(B)/$(BASEGAME)/game/g_client.o \
   $(B)/$(BASEGAME)/game/g_cmds.o \
   $(B)/$(BASEGAME)/game/g_combat.o \
+  $(B)/$(BASEGAME)/game/g_exphysics.o \
+  $(B)/$(BASEGAME)/game/g_ICARUScb.o \
   $(B)/$(BASEGAME)/game/g_items.o \
+  $(B)/$(BASEGAME)/game/g_log.o \
   $(B)/$(BASEGAME)/game/g_mem.o \
   $(B)/$(BASEGAME)/game/g_misc.o \
   $(B)/$(BASEGAME)/game/g_missile.o \
   $(B)/$(BASEGAME)/game/g_mover.o \
+  $(B)/$(BASEGAME)/game/g_nav.o \
+  $(B)/$(BASEGAME)/game/g_navnew.o \
+  $(B)/$(BASEGAME)/game/g_object.o \
+  $(B)/$(BASEGAME)/game/g_saga.o \
   $(B)/$(BASEGAME)/game/g_session.o \
+  $(B)/$(BASEGAME)/game/g_strap.o \
   $(B)/$(BASEGAME)/game/g_spawn.o \
   $(B)/$(BASEGAME)/game/g_svcmds.o \
   $(B)/$(BASEGAME)/game/g_target.o \
   $(B)/$(BASEGAME)/game/g_team.o \
+  $(B)/$(BASEGAME)/game/g_timer.o \
   $(B)/$(BASEGAME)/game/g_trigger.o \
+  $(B)/$(BASEGAME)/game/g_turret.o \
+  $(B)/$(BASEGAME)/game/g_turret_G2.o \
   $(B)/$(BASEGAME)/game/g_utils.o \
+  $(B)/$(BASEGAME)/game/g_vehicles.o \
+  $(B)/$(BASEGAME)/game/g_vehicleTurret.o \
   $(B)/$(BASEGAME)/game/g_weapon.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Atst.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Default.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Droid.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_GalakMech.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Grenadier.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Howler.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_ImperialProbe.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Interrogator.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Jedi.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Mark1.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Mark2.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_MineMonster.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Rancor.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Remote.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Seeker.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Sentry.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Sniper.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Stormtrooper.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Utils.o \
+  $(B)/$(BASEGAME)/game/NPC_AI_Wampa.o \
+  $(B)/$(BASEGAME)/game/NPC_behavior.o \
+  $(B)/$(BASEGAME)/game/NPC.o \
+  $(B)/$(BASEGAME)/game/NPC_combat.o \
+  $(B)/$(BASEGAME)/game/NPC_goal.o \
+  $(B)/$(BASEGAME)/game/NPC_misc.o \
+  $(B)/$(BASEGAME)/game/NPC_move.o \
+  $(B)/$(BASEGAME)/game/NPC_reactions.o \
+  $(B)/$(BASEGAME)/game/NPC_senses.o \
+  $(B)/$(BASEGAME)/game/NPC_sounds.o \
+  $(B)/$(BASEGAME)/game/NPC_spawn.o \
+  $(B)/$(BASEGAME)/game/NPC_stats.o \
+  $(B)/$(BASEGAME)/game/NPC_utils.o \
+  $(B)/$(BASEGAME)/game/SpeederNPC.o \
+  $(B)/$(BASEGAME)/game/tri_coll_test.o \
+  $(B)/$(BASEGAME)/game/WalkerNPC.o \
+  $(B)/$(BASEGAME)/game/w_force.o \
+  $(B)/$(BASEGAME)/game/w_saber.o \
   \
-  $(B)/$(BASEGAME)/qcommon/q_math.o \
+  $(B)/$(BASEGAME)/game/q_math.o \
   $(B)/$(BASEGAME)/qcommon/q_shared.o
 
 Q3GOBJ = $(Q3GOBJ_) $(B)/$(BASEGAME)/game/g_syscalls.o
 Q3GVMOBJ = $(Q3GOBJ_:%.o=%.asm)
 
-$(B)/$(BASEGAME)/qagame$(SHLIBNAME): $(Q3GOBJ)
+$(B)/$(BASEGAME)/jampgame$(SHLIBNAME): $(Q3GOBJ)
 	$(echo_cmd) "LD $@"
 	$(Q)$(CC) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(Q3GOBJ)
 
-$(B)/$(BASEGAME)/vm/qagame.qvm: $(Q3GVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
+$(B)/$(BASEGAME)/vm/jampgame.qvm: $(Q3GVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 	$(echo_cmd) "Q3ASM $@"
 	$(Q)$(Q3ASM) -o $@ $(Q3GVMOBJ) $(GDIR)/g_syscalls.asm
 
@@ -2101,48 +2220,104 @@ $(B)/$(BASEGAME)/vm/qagame.qvm: $(Q3GVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 
 MPGOBJ_ = \
   $(B)/$(MISSIONPACK)/game/g_main.o \
-  $(B)/$(MISSIONPACK)/game/ai_chat.o \
-  $(B)/$(MISSIONPACK)/game/ai_cmd.o \
-  $(B)/$(MISSIONPACK)/game/ai_dmnet.o \
-  $(B)/$(MISSIONPACK)/game/ai_dmq3.o \
+  $(B)/$(MISSIONPACK)/game/g_main.o \
   $(B)/$(MISSIONPACK)/game/ai_main.o \
-  $(B)/$(MISSIONPACK)/game/ai_team.o \
-  $(B)/$(MISSIONPACK)/game/ai_vcmd.o \
-  $(B)/$(MISSIONPACK)/game/bg_misc.o \
-  $(B)/$(MISSIONPACK)/game/bg_pmove.o \
-  $(B)/$(MISSIONPACK)/game/bg_slidemove.o \
+  $(B)/$(MISSIONPACK)/game/ai_util.o \
+  $(B)/$(MISSIONPACK)/game/ai_wpnav.o \
+  $(B)/$(MISSIONPACK)/game/AnimalNPC.o \
+  $(B)/$(MISSIONPACK)/game/bg_g2_utils.o \
   $(B)/$(MISSIONPACK)/game/bg_lib.o \
+  $(B)/$(MISSIONPACK)/game/bg_misc.o \
+  $(B)/$(MISSIONPACK)/game/bg_panimate.o \
+  $(B)/$(MISSIONPACK)/game/bg_pmove.o \
+  $(B)/$(MISSIONPACK)/game/bg_saber.o \
+  $(B)/$(MISSIONPACK)/game/bg_saberLoad.o \
+  $(B)/$(MISSIONPACK)/game/bg_saga.o \
+  $(B)/$(MISSIONPACK)/game/bg_slidemove.o \
+  $(B)/$(MISSIONPACK)/game/bg_vehicleLoad.o \
+  $(B)/$(MISSIONPACK)/game/bg_weapons.o \
+  $(B)/$(MISSIONPACK)/game/FighterNPC.o \
   $(B)/$(MISSIONPACK)/game/g_active.o \
   $(B)/$(MISSIONPACK)/game/g_arenas.o \
   $(B)/$(MISSIONPACK)/game/g_bot.o \
   $(B)/$(MISSIONPACK)/game/g_client.o \
   $(B)/$(MISSIONPACK)/game/g_cmds.o \
   $(B)/$(MISSIONPACK)/game/g_combat.o \
+  $(B)/$(MISSIONPACK)/game/g_exphysics.o \
+  $(B)/$(MISSIONPACK)/game/g_ICARUScb.o \
   $(B)/$(MISSIONPACK)/game/g_items.o \
+  $(B)/$(MISSIONPACK)/game/g_log.o \
   $(B)/$(MISSIONPACK)/game/g_mem.o \
   $(B)/$(MISSIONPACK)/game/g_misc.o \
   $(B)/$(MISSIONPACK)/game/g_missile.o \
   $(B)/$(MISSIONPACK)/game/g_mover.o \
+  $(B)/$(MISSIONPACK)/game/g_nav.o \
+  $(B)/$(MISSIONPACK)/game/g_navnew.o \
+  $(B)/$(MISSIONPACK)/game/g_object.o \
+  $(B)/$(MISSIONPACK)/game/g_saga.o \
   $(B)/$(MISSIONPACK)/game/g_session.o \
+  $(B)/$(MISSIONPACK)/game/g_strap.o \
   $(B)/$(MISSIONPACK)/game/g_spawn.o \
   $(B)/$(MISSIONPACK)/game/g_svcmds.o \
   $(B)/$(MISSIONPACK)/game/g_target.o \
   $(B)/$(MISSIONPACK)/game/g_team.o \
+  $(B)/$(MISSIONPACK)/game/g_timer.o \
   $(B)/$(MISSIONPACK)/game/g_trigger.o \
+  $(B)/$(MISSIONPACK)/game/g_turret.o \
+  $(B)/$(MISSIONPACK)/game/g_turret_G2.o \
   $(B)/$(MISSIONPACK)/game/g_utils.o \
+  $(B)/$(MISSIONPACK)/game/g_vehicles.o \
+  $(B)/$(MISSIONPACK)/game/g_vehicleTurret.o \
   $(B)/$(MISSIONPACK)/game/g_weapon.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Atst.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Default.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Droid.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_GalakMech.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Grenadier.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Howler.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_ImperialProbe.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Interrogator.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Jedi.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Mark1.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Mark2.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_MineMonster.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Rancor.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Remote.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Seeker.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Sentry.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Sniper.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Stormtrooper.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Utils.o \
+  $(B)/$(MISSIONPACK)/game/NPC_AI_Wampa.o \
+  $(B)/$(MISSIONPACK)/game/NPC_behavior.o \
+  $(B)/$(MISSIONPACK)/game/NPC.o \
+  $(B)/$(MISSIONPACK)/game/NPC_combat.o \
+  $(B)/$(MISSIONPACK)/game/NPC_goal.o \
+  $(B)/$(MISSIONPACK)/game/NPC_misc.o \
+  $(B)/$(MISSIONPACK)/game/NPC_move.o \
+  $(B)/$(MISSIONPACK)/game/NPC_reactions.o \
+  $(B)/$(MISSIONPACK)/game/NPC_senses.o \
+  $(B)/$(MISSIONPACK)/game/NPC_sounds.o \
+  $(B)/$(MISSIONPACK)/game/NPC_spawn.o \
+  $(B)/$(MISSIONPACK)/game/NPC_stats.o \
+  $(B)/$(MISSIONPACK)/game/NPC_utils.o \
+  $(B)/$(MISSIONPACK)/game/SpeederNPC.o \
+  $(B)/$(MISSIONPACK)/game/tri_coll_test.o \
+  $(B)/$(MISSIONPACK)/game/WalkerNPC.o \
+  $(B)/$(MISSIONPACK)/game/w_force.o \
+  $(B)/$(MISSIONPACK)/game/w_saber.o \
   \
-  $(B)/$(MISSIONPACK)/qcommon/q_math.o \
+  $(B)/$(MISSIONPACK)/game/q_math.o \
   $(B)/$(MISSIONPACK)/qcommon/q_shared.o
 
 MPGOBJ = $(MPGOBJ_) $(B)/$(MISSIONPACK)/game/g_syscalls.o
 MPGVMOBJ = $(MPGOBJ_:%.o=%.asm)
 
-$(B)/$(MISSIONPACK)/qagame$(SHLIBNAME): $(MPGOBJ)
+$(B)/$(MISSIONPACK)/jampgame$(SHLIBNAME): $(MPGOBJ)
 	$(echo_cmd) "LD $@"
 	$(Q)$(CC) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(MPGOBJ)
 
-$(B)/$(MISSIONPACK)/vm/qagame.qvm: $(MPGVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
+$(B)/$(MISSIONPACK)/vm/jampgame.qvm: $(MPGVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 	$(echo_cmd) "Q3ASM $@"
 	$(Q)$(Q3ASM) -o $@ $(MPGVMOBJ) $(GDIR)/g_syscalls.asm
 
@@ -2154,51 +2329,21 @@ $(B)/$(MISSIONPACK)/vm/qagame.qvm: $(MPGVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 
 Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_main.o \
-  $(B)/$(BASEGAME)/ui/bg_misc.o \
-  $(B)/$(BASEGAME)/ui/bg_lib.o \
-  $(B)/$(BASEGAME)/ui/ui_addbots.o \
   $(B)/$(BASEGAME)/ui/ui_atoms.o \
-  $(B)/$(BASEGAME)/ui/ui_cdkey.o \
-  $(B)/$(BASEGAME)/ui/ui_cinematics.o \
-  $(B)/$(BASEGAME)/ui/ui_confirm.o \
-  $(B)/$(BASEGAME)/ui/ui_connect.o \
-  $(B)/$(BASEGAME)/ui/ui_controls2.o \
-  $(B)/$(BASEGAME)/ui/ui_credits.o \
-  $(B)/$(BASEGAME)/ui/ui_demo2.o \
-  $(B)/$(BASEGAME)/ui/ui_display.o \
+  $(B)/$(BASEGAME)/ui/ui_force.o \
   $(B)/$(BASEGAME)/ui/ui_gameinfo.o \
-  $(B)/$(BASEGAME)/ui/ui_ingame.o \
-  $(B)/$(BASEGAME)/ui/ui_loadconfig.o \
-  $(B)/$(BASEGAME)/ui/ui_menu.o \
-  $(B)/$(BASEGAME)/ui/ui_mfield.o \
-  $(B)/$(BASEGAME)/ui/ui_mods.o \
-  $(B)/$(BASEGAME)/ui/ui_network.o \
-  $(B)/$(BASEGAME)/ui/ui_options.o \
-  $(B)/$(BASEGAME)/ui/ui_playermodel.o \
-  $(B)/$(BASEGAME)/ui/ui_players.o \
-  $(B)/$(BASEGAME)/ui/ui_playersettings.o \
-  $(B)/$(BASEGAME)/ui/ui_preferences.o \
-  $(B)/$(BASEGAME)/ui/ui_qmenu.o \
-  $(B)/$(BASEGAME)/ui/ui_removebots.o \
-  $(B)/$(BASEGAME)/ui/ui_saveconfig.o \
-  $(B)/$(BASEGAME)/ui/ui_serverinfo.o \
-  $(B)/$(BASEGAME)/ui/ui_servers2.o \
-  $(B)/$(BASEGAME)/ui/ui_setup.o \
-  $(B)/$(BASEGAME)/ui/ui_sound.o \
-  $(B)/$(BASEGAME)/ui/ui_sparena.o \
-  $(B)/$(BASEGAME)/ui/ui_specifyserver.o \
-  $(B)/$(BASEGAME)/ui/ui_splevel.o \
-  $(B)/$(BASEGAME)/ui/ui_sppostgame.o \
-  $(B)/$(BASEGAME)/ui/ui_spskill.o \
-  $(B)/$(BASEGAME)/ui/ui_startserver.o \
-  $(B)/$(BASEGAME)/ui/ui_team.o \
-  $(B)/$(BASEGAME)/ui/ui_teamorders.o \
-  $(B)/$(BASEGAME)/ui/ui_video.o \
+  $(B)/$(BASEGAME)/ui/ui_saber.o \
+  $(B)/$(BASEGAME)/ui/ui_shared.o \
   \
-  $(B)/$(BASEGAME)/qcommon/q_math.o \
+  $(B)/$(BASEGAME)/ui/bg_lib.o \
+  $(B)/$(BASEGAME)/ui/bg_misc.o \
+  $(B)/$(BASEGAME)/ui/bg_saga.o \
+  $(B)/$(BASEGAME)/ui/bg_weapons.o \
+  \
+  $(B)/$(BASEGAME)/game/q_math.o \
   $(B)/$(BASEGAME)/qcommon/q_shared.o
 
-Q3UIOBJ = $(Q3UIOBJ_) $(B)/$(MISSIONPACK)/ui/ui_syscalls.o
+Q3UIOBJ = $(Q3UIOBJ_) $(B)/$(BASEGAME)/ui/ui_syscalls.o
 Q3UIVMOBJ = $(Q3UIOBJ_:%.o=%.asm)
 
 $(B)/$(BASEGAME)/ui$(SHLIBNAME): $(Q3UIOBJ)
@@ -2216,14 +2361,17 @@ $(B)/$(BASEGAME)/vm/ui.qvm: $(Q3UIVMOBJ) $(UIDIR)/ui_syscalls.asm $(Q3ASM)
 MPUIOBJ_ = \
   $(B)/$(MISSIONPACK)/ui/ui_main.o \
   $(B)/$(MISSIONPACK)/ui/ui_atoms.o \
+  $(B)/$(MISSIONPACK)/ui/ui_force.o \
   $(B)/$(MISSIONPACK)/ui/ui_gameinfo.o \
-  $(B)/$(MISSIONPACK)/ui/ui_players.o \
+  $(B)/$(MISSIONPACK)/ui/ui_saber.o \
   $(B)/$(MISSIONPACK)/ui/ui_shared.o \
   \
-  $(B)/$(MISSIONPACK)/ui/bg_misc.o \
   $(B)/$(MISSIONPACK)/ui/bg_lib.o \
+  $(B)/$(MISSIONPACK)/ui/bg_misc.o \
+  $(B)/$(MISSIONPACK)/ui/bg_saga.o \
+  $(B)/$(MISSIONPACK)/ui/bg_weapons.o \
   \
-  $(B)/$(MISSIONPACK)/qcommon/q_math.o \
+  $(B)/$(MISSIONPACK)/game/q_math.o \
   $(B)/$(MISSIONPACK)/qcommon/q_shared.o
 
 MPUIOBJ = $(MPUIOBJ_) $(B)/$(MISSIONPACK)/ui/ui_syscalls.o
@@ -2343,6 +2491,12 @@ endif
 $(B)/$(BASEGAME)/cgame/bg_%.o: $(GDIR)/bg_%.c
 	$(DO_CGAME_CC)
 
+$(B)/$(BASEGAME)/cgame/%NPC.o: $(GDIR)/%NPC.c
+	$(DO_CGAME_CC)
+
+$(B)/$(BASEGAME)/cgame/ui_%.o: $(UIDIR)/ui_%.c
+	$(DO_CGAME_CC)
+
 $(B)/$(BASEGAME)/cgame/%.o: $(CGDIR)/%.c
 	$(DO_CGAME_CC)
 
@@ -2353,6 +2507,12 @@ $(B)/$(BASEGAME)/cgame/%.asm: $(CGDIR)/%.c $(Q3LCC)
 	$(DO_CGAME_Q3LCC)
 
 $(B)/$(MISSIONPACK)/cgame/bg_%.o: $(GDIR)/bg_%.c
+	$(DO_CGAME_CC_MISSIONPACK)
+
+$(B)/$(MISSIONPACK)/cgame/%NPC.o: $(GDIR)/%NPC.c
+	$(DO_CGAME_CC_MISSIONPACK)
+
+$(B)/$(MISSIONPACK)/cgame/ui_%.o: $(UIDIR)/ui_%.c
 	$(DO_CGAME_CC_MISSIONPACK)
 
 $(B)/$(MISSIONPACK)/cgame/%.o: $(CGDIR)/%.c
@@ -2381,13 +2541,13 @@ $(B)/$(MISSIONPACK)/game/%.asm: $(GDIR)/%.c $(Q3LCC)
 $(B)/$(BASEGAME)/ui/bg_%.o: $(GDIR)/bg_%.c
 	$(DO_UI_CC)
 
-$(B)/$(BASEGAME)/ui/%.o: $(Q3UIDIR)/%.c
+$(B)/$(BASEGAME)/ui/%.o: $(UIDIR)/%.c
 	$(DO_UI_CC)
 
 $(B)/$(BASEGAME)/ui/bg_%.asm: $(GDIR)/bg_%.c $(Q3LCC)
 	$(DO_UI_Q3LCC)
 
-$(B)/$(BASEGAME)/ui/%.asm: $(Q3UIDIR)/%.c $(Q3LCC)
+$(B)/$(BASEGAME)/ui/%.asm: $(UIDIR)/%.c $(Q3LCC)
 	$(DO_UI_Q3LCC)
 
 $(B)/$(MISSIONPACK)/ui/bg_%.o: $(GDIR)/bg_%.c
@@ -2463,7 +2623,7 @@ ifneq ($(BUILD_GAME_SO),0)
   ifneq ($(BUILD_BASEGAME),0)
 	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(BASEGAME)/cgame$(SHLIBNAME) \
 					$(COPYDIR)/$(BASEGAME)/.
-	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(BASEGAME)/qagame$(SHLIBNAME) \
+	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(BASEGAME)/jampgame$(SHLIBNAME) \
 					$(COPYDIR)/$(BASEGAME)/.
 	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(BASEGAME)/ui$(SHLIBNAME) \
 					$(COPYDIR)/$(BASEGAME)/.
@@ -2471,7 +2631,7 @@ ifneq ($(BUILD_GAME_SO),0)
   ifneq ($(BUILD_MISSIONPACK),0)
 	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(MISSIONPACK)/cgame$(SHLIBNAME) \
 					$(COPYDIR)/$(MISSIONPACK)/.
-	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(MISSIONPACK)/qagame$(SHLIBNAME) \
+	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(MISSIONPACK)/jampgame$(SHLIBNAME) \
 					$(COPYDIR)/$(MISSIONPACK)/.
 	$(INSTALL) $(STRIP_FLAG) -m 0755 $(BR)/$(MISSIONPACK)/ui$(SHLIBNAME) \
 					$(COPYDIR)/$(MISSIONPACK)/.
