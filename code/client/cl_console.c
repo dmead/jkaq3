@@ -23,9 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 
-
 int g_console_field_width = 78;
-
 
 #define	NUM_CON_TIMES 4
 
@@ -65,7 +63,6 @@ cvar_t *notify_time;
 cvar_t *notify_xoffset;
 
 #define	DEFAULT_CONSOLE_WIDTH	78
-
 
 /*
 ================
@@ -161,7 +158,6 @@ void Con_Clear_f (void) {
 	Con_Bottom();		// go to end
 }
 
-						
 /*
 ================
 Con_Dump_f
@@ -174,7 +170,11 @@ void Con_Dump_f (void)
 	int		l, x, i;
 	short	*line;
 	fileHandle_t	f;
-	char	buffer[1024];
+#ifdef _WIN32
+	char	buffer[DEFAULT_CONSOLE_WIDTH+3];
+#else
+	char	buffer[DEFAULT_CONSOLE_WIDTH+2];
+#endif
 	char	filename[MAX_QPATH];
 
 	if (Cmd_Argc() != 2)
@@ -216,19 +216,25 @@ void Con_Dump_f (void)
 			buffer[i] = line[i] & 0xff;
 		for (x=con.linewidth-1 ; x>=0 ; x--)
 		{
-			if (buffer[x] == ' ')
+			if (buffer[x] <= ' ')
 				buffer[x] = 0;
 			else
 				break;
 		}
-		strcat( buffer, "\n" );
+#ifdef _WIN32
+		buffer[x+1] = '\r';
+		buffer[x+2] = '\n';
+		buffer[x+3] = 0;
+#else
+		buffer[x+1] = '\n';
+		buffer[x+2] = 0;
+#endif
 		FS_Write(buffer, strlen(buffer), f);
 	}
 
 	FS_FCloseFile( f );
 }
 
-						
 /*
 ================
 Con_ClearNotify
@@ -241,8 +247,6 @@ void Con_ClearNotify( void ) {
 		con.times[i] = 0;
 	}
 }
-
-						
 
 /*
 ================
@@ -267,7 +271,6 @@ void Con_CheckResize (void)
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
 		for(i=0; i<CON_TEXTSIZE; i++)
-
 			con.text[i] = (ColorIndex(COLOR_WHITE)<<8) | ' ';
 	}
 	else
@@ -288,9 +291,7 @@ void Con_CheckResize (void)
 
 		Com_Memcpy (tbuf, con.text, CON_TEXTSIZE * sizeof(short));
 		for(i=0; i<CON_TEXTSIZE; i++)
-
 			con.text[i] = (ColorIndex(COLOR_WHITE)<<8) | ' ';
-
 
 		for (i=0 ; i<numlines ; i++)
 		{
@@ -319,7 +320,6 @@ void Cmd_CompleteTxtName( char *args, int argNum ) {
 		Field_CompleteFilename( "", "txt", qfalse, qtrue );
 	}
 }
-
 
 /*
 ================
@@ -389,10 +389,10 @@ void Con_Linefeed (qboolean skipnotify)
 	// mark time for transparent overlay
 	if (con.current >= 0)
 	{
-    if (skipnotify)
-		  con.times[con.current % NUM_CON_TIMES] = 0;
-    else
-		  con.times[con.current % NUM_CON_TIMES] = cls.realtime;
+		if (skipnotify)
+			  con.times[con.current % NUM_CON_TIMES] = 0;
+		else
+			  con.times[con.current % NUM_CON_TIMES] = cls.realtime;
 	}
 
 	con.x = 0;
@@ -504,7 +504,6 @@ void CL_ConsolePrint( char *txt ) {
 	}
 }
 
-
 /*
 ==============================================================================
 
@@ -512,7 +511,6 @@ DRAWING
 
 ==============================================================================
 */
-
 
 /*
 ================
@@ -538,7 +536,6 @@ void Con_DrawInput (void) {
 		SCREEN_WIDTH - 3 * SMALLCHAR_WIDTH, qtrue, qtrue );
 }
 
-
 /*
 ================
 Con_DrawNotify
@@ -555,8 +552,8 @@ void Con_DrawNotify (void)
 	int		skip;
 	int		currentColor;
 
-	currentColor = 7;
-	re.SetColor( g_color_table[currentColor] );
+	currentColor = ColorIndex( C_COLOR_WHITE );
+	re.SetColor( ColorForIndex( currentColor ) );
 
 	v = 0;
 	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
@@ -579,9 +576,9 @@ void Con_DrawNotify (void)
 			if ( ( text[x] & 0xff ) == ' ' ) {
 				continue;
 			}
-			if ( ( (text[x]>>8)&7 ) != currentColor ) {
-				currentColor = (text[x]>>8)&7;
-				re.SetColor( g_color_table[currentColor] );
+			if ( ( ColorIndex(text[x]>>8) ) != currentColor ) {
+				currentColor = ColorIndex(text[x]>>8);
+				re.SetColor( ColorForIndex( currentColor ) );
 			}
 			SCR_DrawSmallChar( notify_xoffset->integer + con.xadjust + (x+1)*SMALLCHAR_WIDTH, v, text[x] & 0xff );
 		}
@@ -614,7 +611,6 @@ void Con_DrawNotify (void)
 
 		v += BIGCHAR_HEIGHT;
 	}
-
 }
 
 /*
@@ -669,7 +665,6 @@ void Con_DrawSolidConsole( float frac ) {
 	color[3] = 1;
 	SCR_FillRect( 0, y, SCREEN_WIDTH, 2, color );
 
-
 	// draw the version number
 
 	re.SetColor( color );
@@ -681,7 +676,6 @@ void Con_DrawSolidConsole( float frac ) {
 			lines - SMALLCHAR_HEIGHT, Q3_VERSION[x] );
 	}
 
-
 	// draw the text
 	con.vislines = lines;
 	rows = (lines-SMALLCHAR_WIDTH)/SMALLCHAR_WIDTH;		// rows of text to draw
@@ -691,7 +685,7 @@ void Con_DrawSolidConsole( float frac ) {
 	// draw from the bottom up
 	if (con.display != con.current)
 	{
-	// draw arrows to show the buffer is backscrolled
+		// draw arrows to show the buffer is backscrolled
 		re.SetColor( color );
 		for (x=0 ; x<con.linewidth ; x+=4)
 			SCR_DrawSmallChar( con.xadjust + (x+1)*SMALLCHAR_WIDTH, y, '^' );
@@ -705,8 +699,8 @@ void Con_DrawSolidConsole( float frac ) {
 		row--;
 	}
 
-	currentColor = 7;
-	re.SetColor( g_color_table[currentColor] );
+	currentColor = ColorIndex( C_COLOR_WHITE );
+	re.SetColor( ColorForIndex( currentColor ) );
 
 	for (i=0 ; i<rows ; i++, y -= SMALLCHAR_HEIGHT, row--)
 	{
@@ -724,9 +718,9 @@ void Con_DrawSolidConsole( float frac ) {
 				continue;
 			}
 
-			if ( ( (text[x]>>8)&7 ) != currentColor ) {
-				currentColor = (text[x]>>8)&7;
-				re.SetColor( g_color_table[currentColor] );
+			if ( ( ColorIndex(text[x]>>8) ) != currentColor ) {
+				currentColor = ColorIndex(text[x]>>8);
+				re.SetColor( ColorForIndex( currentColor ) );
 			}
 			SCR_DrawSmallChar(  con.xadjust + (x+1)*SMALLCHAR_WIDTH, y, text[x] & 0xff );
 		}
@@ -737,8 +731,6 @@ void Con_DrawSolidConsole( float frac ) {
 
 	re.SetColor( NULL );
 }
-
-
 
 /*
 ==================
@@ -800,7 +792,6 @@ void Con_RunConsole (void) {
 
 }
 
-
 void Con_PageUp( void ) {
 	con.display -= 2;
 	if ( con.current - con.display >= con.totallines ) {
@@ -825,7 +816,6 @@ void Con_Top( void ) {
 void Con_Bottom( void ) {
 	con.display = con.current;
 }
-
 
 void Con_Close( void ) {
 	if ( !com_cl_running->integer ) {

@@ -411,7 +411,18 @@ extern	vec4_t		colorDkGrey;
 #define COLOR_CYAN	'5'
 #define COLOR_MAGENTA	'6'
 #define COLOR_WHITE	'7'
-#define ColorIndex(c)	(((c) - '0') & 0x07)
+
+#define COLOR_BITS	0x07
+#define ColorIndex(c)	(((c) - '0') & COLOR_BITS)
+
+#define C_COLOR_BLACK	0
+#define C_COLOR_RED	1
+#define C_COLOR_GREEN	2
+#define C_COLOR_YELLOW	3
+#define C_COLOR_BLUE	4
+#define C_COLOR_CYAN	5
+#define C_COLOR_MAGENTA	6
+#define C_COLOR_WHITE	7
 
 #define S_COLOR_BLACK	"^0"
 #define S_COLOR_RED	"^1"
@@ -422,7 +433,11 @@ extern	vec4_t		colorDkGrey;
 #define S_COLOR_MAGENTA	"^6"
 #define S_COLOR_WHITE	"^7"
 
-extern vec4_t	g_color_table[8];
+#define MAX_COLOR_CODES	8
+
+extern vec4_t	g_color_table[MAX_COLOR_CODES];
+
+#define ColorForIndex(i)	(g_color_table[((i) & COLOR_BITS)])
 
 #define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
 #define	MAKERGBA( v, r, g, b, a ) v[0]=r;v[1]=g;v[2]=b;v[3]=a
