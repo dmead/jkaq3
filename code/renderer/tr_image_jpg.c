@@ -65,7 +65,7 @@ static void R_JPGOutputMessage(j_common_ptr cinfo)
   ri.Printf(PRINT_ALL, "%s\n", buffer);
 }
 
-void R_LoadJPG(const char *filename, unsigned char **pic, int *width, int *height)
+void R_LoadJPG (const char *name, byte **pic, int *width, int *height)
 {
   /* This struct contains the JPEG decompression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
@@ -103,7 +103,7 @@ void R_LoadJPG(const char *filename, unsigned char **pic, int *width, int *heigh
    * requires it in order to read binary files.
    */
 
-  len = ri.FS_ReadFile ( ( char * ) filename, &fbuffer.v);
+  len = ri.FS_ReadFile ( ( char * ) name, &fbuffer.v);
   if (!fbuffer.b || len < 0) {
 	return;
   }
@@ -169,7 +169,7 @@ void R_LoadJPG(const char *filename, unsigned char **pic, int *width, int *heigh
     ri.FS_FreeFile (fbuffer.v);
     jpeg_destroy_decompress(&cinfo);
   
-    ri.Error(ERR_DROP, "LoadJPG: %s has an invalid image format: %dx%d*4=%d, components: %d", filename,
+    ri.Error(ERR_DROP, "LoadJPG: %s has an invalid image format: %dx%d*4=%d, components: %d", name,
 		    cinfo.output_width, cinfo.output_height, pixelcount * 4, cinfo.output_components);
   }
 

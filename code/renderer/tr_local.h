@@ -1356,7 +1356,6 @@ void	R_ImageList_f( void );
 void	R_SkinList_f( void );
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=516
 const void *RB_TakeScreenshotCmd( const void *data );
-void	R_ScreenShot_f( void );
 
 void	R_InitFogTable( void );
 float	R_FogFactor( float s, float t );
@@ -1752,6 +1751,12 @@ typedef struct {
 	int		numDrawSurfs;
 } drawSurfsCommand_t;
 
+typedef enum {
+	SSF_TGA,
+	SSF_JPEG,
+	SSF_PNG
+} ssFormat_t;
+
 typedef struct {
 	int commandId;
 	int x;
@@ -1759,7 +1764,7 @@ typedef struct {
 	int width;
 	int height;
 	char *fileName;
-	qboolean jpeg;
+	ssFormat_t format;
 } screenshotCommand_t;
 
 typedef struct {
@@ -1846,6 +1851,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame );
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 void RE_SaveJPG(char * filename, int quality, int image_width, int image_height,
                 unsigned char *image_buffer, int padding);
+void RE_SavePNG(char * filename, int image_width, int image_height, byte *image_buffer, int num_bytes, int padding, qboolean flip);
 size_t RE_SaveJPGToBuffer(byte *buffer, size_t bufSize, int quality,
 		          int image_width, int image_height, byte *image_buffer, int padding);
 void RE_TakeVideoFrame( int width, int height,
