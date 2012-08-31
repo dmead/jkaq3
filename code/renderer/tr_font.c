@@ -337,7 +337,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 		while( s && *s && count < len ) {
 			glyph = &font->mGlyphs[(unsigned char)*s];
 			if( Q_IsColorString( s ) ) {
-				memcpy( newColor, g_color_table[ColorIndex( *( s + 1 ) )], sizeof( newColor ) );
+				memcpy( newColor, ColorForIndex(ColorIndex( *( s + 1 ) )), sizeof( newColor ) );
 				newColor[3] = rgba[3];
 				RE_SetColor( newColor );
 				s += 2;

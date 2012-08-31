@@ -552,7 +552,7 @@ void Con_DrawNotify (void)
 	int		skip;
 	int		currentColor;
 
-	currentColor = ColorIndex( C_COLOR_WHITE );
+	currentColor = ColorIndex( COLOR_WHITE );
 	re.SetColor( ColorForIndex( currentColor ) );
 
 	v = 0;
@@ -699,7 +699,7 @@ void Con_DrawSolidConsole( float frac ) {
 		row--;
 	}
 
-	currentColor = ColorIndex( C_COLOR_WHITE );
+	currentColor = ColorIndex( COLOR_WHITE );
 	re.SetColor( ColorForIndex( currentColor ) );
 
 	for (i=0 ; i<rows ; i++, y -= SMALLCHAR_HEIGHT, row--)
