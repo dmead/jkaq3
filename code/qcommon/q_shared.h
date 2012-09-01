@@ -415,15 +415,6 @@ extern	vec4_t		colorDkGrey;
 #define COLOR_BITS	0x07
 #define ColorIndex(c)	(((c) - '0') & COLOR_BITS)
 
-#define C_COLOR_BLACK	0
-#define C_COLOR_RED	1
-#define C_COLOR_GREEN	2
-#define C_COLOR_YELLOW	3
-#define C_COLOR_BLUE	4
-#define C_COLOR_CYAN	5
-#define C_COLOR_MAGENTA	6
-#define C_COLOR_WHITE	7
-
 #define S_COLOR_BLACK	"^0"
 #define S_COLOR_RED	"^1"
 #define S_COLOR_GREEN	"^2"
