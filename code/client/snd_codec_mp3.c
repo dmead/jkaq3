@@ -91,9 +91,13 @@ int S_MP3_ReadData(snd_stream_t *stream, struct mad_stream *madstream, byte *enc
 	if(leftover > 0)
 		memmove(encbuf, madstream->this_frame, leftover);
 
+
+	// Fill the buffer right to the end
+	
 	retval = FS_Read(&encbuf[leftover], encbufsize - leftover, stream->file);
 
-	if(retval <= 0) {
+	if(retval <= 0)
+	{
 		// EOF reached, that's ok.
 		return 0;
 	}
@@ -484,12 +488,12 @@ int S_MP3_Decode(snd_stream_t *stream)
 		if(samplecount < pcm->length)
 		{
 			// The pcm buffer was not large enough. Make it bigger.
-			byte *newbuf = (byte *)Hunk_AllocateTempMemory(cursize);
+			byte *newbuf = (byte *)Z_Malloc(cursize);
 			
 			if(mp3info->pcmbuf)
 			{
-				memcpy(newbuf, mp3info->pcmbuf, mp3info->buflen);
-				Hunk_FreeTempMemory(mp3info->pcmbuf);
+				Com_Memcpy(newbuf, mp3info->pcmbuf, mp3info->buflen);
+				Z_Free(mp3info->pcmbuf);
 			}
 			
 			mp3info->pcmbuf = newbuf;
@@ -586,7 +590,7 @@ void S_MP3_CodecCloseStream(snd_stream_t *stream)
 		mp3info = (struct snd_codec_mp3_info *)stream->ptr;
 
 		if(mp3info->pcmbuf)
-			Hunk_FreeTempMemory(mp3info->pcmbuf);
+			Z_Free(mp3info->pcmbuf);
 
 		mad_synth_finish(&mp3info->madsynth);
 		mad_frame_finish(&mp3info->madframe);
@@ -621,7 +625,7 @@ int S_MP3_CodecReadStream(snd_stream_t *stream, int bytes, void *buffer)
 		if(bytes < mp3info->buflen)
 		{
 			// we still have enough bytes in our decoded pcm buffer
-			memcpy(buffer, mp3info->pcmbuf, bytes);
+			Com_Memcpy(buffer, mp3info->pcmbuf, bytes);
 		
 			// remove the portion from our buffer.
 			mp3info->buflen -= bytes;
@@ -631,7 +635,7 @@ int S_MP3_CodecReadStream(snd_stream_t *stream, int bytes, void *buffer)
 		else
 		{
 			// copy over the samples we already have.
-			memcpy(buffer, mp3info->pcmbuf, mp3info->buflen);
+			Com_Memcpy(buffer, mp3info->pcmbuf, mp3info->buflen);
 			mp3info->destlen = mp3info->buflen;
 			mp3info->buflen = 0;
 		}
