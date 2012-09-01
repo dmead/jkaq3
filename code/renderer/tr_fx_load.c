@@ -412,7 +412,7 @@ qboolean CFxParser_ParseCameraShake(char **buf)
 		// Set all defaults here
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_CAMERASHAKE;
 		segData = (FXCameraShakeSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
-		memset(segData, 0, sizeof(FXCameraShakeSegment_t));
+		Com_Memset(segData, 0, sizeof(FXCameraShakeSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->radius, 10);
 		while(1)
@@ -531,7 +531,7 @@ qboolean CFxParser_ParseCylinder(char **buf)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_CYLINDER;
 		segData = (FXCylinderSegment_t *)malloc(sizeof(FXCylinderSegment_t));
-		memset(segData, 0, sizeof(FXCylinderSegment_t));
+		Com_Memset(segData, 0, sizeof(FXCylinderSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		FX_Copy(segData->size.start.sf, 1.0f);
@@ -681,7 +681,7 @@ qboolean CFxParser_ParseDecal(char **buf)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_DECAL;
 		segData = (FXDecalSegment_t *)malloc(sizeof(FXDecalSegment_t));
-		memset(segData, 0, sizeof(FXDecalSegment_t));
+		Com_Memset(segData, 0, sizeof(FXDecalSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		FX_Copy(segData->size.start.sf, 1.0f);
@@ -831,7 +831,7 @@ qboolean CFxParser_ParseElectricity(char **buf)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_ELECTRICITY;
 		segData = (FXElectricitySegment_t *)malloc(sizeof(FXElectricitySegment_t));
-		memset(segData, 0, sizeof(FXElectricitySegment_t));
+		Com_Memset(segData, 0, sizeof(FXElectricitySegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		segData->size.timelapseType = FXTLT_FLOAT;
@@ -977,7 +977,7 @@ qboolean CFxParser_ParseEmitter(char **buf)
 	{
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_EMITTER;
 		segData = (FXEmitterSegment_t *)malloc(sizeof(FXEmitterSegment_t));
-		memset(segData, 0, sizeof(FXEmitterSegment_t));
+		Com_Memset(segData, 0, sizeof(FXEmitterSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		segData->size.timelapseType = FXTLT_FLOAT;
@@ -1094,7 +1094,7 @@ qboolean CFxParser_ParseFlash(char **buf)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_FLASH;
 		segData = (FXFlashSegment_t *)malloc(sizeof(FXFlashSegment_t));
-		memset(segData, 0, sizeof(FXFlashSegment_t));
+		Com_Memset(segData, 0, sizeof(FXFlashSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		segData->size.timelapseType = FXTLT_FLOAT;
@@ -1226,7 +1226,7 @@ qboolean CFxParser_ParseLight(char **buf)
 	{
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_LIGHT;
 		segData = (FXLightSegment_t *)malloc(sizeof(FXLightSegment_t));
-		memset(segData, 0, sizeof(FXLightSegment_t));
+		Com_Memset(segData, 0, sizeof(FXLightSegment_t));
 		FX_Copy(segData->life, 50);
 		segData->size.timelapseType = FXTLT_FLOAT;
 		segData->size.start.sf[0] = segData->size.start.sf[1] = 1;
@@ -1340,7 +1340,7 @@ qboolean CFxParser_ParseLine(char **buf)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_LINE;
 		segData = (FXLineSegment_t *)malloc(sizeof(FXLineSegment_t));
-		memset(segData, 0, sizeof(FXLineSegment_t));
+		Com_Memset(segData, 0, sizeof(FXLineSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		segData->size.timelapseType = FXTLT_FLOAT;
@@ -1489,7 +1489,7 @@ qboolean CFxParser_ParseParticle(char **buf, qboolean oriented)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = (oriented) ? EFXS_ORIENTEDPARTICLE : EFXS_PARTICLE;
 		segData = (FXParticleSegment_t *)malloc(sizeof(FXParticleSegment_t));
-		memset(segData, 0, sizeof(FXParticleSegment_t));
+		Com_Memset(segData, 0, sizeof(FXParticleSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		segData->size.timelapseType = FXTLT_FLOAT;
@@ -1631,7 +1631,7 @@ qboolean CFxParser_ParseSound(char **buf)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_SOUND;
 		segData = (FXSoundSegment_t *)malloc(sizeof(FXSoundSegment_t));
-		memset(segData, 0, sizeof(FXSoundSegment_t));
+		Com_Memset(segData, 0, sizeof(FXSoundSegment_t));
 		FX_Copy(segData->count, 1);
 		segData->sound.fields = shaderFix;
 		segData->sound.fieldHandles = shaderHandleFix;
@@ -1720,7 +1720,7 @@ qboolean CFxParser_ParseTail(char **buf)
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_TAIL;
 		segData = (FXTailSegment_t *)malloc(sizeof(FXTailSegment_t));
-		memset(segData, 0, sizeof(FXTailSegment_t));
+		Com_Memset(segData, 0, sizeof(FXTailSegment_t));
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		segData->size.timelapseType = FXTLT_FLOAT;
@@ -1877,10 +1877,10 @@ qboolean CFxParser_ParseEffect(char *fileName)
 		return qfalse;
 	}
 	// OK, now that we've performed basic checks on the file, let's start to parse it
-	memset(&parsedfile, 0, sizeof(parsedfile));
+	Com_Memset(&parsedfile, 0, sizeof(parsedfile));
 	strcpy(parsedfile.filename, fileName);
 	parsedfile.segments = (FXSegment_t *)malloc(sizeof(FXSegment_t));
-	memset(parsedfile.segments, 0, sizeof(FXSegment_t));
+	Com_Memset(parsedfile.segments, 0, sizeof(FXSegment_t));
 
 	while(1)
 	{

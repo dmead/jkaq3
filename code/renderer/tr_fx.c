@@ -59,7 +59,7 @@ void CFxScheduler_RunSchedulerLoop(void)
 		{
 			// Check the culling on it
 			vec3_t result;
-			float dist;
+			//float dist;
 			VectorSubtract(backEnd.refdef.vieworg, runningEffects[i].currentOrigin, result);
 			if(runningEffects[i].cullDist > 0 && VectorLength(result) > runningEffects[i].cullDist)
 			{

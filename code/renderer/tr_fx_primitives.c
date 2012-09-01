@@ -68,7 +68,7 @@ void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 	for(i = 0; i < countRand; i++)
 	{
 		FXPlayingParticle_t part;
-		memset(&part, 0, sizeof(part));
+		Com_Memset(&part, 0, sizeof(part));
 		part.cullDist = flrand(sfx->cullrange[0], sfx->cullrange[1]);
 		part.startTime = backEnd.refdef.time + Q_irand(sfx->delay[0], sfx->delay[1]);
 		part.endTime = part.startTime + 1;
@@ -129,7 +129,7 @@ void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
 		return;
 	}
 	light = segment->SegmentData.FXLightSegment;
-	memset(&part, 0, sizeof(part));
+	Com_Memset(&part, 0, sizeof(part));
 
 	part.cullDist = flrand(light->cullrange[0], light->cullrange[1]);
 	part.startTime = backEnd.refdef.time + Q_irand(light->delay[0], light->delay[1]);
@@ -205,7 +205,7 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 		return;
 	}
 	particle = segment->SegmentData.FXParticleSegment;
-	memset(&part, 0, sizeof(part));
+	Com_Memset(&part, 0, sizeof(part));
 
 	part.cullDist = flrand(particle->cullrange[0], particle->cullrange[1]);
 	part.startTime = backEnd.refdef.time + Q_irand(particle->delay[0], particle->delay[1]);
