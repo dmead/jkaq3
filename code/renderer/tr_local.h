@@ -738,13 +738,6 @@ typedef struct {
 	int			numSurfaces;
 } bmodel_t;
 
-typedef struct {
-	vec3_t		origin;
-	vec4_t		ambientColor;
-	vec4_t		directedColor;
-	vec3_t		direction;
-} bgridpoint_t;
-
 // ydnar: optimization
 #define WORLD_MAX_SKY_NODES 32
 
