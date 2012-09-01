@@ -49,7 +49,8 @@ typedef unsigned int glIndex_t;
 #define MAX_STATES_PER_SHADER 32
 #define MAX_STATE_NAME 32
 
-
+#define FONT_BITS	5
+#define MAX_FONTS		(1<<FONT_BITS)
 
 typedef struct dlight_s {
 	vec3_t	origin;
@@ -478,6 +479,12 @@ typedef struct skin_s {
 	int			numSurfaces;
 	skinSurface_t	*surfaces[MD3_MAX_SURFACES];
 } skin_t;
+
+typedef struct font_s {
+	char		name[MAX_QPATH];
+	qhandle_t	imageHandle;
+	dfontdat_t	fontData;
+} font_t;
 
 
 typedef struct {
@@ -1067,6 +1074,9 @@ typedef struct {
 	int						numSkins;
 	skin_t					*skins[MAX_SKINS];
 
+	int						numFonts;
+	font_t					*fonts[MAX_FONTS];
+
 	float					sinTable[FUNCTABLE_SIZE];
 	float					squareTable[FUNCTABLE_SIZE];
 	float					triangleTable[FUNCTABLE_SIZE];
@@ -1354,6 +1364,7 @@ void		R_GammaCorrect( byte *buffer, int bufSize );
 
 void	R_ImageList_f( void );
 void	R_SkinList_f( void );
+void	R_FontList_f( void );
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=516
 const void *RB_TakeScreenshotCmd( const void *data );
 
