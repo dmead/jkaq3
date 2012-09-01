@@ -254,7 +254,7 @@ void RE_Font_PaintChar( float x, float y, float width, float height, float scale
 	RE_StretchPic( x, y, w, h, s, t, s2, t2, hShader );
 }
 
-static const vec4_t dropShadow = {0.2f, 0.2f, 0.2f, 1};
+static vec4_t dropShadow = {0.2f, 0.2f, 0.2f, 1};
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale ) {
 	qhandle_t fontIndex = setIndex;
 	qhandle_t shader;
