@@ -427,19 +427,19 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 Sys_FreeFileList
 ==================
 */
-void Sys_FreeFileList( char **list )
+void Sys_FreeFileList( char **fileList )
 {
 	int i;
 
-	if ( !list ) {
+	if ( !fileList ) {
 		return;
 	}
 
-	for ( i = 0 ; list[i] ; i++ ) {
-		Z_Free( list[i] );
+	for ( i = 0 ; fileList[i] ; i++ ) {
+		Z_Free( fileList[i] );
 	}
 
-	Z_Free( list );
+	Z_Free( fileList );
 }
 
 /*

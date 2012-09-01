@@ -169,7 +169,7 @@ void CM_BoxLeafnums_r( leafList_t *ll, int nodenum ) {
 CM_BoxLeafnums
 ==================
 */
-int	CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list, int listsize, int *lastLeaf) {
+int	CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *boxList, int listsize, int *lastLeaf) {
 	leafList_t	ll;
 
 	cm.checkcount++;
@@ -178,7 +178,7 @@ int	CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list, int listsiz
 	VectorCopy( maxs, ll.bounds[1] );
 	ll.count = 0;
 	ll.maxcount = listsize;
-	ll.list = list;
+	ll.list = boxList;
 	ll.storeLeafs = CM_StoreLeafs;
 	ll.lastLeaf = 0;
 	ll.overflowed = qfalse;
