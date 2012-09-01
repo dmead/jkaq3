@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
+#include "tr_fx.h"
 #include "qgl.h"
 #include "iqm.h"
 
@@ -1870,5 +1871,9 @@ int RE_Font_HeightPixels( const int iFontIndex, const float scale );
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale );
 
 extern int skyboxportal;
+
+// effects
+extern void CFxScheduler_Init(void);
+extern void CFxScheduler_Cleanup(void);
 
 #endif //TR_LOCAL_H

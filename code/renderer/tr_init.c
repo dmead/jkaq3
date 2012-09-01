@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_init.c -- functions that are not called every frame
 
 #include "tr_local.h"
+#include "tr_fx.h"
 
 glconfig_t  glConfig;
 glconfig2_t glConfig2;
@@ -1369,6 +1370,9 @@ void R_Init( void ) {
 
 	R_InitFonts();
 
+	// Effects
+	CFxScheduler_Init();
+
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
 		ri.Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
@@ -1386,6 +1390,9 @@ RE_Shutdown
 void RE_Shutdown( qboolean destroyWindow ) {	
 
 	ri.Printf( PRINT_ALL, "RE_Shutdown( %i )\n", destroyWindow );
+
+	// Effects
+	CFxScheduler_Cleanup();
 
 	ri.Cmd_RemoveCommand ("modellist");
 	ri.Cmd_RemoveCommand ("screenshot");
@@ -1464,6 +1471,7 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.RegisterSkin = RE_RegisterSkin;
 	re.RegisterShader = RE_RegisterShader;
 	re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
+	re.RegisterEffect = CFxScheduler_RegisterEffect;
 	re.ShaderNameFromIndex = RE_ShaderNameFromIndex;
 	re.LoadWorld = RE_LoadWorldMap;
 	re.SetWorldVisData = RE_SetWorldVisData;
@@ -1483,6 +1491,10 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.AddLightToScene = RE_AddLightToScene;
 	re.AddAdditiveLightToScene = RE_AddAdditiveLightToScene;
 	re.RenderScene = RE_RenderScene;
+
+	// FX System
+	re.PlayEffect = CFxScheduler_PlayEffect;
+	re.PlayEffectID = CFxScheduler_PlayEffectID;
 
 	re.SetColor = RE_SetColor;
 	re.DrawStretchPic = RE_StretchPic;

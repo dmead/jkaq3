@@ -120,6 +120,7 @@
     <ClInclude Include="..\..\code\png\pngstruct.h" />
     <ClInclude Include="..\..\code\renderer\iqm.h" />
     <ClInclude Include="..\..\code\renderer\qgl.h" />
+    <ClInclude Include="..\..\code\renderer\tr_fx.h" />
     <ClInclude Include="..\..\code\renderer\tr_local.h" />
     <ClInclude Include="..\..\code\renderer\tr_public.h" />
     <ClInclude Include="..\..\code\renderer\tr_types.h" />
@@ -237,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_font.c">
     </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_fx.c" />
+    <ClCompile Include="..\..\code\renderer\tr_fx_load.c" />
+    <ClCompile Include="..\..\code\renderer\tr_fx_primitives.c" />
     <ClCompile Include="..\..\code\renderer\tr_image.c">
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_image_bmp.c">

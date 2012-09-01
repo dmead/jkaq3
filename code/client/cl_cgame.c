@@ -741,6 +741,17 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
   case CG_KEY_GETKEY:
 		return Key_GetKey( VMA(1) );
 
+	case CG_FX_REGISTER_EFFECT:
+		return re.RegisterEffect(VMA(1));
+
+	case CG_FX_PLAY_EFFECT:
+		re.PlayEffect(VMA(1), VMA(2), VMA(3));
+		return 0;
+
+	case CG_FX_PLAY_EFFECT_ID:
+		re.PlayEffectID(args[1], VMA(2), VMA(3));
+		return 0;
+
 #if 0
 
 	case CG_MEMSET:

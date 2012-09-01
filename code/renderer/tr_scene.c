@@ -314,6 +314,9 @@ void RE_RenderScene( const refdef_t *fd ) {
 		ri.Error (ERR_DROP, "R_RenderScene: NULL worldmodel");
 	}
 
+	// Probably a good idea to do effects things here -- eez
+	CFxScheduler_RunSchedulerLoop();
+
 	Com_Memcpy( tr.refdef.text, fd->text, sizeof( tr.refdef.text ) );
 
 	tr.refdef.x = fd->x;
