@@ -112,6 +112,16 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
 	fontData->mDescender = LittleShort(fontData->mDescender);
 	fontData->mKoreanHack = LittleShort(fontData->mKoreanHack);
 
+    // Hack to fix the numbers apparently.
+    if( !fontData->mHeight ) {
+        float pointSize = fontData->mPointSize;
+        float a = pointSize * 0.1f + 2.5f;
+
+        fontData->mHeight = pointSize;
+        fontData->mAscender = pointSize - a;
+        fontData->mDescender = pointSize - fontData->mAscender;
+    }
+
 	Com_Memcpy( &font->fontData, fontData, sizeof( dfontdat_t ) );
 
 	ri.FS_FreeFile( buffer.v );
@@ -254,7 +264,7 @@ void RE_Font_PaintChar( float x, float y, float width, float height, float scale
 	RE_StretchPic( x, y, w, h, s, t, s2, t2, hShader );
 }
 
-vec4_t dropShadow = {0.2f, 0.2f, 0.2f, 1};
+static vec4_t dropShadow = {0.2f, 0.2f, 0.2f, 1};
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale ) {
 	qhandle_t fontIndex = setIndex;
 	qhandle_t shader;
@@ -275,6 +285,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 
 	if( text ) {
 		const char *s = text;
+        int yoffset = 0;
 
 		//if ((setIndex & STYLE_BLINK) && ((cls.realtime/BLINK_DIVISOR) & 1))
 		//	return;
@@ -287,6 +298,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 		}
 
 		count = 0;
+        yoffset = oy + (int)(0.5f + scale * (font->fontData.mHeight - (font->fontData.mDescender * 0.5f)));
 		while( s && *s && count < len ) {
 			glyph = &font->fontData.mGlyphs[(unsigned char)*s];
 			if( Q_IsColorString( s ) ) {
@@ -303,17 +315,17 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 				 *   ----------------------- descender = lowest point below baseline
 				 */
 
-				float yadj = scale * (font->fontData.mAscender - glyph->baseline);
+                int yadj = scale * glyph->baseline;
 
 				if( setIndex & STYLE_DROPSHADOW ) {
 					dropShadow[3] = newColor[3];
 					RE_SetColor( dropShadow );
-					RE_Font_PaintChar( (fox + ( glyph->horizOffset * scale ))+1, ((foy+yadj))+1, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
+					RE_Font_PaintChar( (fox + ( glyph->horizOffset * scale ))+1, ((yoffset - yadj))+1, glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
 					RE_SetColor( newColor );
 					dropShadow[3] = 1.0;
 				}
 
-				RE_Font_PaintChar( fox + ( glyph->horizOffset * scale ), (foy+yadj), glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
+				RE_Font_PaintChar( fox + ( glyph->horizOffset * scale ), (yoffset - yadj), glyph->width, glyph->height, scale, glyph->s, glyph->t, glyph->s2, glyph->t2, shader );
 				fox += ( glyph->horizAdvance * scale );
 				s++;
 				count++;
