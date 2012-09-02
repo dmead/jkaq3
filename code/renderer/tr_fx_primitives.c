@@ -32,6 +32,24 @@ float coslerp(float start, float end, float phase)
 	return (start*(1-phase2)+end*phase2);
 }
 
+//Sprite vertex template
+const	vec3_t sprite_template[4] =
+{
+	{ -1, -1,  0,	},	//Top left
+	{ -1,  1,  0,	},	//Bottom left
+	{  1,  1,  0,	},	//Bottom right
+	{  1, -1,  0,	},	//Top right
+};
+
+//Sprite UV template
+const	float sprite_texture_template[][2] = 
+{
+	{  0.0f,  0.0f	},	//Top left
+	{  0.0f,  1.0f	},	//Bottom left
+	{  1.0f,  1.0f	},	//Bottom right
+	{  1.0f,  0.0f	},	//Top right
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //																									 //
 //																									 //
@@ -39,11 +57,14 @@ float coslerp(float start, float end, float phase)
 //																									 //
 //																									 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+#ifdef WIN32
+#pragma region Sound Effects
+#endif
+extern void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
 static void CFXPRI_SoundDeath(FXPlayingParticle_t *part)
 {
 	// Play a sound
+	ri.StartSound(part->currentOrigin, -1, CHAN_AUTO, part->handle);
 }
 
 void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
@@ -72,12 +93,21 @@ void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 		part.cullDist = flrand(sfx->cullrange[0], sfx->cullrange[1]);
 		part.startTime = backEnd.refdef.time + Q_irand(sfx->delay[0], sfx->delay[1]);
 		part.endTime = part.startTime + 1;
-		part.handle = sfx->sound.fieldHandles[Q_irand(0, sfx->sound.numFields)];
+		part.handle = sfx->sound.fieldHandles[Q_irand(0, sfx->sound.numFields-1)];
 		vecrandom(sfx->origin[0], sfx->origin[1], &part.originalOrigin);
+		if(!(segment->spawnflags & FXSFLAG_CHEAPORIGINCALC) || segment->spawnflags < 0)
+		{
+			// Cheap origin calculation if false - use origin listed
+			VectorAdd(part.originalOrigin, origin, part.originalOrigin);
+		}
+		VectorCopy(part.originalOrigin, part.currentOrigin);
+		part.death = CFXPRI_SoundDeath;
 		CFxScheduler_AddToScheduler(&part);
 	}
 }
-
+#ifdef WIN32
+#pragma endregion
+#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //																									 //
 //																									 //
@@ -87,7 +117,9 @@ void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // This is really pretty easy, all it does is create a dynamic light on each render using RE_AddDynamicLightToScene
-
+#ifdef WIN32
+#pragma region Lights
+#endif
 static void CFxPrimitive_LightThink(float phase, FXPlayingParticle_t *part)
 {
 	// Only care about things that change here.
@@ -109,7 +141,7 @@ static void CFxPrimitive_LightThink(float phase, FXPlayingParticle_t *part)
 
 static void CFxPrimitive_LightRender(FXPlayingParticle_t *part)
 {
-	RE_AddLightToScene(part->currentOrigin, part->currentSize*10, part->currentRGB[0], part->currentRGB[1], part->currentRGB[2]);
+	RE_AddLightToScene(part->currentOrigin, part->currentSize*5, part->currentRGB[0], part->currentRGB[1], part->currentRGB[2]);
 }
 
 void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
@@ -171,7 +203,9 @@ void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
 	part.think = CFxPrimitive_LightThink;
 	CFxScheduler_AddToScheduler(&part);
 }
-
+#ifdef WIN32
+#pragma endregion
+#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //																									 //
 //																									 //
@@ -179,13 +213,102 @@ void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
 //																									 //
 //																									 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#ifdef WIN32
+#pragma region Particles
+#endif
 static void CFxPrimitive_ParticleThink(float phase, FXPlayingParticle_t *part)
 {
+	// Only care about things that change here.
+	int i;
+
+	if(VectorCompare(part->startRGB, part->endRGB))		// This changes based on time, so do some sort of magic lerping
+	{
+		// TODO: wave/clamp/nonlinear. BLAH.
+		if(part->RGBflags & FXTLF_NONLINEAR)
+		{
+			// Nonlinear
+			/*if(phase > part->RGBparameter)
+			{
+				for(i = 0; i < 3; i++)
+				{
+					part->currentRGB[i] = lerp(part->startRGB[i], part->endRGB[i], 1.0f(1.0f-phase));
+				}
+			}
+			else if(part->RGBflags & FXTLF_LINEAR)
+			{
+				// TODO: Nonlinear/Linear
+				goto LinearParticleRGB;
+			}*/
+		}
+		else if(part->RGBflags & FXTLF_LINEAR)
+		{
+LinearParticleRGB:
+			for(i = 0; i < 3; i++)
+			{
+				part->currentRGB[i] = lerp(part->startRGB[i], part->endRGB[i], phase);
+			}
+		}
+	}
+	if(part->startSize != part->endSize)
+	{
+		part->currentSize = coslerp(part->startSize, part->endSize, phase);
+	}
+	if(part->startAlpha != part->endAlpha)
+	{
+		part->currentAlpha = lerp(part->startAlpha, part->endAlpha, phase);
+	}
+	if(part->rotationStart+part->rotationDelta != part->rotationStart)
+	{
+		part->currentRotation = lerp(part->rotationStart, part->rotationStart+part->rotationDelta, phase);
+	}
+	// TODO: do movement
+	VectorAdd(part->currentOrigin, part->velocity, part->currentOrigin);
 }
 
 static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 {
+	polyVert_t verts[4];
+	vec3_t axis[3];
+	int i;
+	float scale;
+
+	if(part->lastRenderTime > backEnd.refdef.time - 50)
+	{
+		return;
+	}
+
+	scale = part->currentSize * 2.0f;
+
+	for(i = 0; i < 3; i++)
+	{
+		VectorCopy(tr.refdef.viewaxis[i], axis[i]);
+	}
+
+	if(part->currentRotation)
+		RotateAroundDirection(axis, part->currentRotation);
+
+	for(i = 0; i < 4; i++)
+	{
+		// Loop through each vert in the quad
+		VectorMA( part->currentOrigin,	sprite_template[i][0] * scale, axis[1], verts[i].xyz );
+		VectorMA( verts[i].xyz, sprite_template[i][1] * scale, axis[2], verts[i].xyz );
+
+		//Setup the UVs
+		verts[i].st[0] = sprite_texture_template[i][0];
+		verts[i].st[1] = sprite_texture_template[i][1];
+
+		//Setup the vertex modulation
+		verts[i].modulate[0] = (byte)(part->currentRGB[0] * 255);
+		verts[i].modulate[1] = (byte)(part->currentRGB[1] * 255);
+		verts[i].modulate[2] = (byte)(part->currentRGB[2] * 255);
+
+		// TODO: Use alpha chan? (copy from Elite Forces SDK?)
+		verts[i].modulate[3] = part->currentAlpha*255;
+	}
+
+	RE_AddPolyToScene(part->handle, 4, verts, 1);
+
+	//part->lastRenderTime = backEnd.refdef.time + 50;
 }
 
 void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir)
@@ -203,6 +326,8 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 	if(segment->segmentType != EFXS_PARTICLE)
 	{	// Not a particle?
 		return;
+
+
 	}
 	particle = segment->SegmentData.FXParticleSegment;
 	Com_Memset(&part, 0, sizeof(part));
@@ -217,6 +342,11 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 		VectorAdd(part.originalOrigin, origin, part.originalOrigin);
 	}
 	VectorCopy(part.originalOrigin, part.currentOrigin);
+
+	VectorCopy(particle->velocity[Q_irand(0,1)], part.velocity);
+	VectorCopy(particle->acceleration[Q_irand(0,1)], part.acceleration);
+
+	part.handle = particle->shader.fieldHandles[Q_irand(0, particle->shader.numFields-1)];
 
 
 	vecrandom(particle->rgb.start.sv[0], particle->rgb.start.sv[1], &part.startRGB);
@@ -255,7 +385,18 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 	}
 	part.alphaFlags = particle->alpha.flags;
 
+	// Do rotation bits
+	part.currentRotation = part.rotationStart = flrand(particle->rotation[0], particle->rotation[1]);
+	part.rotationDelta = flrand(particle->rotationDelta[0], particle->rotationDelta[1]);
+
+	part.velocity[0] = flrand(particle->velocity[0][0], particle->velocity[1][0]);
+	part.velocity[1] = flrand(particle->velocity[0][1], particle->velocity[1][1]);
+	part.velocity[2] = flrand(particle->velocity[0][2], particle->velocity[1][2]);
+
 	part.render = CFxPrimitive_ParticleRender;
 	part.think = CFxPrimitive_ParticleThink;
 	CFxScheduler_AddToScheduler(&part);
 }
+#ifdef WIN32
+#pragma endregion
+#endif

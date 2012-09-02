@@ -308,6 +308,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 		return;
 	}
 
+
 	startTime = ri.Milliseconds();
 
 	if (!tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) ) {

@@ -3235,6 +3235,9 @@ void CL_InitRef( void ) {
 	ri.IN_Shutdown = IN_Shutdown;
 	ri.IN_Restart = IN_Restart;
 
+	ri.StartSound = S_StartSound;
+	ri.RegisterSound = S_RegisterSound;
+
 	ri.ftol = Q_ftol;
 
 	ri.Sys_SetEnv = Sys_SetEnv;

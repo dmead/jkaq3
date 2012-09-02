@@ -204,6 +204,10 @@ typedef struct {
 	// math
 	long    (*ftol)(float f);
 
+	// sound
+	void (*StartSound)( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
+	sfxHandle_t (*RegisterSound)( const char *sample, qboolean compressed );
+
 	// system stuff
 	void	(*Sys_SetEnv)( const char *name, const char *value );
 	void	(*Sys_GLimpSafeInit)( void );
