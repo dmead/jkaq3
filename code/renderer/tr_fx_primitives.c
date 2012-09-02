@@ -242,7 +242,7 @@ static void CFxPrimitive_ParticleThink(float phase, FXPlayingParticle_t *part)
 		}
 		else if(part->RGBflags & FXTLF_LINEAR)
 		{
-LinearParticleRGB:
+//LinearParticleRGB:
 			for(i = 0; i < 3; i++)
 			{
 				part->currentRGB[i] = lerp(part->startRGB[i], part->endRGB[i], phase);

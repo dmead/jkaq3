@@ -42,7 +42,7 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
 	}
 
 	if ( strlen( fontName ) >= MAX_QPATH ) {
-		ri.Printf( PRINT_DEVELOPER, "Font name exceeds MAX_QPATH\n" );
+		ri.Error( ERR_FATAL, "Font name exceeds MAX_QPATH\n" );
 		return 0;
 	}
 
