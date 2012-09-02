@@ -46,7 +46,6 @@ void CFxScheduler_RunSchedulerLoop(void)
 			if(runningEffects[i].death)
 			{
 				runningEffects[i].death(&runningEffects[i]);
-				continue;
 			}
 			CFxScheduler_RemoveFromScheduler(i);
 			continue;
@@ -61,7 +60,7 @@ void CFxScheduler_RunSchedulerLoop(void)
 			vec3_t result;
 			float dist;
 			VectorSubtract(backEnd.refdef.vieworg, runningEffects[i].currentOrigin, result);
-			if(runningEffects[i].cullDist > 0 && VectorLength(result) > runningEffects[i].cullDist)
+			if(runningEffects[i].cullDist > 0 && VectorLength(result) > runningEffects[i].cullDist*2)
 			{
 				continue;
 			}
@@ -97,7 +96,7 @@ void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir)
 	}
 
 	file = FX_fxHandles[handle];
-	for(i = 0; i < file.numSegments; i++)
+	for(i = 0; i < file.numSegments ; i++)
 	{
 		switch(file.segments[i].segmentType)
 		{
@@ -123,6 +122,7 @@ void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir)
 			case EFXS_ORIENTEDPARTICLE:
 				break;
 			case EFXS_PARTICLE:
+				CFxPrimitive_CreateParticlePrimitive(&file.segments[i], origin, dir);
 				break;
 			case EFXS_SOUND:
 				CFxPrimitives_CreateSoundPrimitive(&file.segments[i], origin);

@@ -824,7 +824,7 @@ qboolean CFxParser_ParseElectricity(char **buf)
 	FXElectricitySegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXElectricitySegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
+	segData = (FXElectricitySegment_t *)malloc(sizeof(FXElectricitySegment_t));
 	if(token[0] && token)
 	{
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
@@ -1604,6 +1604,20 @@ qboolean CFxParser_ParseParticle(char **buf, qboolean oriented)
 					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
+			} else if(!Q_stricmp(token, "rotation"))
+			{
+				if(!CFxParser_Field_FXFloat(&segData->rotation, buf))
+				{
+					Com_Printf("^3WARNING: Missing value for \"rotation\" in %s\n", parsedfile.filename);
+					return qfalse;
+				}
+			} else if(!Q_stricmp(token, "rotationDelta"))
+			{
+				if(!CFxParser_Field_FXFloat(&segData->rotationDelta, buf))
+				{
+					Com_Printf("^3WARNING: Missing value for \"rotationDelta\" in %s\n", parsedfile.filename);
+					return qfalse;
+				}
 			}
 		}
 	}
@@ -1691,6 +1705,13 @@ qboolean CFxParser_ParseSound(char **buf)
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
 					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					return qfalse;
+				}
+			} else if(!Q_stricmp(token, "sound") || !Q_stricmp(token, "sounds"))
+			{
+				if(!CFxParser_Field_Shaderlist(&segData->sound, buf))
+				{
+					Com_Printf("^3WARNING: Could not parse value \"sound\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -2020,10 +2041,10 @@ void CFxScheduler_RunSecondPass(void)
 				break;
 			case EFXS_ELECTRICITY:
 				{
-					for(k = 0; k < parsedfile.segments[i].SegmentData.FXDecalSegment->shader.numFields; k++)
+					for(k = 0; k < parsedfile.segments[i].SegmentData.FXElectricitySegment->shader.numFields; k++)
 					{
-						parsedfile.segments[i].SegmentData.FXDecalSegment->shader.fieldHandles[k] = 
-							RE_RegisterShader(parsedfile.segments[i].SegmentData.FXDecalSegment->shader.fields[k]);
+						parsedfile.segments[i].SegmentData.FXElectricitySegment->shader.fieldHandles[k] = 
+							RE_RegisterShader(parsedfile.segments[i].SegmentData.FXElectricitySegment->shader.fields[k]);
 					}
 				}
 				break;
@@ -2077,7 +2098,8 @@ void CFxScheduler_RunSecondPass(void)
 					for(k = 0; k < parsedfile.segments[i].SegmentData.FXSoundSegment->sound.numFields; k++)
 					{
 						parsedfile.segments[i].SegmentData.FXSoundSegment->sound.fieldHandles[k] = 
-							RE_RegisterShader(parsedfile.segments[i].SegmentData.FXSoundSegment->sound.fields[k]);
+							ri.RegisterSound(parsedfile.segments[i].SegmentData.FXSoundSegment->sound.fields[k], qfalse);
+							//RE_RegisterShader(parsedfile.segments[i].SegmentData.FXSoundSegment->sound.fields[k]);
 					}
 				}
 				break;

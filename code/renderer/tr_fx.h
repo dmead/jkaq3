@@ -288,8 +288,8 @@ typedef struct
 	fxVec3_t	velocity;
 	fxVec3_t	acceleration;
 	fxInt_t		gravity;
-	fxInt_t		rotation;
-	fxInt_t		rotationDelta;
+	fxFloat_t		rotation;
+	fxFloat_t		rotationDelta;
 	// -- Color --
 	fxTimeLapse_t	rgb;
 	fxTimeLapse_t	alpha;
@@ -398,6 +398,7 @@ typedef struct FXPlayingParticle_s {
 	// Timing control and killing effects
 	int startTime;
 	int endTime;
+	int lastRenderTime;
 	void (*death)(FXPlayingParticle_t *thisParticle);					// Played on effect death
 	void (*think)(float phase, FXPlayingParticle_t *thisParticle);		// Thinking
 	void (*render)(FXPlayingParticle_t *thisParticle);					// Render pass
@@ -410,17 +411,27 @@ typedef struct FXPlayingParticle_s {
 	float startSize;
 	float endSize;
 	int sizeFlags;
+	float sizeParameter;
+	// Velocity
+	vec3_t velocity;
+	vec3_t acceleration;
 	// Shaders, RGB and coloring
 	qhandle_t handle;
 	vec3_t currentRGB;
 	vec3_t startRGB;
 	vec3_t endRGB;
 	int RGBflags;
+	float RGBparameter;
 	// Alpha
 	float currentAlpha;
 	float startAlpha;
 	float endAlpha;
 	int alphaFlags;
+	float alphaParameter;
+	// Rotation
+	float rotationDelta;
+	float rotationStart;
+	float currentRotation;
 } FXPlayingParticle_t;
 
 void CFxScheduler_AddToScheduler(FXPlayingParticle_t *particle);
@@ -435,6 +446,6 @@ void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir);
 
 void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin);
 void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin);
-
+void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir);
 
 #endif
