@@ -509,6 +509,7 @@ qboolean CFxParser_ParseCameraShake(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -523,7 +524,6 @@ qboolean CFxParser_ParseCylinder(char **buf)
 	FXCylinderSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXCylinderSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		// Defaults
@@ -633,7 +633,7 @@ qboolean CFxParser_ParseCylinder(char **buf)
 					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "shaders"))
+			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
@@ -660,6 +660,7 @@ qboolean CFxParser_ParseCylinder(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -674,7 +675,6 @@ qboolean CFxParser_ParseDecal(char **buf)
 	FXDecalSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXDecalSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
@@ -770,7 +770,7 @@ qboolean CFxParser_ParseDecal(char **buf)
 					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "shaders"))
+			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
@@ -811,6 +811,7 @@ qboolean CFxParser_ParseDecal(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -824,7 +825,6 @@ qboolean CFxParser_ParseElectricity(char **buf)
 	FXElectricitySegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXElectricitySegment_t *)malloc(sizeof(FXElectricitySegment_t));
 	if(token[0] && token)
 	{
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
@@ -918,7 +918,7 @@ qboolean CFxParser_ParseElectricity(char **buf)
 					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "shaders"))
+			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
@@ -959,6 +959,7 @@ qboolean CFxParser_ParseElectricity(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -972,7 +973,6 @@ qboolean CFxParser_ParseEmitter(char **buf)
 	FXEmitterSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXEmitterSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_EMITTER;
@@ -1073,6 +1073,7 @@ qboolean CFxParser_ParseEmitter(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1087,7 +1088,6 @@ qboolean CFxParser_ParseFlash(char **buf)
 	FXFlashSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXFlashSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
@@ -1174,7 +1174,7 @@ qboolean CFxParser_ParseFlash(char **buf)
 					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "shaders"))
+			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
@@ -1201,6 +1201,7 @@ qboolean CFxParser_ParseFlash(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1221,7 +1222,6 @@ qboolean CFxParser_ParseLight(char **buf)
 	FXLightSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXLightSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		parsedfile.segments[parsedfile.numSegments].segmentType = EFXS_LIGHT;
@@ -1319,6 +1319,7 @@ qboolean CFxParser_ParseLight(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1333,7 +1334,6 @@ qboolean CFxParser_ParseLine(char **buf)
 	FXLineSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXLineSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
@@ -1427,7 +1427,7 @@ qboolean CFxParser_ParseLine(char **buf)
 					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "shaders"))
+			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
@@ -1468,6 +1468,7 @@ qboolean CFxParser_ParseLine(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1482,19 +1483,26 @@ qboolean CFxParser_ParseParticle(char **buf, qboolean oriented)
 	FXParticleSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXParticleSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
+		vec3_t white = {1.0f, 1.0f, 1.0f};
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
 		qhandle_t *shaderHandleFix = (qhandle_t *)malloc(sizeof(qhandle_t));
 		parsedfile.segments[parsedfile.numSegments].segmentType = (oriented) ? EFXS_ORIENTEDPARTICLE : EFXS_PARTICLE;
 		segData = (FXParticleSegment_t *)malloc(sizeof(FXParticleSegment_t));
 		Com_Memset(segData, 0, sizeof(FXParticleSegment_t));
+		// TODO: put this all in a huge function
 		FX_Copy(segData->life, 50);
 		FX_Copy(segData->count, 1);
 		segData->size.timelapseType = FXTLT_FLOAT;
 		segData->rgb.timelapseType = FXTLT_VECTOR;
 		segData->alpha.timelapseType = FXTLT_FLOAT;
+		FX_Copy(segData->alpha.start.sf, 1.0f);
+		FX_Copy(segData->alpha.end.ef, 1.0f);
+		FXV_Copy(segData->rgb.start.sv, 1.0f);
+		FXV_Copy(segData->rgb.end.ev, 1.0f);
+		FX_Copy(segData->size.start.sf, 1.0f);
+		FX_Copy(segData->size.end.ef, 1.0f);
 		segData->shader.fields = shaderFix;
 		segData->shader.fieldHandles = shaderHandleFix;
 		while(1)
@@ -1569,7 +1577,7 @@ qboolean CFxParser_ParseParticle(char **buf, qboolean oriented)
 					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "shaders"))
+			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
@@ -1624,6 +1632,7 @@ qboolean CFxParser_ParseParticle(char **buf, qboolean oriented)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1638,7 +1647,6 @@ qboolean CFxParser_ParseSound(char **buf)
 	FXSoundSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXSoundSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
@@ -1707,7 +1715,7 @@ qboolean CFxParser_ParseSound(char **buf)
 					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "sound") || !Q_stricmp(token, "sounds"))
+			} else if(!Q_stricmpn(token, "sound", 5))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->sound, buf))
 				{
@@ -1720,6 +1728,7 @@ qboolean CFxParser_ParseSound(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1734,7 +1743,6 @@ qboolean CFxParser_ParseTail(char **buf)
 	FXTailSegment_t *segData;
 	qboolean foundLastBracket = qfalse;
 	char *token = COM_Parse(buf);
-	segData = (FXTailSegment_t *)malloc(sizeof(FXCameraShakeSegment_t));
 	if(token[0] && token)
 	{
 		char (*shaderFix)[MAX_QPATH] = (char (*)[MAX_QPATH])malloc(MAX_QPATH);
@@ -1829,7 +1837,7 @@ qboolean CFxParser_ParseTail(char **buf)
 					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
-			} else if(!Q_stricmp(token, "shaders"))
+			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
@@ -1870,6 +1878,7 @@ qboolean CFxParser_ParseTail(char **buf)
 	if(!foundLastBracket)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
+		free(segData);
 		return qfalse;
 	}
 	// Add the segment to the effect file
