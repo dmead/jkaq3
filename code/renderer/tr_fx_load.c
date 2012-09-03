@@ -228,7 +228,7 @@ qboolean CFxParser_Field_Shaderlist(fxShaderList_t *field, char **buf)
 	token = COM_Parse(buf);
 	if(!token || !token[0])
 	{
-		Com_Printf("^3WARNING: Missing '[' in effect file.\n");
+		ri.Printf( PRINT_WARNING, "WARNING: Missing '[' in effect file.\n");
 		return qfalse;
 	}
 	do
@@ -244,7 +244,7 @@ qboolean CFxParser_Field_Shaderlist(fxShaderList_t *field, char **buf)
 		}
 		if(strlen(token) > MAX_QPATH)
 		{
-			Com_Error(ERR_FATAL, "CFxParser_Field_Shaderlist: MAX_QPATH exceeded (%s)", token);
+			ri.Error(ERR_FATAL, "CFxParser_Field_Shaderlist: MAX_QPATH exceeded (%s)", token);
 			return qfalse;
 		}
 		{
@@ -319,7 +319,7 @@ qboolean CFxParser_Field_Timelapse(fxTimeLapse_t *field, char **buf)
 	}
 	if(!token || !token[0])
 	{
-		Com_Printf("^3WARNING: Missing '{' in effect file timelapse %s\n", parsedfile.filename);
+		ri.Printf(PRINT_WARNING, "WARNING: Missing '{' in effect file timelapse %s\n", parsedfile.filename);
 		return qfalse;
 	}
 	do
@@ -383,7 +383,7 @@ qboolean CFxParser_Field_Timelapse(fxTimeLapse_t *field, char **buf)
 		{
 			if(!CFxParser_Field_FXInt(&field->parameter, buf))
 			{
-				Com_Printf("^3WARNING: FX \"parm\" field with no value(s): %s\n", parsedfile.filename);
+				ri.Printf(PRINT_WARNING, "WARNING: FX \"parm\" field with no value(s): %s\n", parsedfile.filename);
 				return qfalse;
 			}
 		}
@@ -429,87 +429,86 @@ qboolean CFxParser_ParseCameraShake(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if (!Q_stricmp(token, "bounce"))
 			{
-				COM_Parse(buf);
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Unknown;
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "intensity"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->intensity, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"intensity\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"intensity\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else 
 			{
-				Com_Printf("^3WARNING: Unknown token '%s' in efx file %s\n", token, parsedfile.filename);
+				ri.Printf(PRINT_WARNING, "WARNING: Unknown token '%s' in efx file %s\n", token, parsedfile.filename);
 				continue;
 			}
 		}
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -561,97 +560,97 @@ qboolean CFxParser_ParseCylinder(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags") || !Q_stricmp(token, "flag"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags") || !Q_stricmp(token, "spawnflag"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "height"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->height, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->alpha, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -659,8 +658,8 @@ qboolean CFxParser_ParseCylinder(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -705,104 +704,104 @@ qboolean CFxParser_ParseDecal(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->alpha, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "height"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->height, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rotation"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->rotation, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rotation\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rotation\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -810,8 +809,8 @@ qboolean CFxParser_ParseDecal(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -853,104 +852,104 @@ qboolean CFxParser_ParseElectricity(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin2"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin2, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin2\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin2\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->alpha, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "height"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->height, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -958,8 +957,8 @@ qboolean CFxParser_ParseElectricity(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -995,76 +994,76 @@ qboolean CFxParser_ParseEmitter(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "height"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->height, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -1072,8 +1071,8 @@ qboolean CFxParser_ParseEmitter(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1116,83 +1115,83 @@ qboolean CFxParser_ParseFlash(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->alpha, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -1200,8 +1199,8 @@ qboolean CFxParser_ParseFlash(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1249,62 +1248,62 @@ qboolean CFxParser_ParseLight(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
@@ -1318,8 +1317,8 @@ qboolean CFxParser_ParseLight(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1362,104 +1361,104 @@ qboolean CFxParser_ParseLine(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin2"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin2, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin2\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin2\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->alpha, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "height"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->height, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -1467,8 +1466,8 @@ qboolean CFxParser_ParseLine(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1519,111 +1518,111 @@ qboolean CFxParser_ParseParticle(char **buf, qboolean oriented)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->alpha, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "height"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->height, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rotation"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->rotation, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rotation\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rotation\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rotationDelta"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->rotationDelta, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rotationDelta\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rotationDelta\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -1633,6 +1632,7 @@ qboolean CFxParser_ParseParticle(char **buf, qboolean oriented)
 	{
 		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1671,55 +1671,55 @@ qboolean CFxParser_ParseSound(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "sound", 5))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->sound, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"sound\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"sound\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -1727,8 +1727,8 @@ qboolean CFxParser_ParseSound(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -1772,104 +1772,104 @@ qboolean CFxParser_ParseTail(char **buf)
 			}
 			if(!Q_stricmp(token, "name"))
 			{
-				COM_Parse(buf);
+				SkipRestOfLine(buf);
 				continue;			// Editor only - skip this field
 			} else if(!Q_stricmp(token, "life"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->life, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"life\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "delay"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->delay, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"delay\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "count"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->count, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"count\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "cullrange"))
 			{
 				if(!CFxParser_Field_FXInt(&segData->cullrange, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"cullrange\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "flags"))
 			{
 				if(!CFxParser_Field_Flags(&parsedfile.segments[parsedfile.numSegments].flags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"flags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "spawnflags"))
 			{
 				if(!CFxParser_Field_Spawnflags(&parsedfile.segments[parsedfile.numSegments].spawnflags, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"spawnflags\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "origin"))
 			{
 				if(!CFxParser_Field_FXVec3(&segData->origin, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"origin\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "alpha"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->alpha, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "length"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->length, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"alpha\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmpn(token, "shader", 6))
 			{
 				if(!CFxParser_Field_Shaderlist(&segData->shader, buf))
 				{
-					Com_Printf("^3WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Could not parse value \"shaders\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "rgb"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->rgb, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"rgb\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "size"))
 			{
 				if(!CFxParser_Field_Timelapse(&segData->size, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"size\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "radius"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->radius, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"radius\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			} else if(!Q_stricmp(token, "height"))
 			{
 				if(!CFxParser_Field_FXFloat(&segData->height, buf))
 				{
-					Com_Printf("^3WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
+					ri.Printf(PRINT_WARNING, "WARNING: Missing value for \"height\" in %s\n", parsedfile.filename);
 					return qfalse;
 				}
 			}
@@ -1877,8 +1877,8 @@ qboolean CFxParser_ParseTail(char **buf)
 	}
 	if(!foundLastBracket)
 	{
-		Com_Printf("^3WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		free(segData);
+		ri.Printf(PRINT_WARNING, "WARNING: Ending bracket not found on .efx file. BAD THINGS WILL HAPPEN!\n");
 		return qfalse;
 	}
 	// Add the segment to the effect file
@@ -2129,23 +2129,18 @@ int CFxScheduler_RegisterEffect(const char *path)
 	}
 	if(strlen(path) >= MAX_QPATH)
 	{
-		Com_Error(ERR_FATAL, "%s exceeds MAX_QPATH", path);
+		ri.Error(ERR_FATAL, "%s exceeds MAX_QPATH", path);
 	}
-	if(Q_stricmpn(path, EFFECTS_FOLDER, 8))
+	if(Q_stricmpn(path, EFFECTS_FOLDER, 8) != 0)
 	{
-		strcpy(finalPath, EFFECTS_FOLDER);
-		strcat(finalPath, path);
+		Com_sprintf(finalPath, sizeof(finalPath), EFFECTS_FOLDER "%s", path);
 	}
 	else
 	{
-		strcpy(finalPath, path);
+		Q_strncpyz(finalPath, path, sizeof(finalPath));
 	}
 
-	if(Q_stricmp((path+strlen(path))-4, ".efx"))
-	{
-		// Files that don't end in .efx will automatically be converted to a workable format
-		strcat(finalPath, ".efx");
-	}
+	COM_DefaultExtension(finalPath, sizeof(finalPath), ".efx");
 
 	// Loop through the FX files and see if we've got ourselves a repeat file
 	for(i = 0; i < FX_numFXFiles; i++)
@@ -2160,7 +2155,7 @@ int CFxScheduler_RegisterEffect(const char *path)
 	// No? Parse the effect file.
 	if(!CFxParser_ParseEffect(finalPath))
 	{
-		Com_Printf("^3WARNING: Failed to parse effect file (%s)\n", path);
+		ri.Printf(PRINT_WARNING, "WARNING: Failed to parse effect file (%s)\n", path);
 		return 0;
 	}
 	else

@@ -42,7 +42,7 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
 	}
 
 	if ( strlen( fontName ) >= MAX_QPATH ) {
-		ri.Printf( PRINT_DEVELOPER, "Font name exceeds MAX_QPATH\n" );
+		ri.Error( ERR_FATAL, "Font name exceeds MAX_QPATH\n" );
 		return 0;
 	}
 
@@ -117,9 +117,10 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
         float pointSize = fontData->mPointSize;
         float a = pointSize * 0.1f + 2.5f;
 
-        fontData->mHeight = pointSize;
-        fontData->mAscender = pointSize - a;
-        fontData->mDescender = pointSize - fontData->mAscender;
+        fontData->mHeight = (short)pointSize;
+        fontData->mAscender = (short)(pointSize - a);
+        fontData->mDescender = (short)(pointSize - fontData->mAscender);
+		ri.Printf( PRINT_DEVELOPER, "RE_RegisterFont( '%s' ) font contains empty height. estimating... to %hi\n", name, fontData->mHeight);
     }
 
 	Com_Memcpy( &font->fontData, fontData, sizeof( dfontdat_t ) );
@@ -147,7 +148,6 @@ void	R_InitFonts( void ) {
 	font = tr.fonts[0] = ri.Hunk_Alloc( sizeof( font_t ), h_low );
 	Q_strncpyz( font->name, "<default font>", sizeof( font->name )  );
 	font->imageHandle = 0;
-	//font->fontData = ri.Hunk_Alloc( sizeof( dfontdat_t ), h_low );
 	Com_Memset( &font->fontData, 0, sizeof( dfontdat_t ) );
 }
 
@@ -285,7 +285,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 
 	if( text ) {
 		const char *s = text;
-        int yoffset = 0;
+        float yoffset = 0;
 
 		//if ((setIndex & STYLE_BLINK) && ((cls.realtime/BLINK_DIVISOR) & 1))
 		//	return;
@@ -315,7 +315,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 				 *   ----------------------- descender = lowest point below baseline
 				 */
 
-                int yadj = scale * glyph->baseline;
+                float yadj = scale * glyph->baseline;
 
 				if( setIndex & STYLE_DROPSHADOW ) {
 					dropShadow[3] = newColor[3];
