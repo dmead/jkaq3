@@ -60,8 +60,14 @@ void CFxScheduler_RunSchedulerLoop(void)
 			vec3_t result;
 			//float dist;
 			VectorSubtract(backEnd.refdef.vieworg, runningEffects[i].currentOrigin, result);
-			if(runningEffects[i].cullDist > 0 && VectorLength(result) > runningEffects[i].cullDist*2)
+			if(runningEffects[i].cullDist > 0 && VectorLengthSquared(result) > (runningEffects[i].cullDist*runningEffects[i].cullDist)*2)
 			{
+				// Saves on performance according to Ensiform --eez
+				continue;
+			}
+			else if(runningEffects[i].cullDist <= 0 && VectorLengthSquared(result) > (8192*8192))
+			{
+				// Always cull after 8192
 				continue;
 			}
 		}
