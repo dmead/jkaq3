@@ -32,6 +32,8 @@ float coslerp(float start, float end, float phase)
 	return (start*(1-phase2)+end*phase2);
 }
 
+// The following 4 sections are ported straight from Raven's files.
+
 //Sprite vertex template
 const	vec3_t sprite_template[4] =
 {
@@ -48,6 +50,22 @@ const	float sprite_texture_template[][2] =
 	{  0.0f,  1.0f	},	//Bottom left
 	{  1.0f,  1.0f	},	//Bottom right
 	{  1.0f,  0.0f	},	//Top right
+};
+
+const	vec3_t	quad_template[] = 
+{
+	{	-1.0f, -1.0f, 0.0f	},
+	{	-1.0f,  1.0f, 0.0f	},
+	{	 1.0f,  1.0f, 0.0f	},
+	{	 1.0f, -1.0f, 0.0f	}
+};
+
+const	float	quad_st_template[][2] = 
+{
+	{   0.0f,  0.0f	},
+	{   0.0f,  1.0f	},
+	{   1.0f,  1.0f	},
+	{   1.0f,  0.0f	}
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,16 +290,16 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 	int i;
 	float scale;
 
-	if(part->lastRenderTime > backEnd.refdef.time - 50)
-	{
-		return;
-	}
+	//if(part->lastRenderTime > backEnd.refdef.time - 5)
+	//{
+	//	return;
+	//}
 
 	scale = part->currentSize * 2.0f;
 
 	for(i = 0; i < 3; i++)
 	{
-		VectorCopy(backEnd.viewParms.or.axis[i], axis[i]);
+		VectorCopy(tr.refdef.viewaxis[i], axis[i]);
 	}
 
 	if(part->currentRotation)
@@ -290,25 +308,29 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 	for(i = 0; i < 4; i++)
 	{
 		// Loop through each vert in the quad
-		VectorMA( part->currentOrigin,	sprite_template[i][0] * scale, axis[1], verts[i].xyz );
-		VectorMA( verts[i].xyz, sprite_template[i][1] * scale, axis[2], verts[i].xyz );
+		VectorMA( part->currentOrigin,	quad_template[i][0] * scale, axis[1], verts[i].xyz );
+		VectorMA( verts[i].xyz, quad_template[i][1] * scale, axis[2], verts[i].xyz );
 
 		//Setup the UVs
-		verts[i].st[0] = sprite_texture_template[i][0];
-		verts[i].st[1] = sprite_texture_template[i][1];
+		verts[i].st[0] = quad_st_template[i][0];
+		verts[i].st[1] = quad_st_template[i][1];
 
 		//Setup the vertex modulation
-		verts[i].modulate[0] = (byte)(part->currentRGB[0] * 255);
-		verts[i].modulate[1] = (byte)(part->currentRGB[1] * 255);
-		verts[i].modulate[2] = (byte)(part->currentRGB[2] * 255);
+		verts[i].modulate[0] = (byte)((part->currentRGB[0] * 255));
+		verts[i].modulate[1] = (byte)((part->currentRGB[1] * 255));
+		verts[i].modulate[2] = (byte)((part->currentRGB[2] * 255));
 
 		// TODO: Use alpha chan? (copy from Elite Forces SDK?)
-		verts[i].modulate[3] = part->currentAlpha*255;
+		// FIXME: NO EFFECT WTF
+		{
+			float currentAlpha = part->currentAlpha*123;
+			verts[i].modulate[3] = (byte)(currentAlpha);
+		}
 	}
 
 	RE_AddPolyToScene(part->handle, 4, verts, 1);
 
-	//part->lastRenderTime = backEnd.refdef.time + 50;
+	//part->lastRenderTime = backEnd.refdef.time + 5;
 }
 
 void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir)
@@ -399,4 +421,199 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 }
 #ifdef WIN32
 #pragma endregion
+#endif
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//																									 //
+//																									 //
+//									LINES															 //
+//																									 //
+//																									 //
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
+#ifdef WIN32
+#pragma region Lines
+#endif
+static void CFxPrimitive_ParticleThink(float phase, FXPlayingParticle_t *part)
+{
+	// Only care about things that change here.
+	int i;
+
+	if(VectorCompare(part->startRGB, part->endRGB))		// This changes based on time, so do some sort of magic lerping
+	{
+		// TODO: wave/clamp/nonlinear. BLAH.
+		if(part->RGBflags & FXTLF_NONLINEAR)
+		{
+			// Nonlinear
+			/*if(phase > part->RGBparameter)
+			{
+				for(i = 0; i < 3; i++)
+				{
+					part->currentRGB[i] = lerp(part->startRGB[i], part->endRGB[i], 1.0f(1.0f-phase));
+				}
+			}
+			else if(part->RGBflags & FXTLF_LINEAR)
+			{
+				// TODO: Nonlinear/Linear
+				goto LinearParticleRGB;
+			}*/
+		}
+		else if(part->RGBflags & FXTLF_LINEAR)
+		{
+			for(i = 0; i < 3; i++)
+			{
+				part->currentRGB[i] = lerp(part->startRGB[i], part->endRGB[i], phase);
+			}
+		}
+	}
+	if(part->startSize != part->endSize)
+	{
+		part->currentSize = coslerp(part->startSize, part->endSize, phase);
+	}
+	if(part->startAlpha != part->endAlpha)
+	{
+		part->currentAlpha = lerp(part->startAlpha, part->endAlpha, phase);
+	}
+	if(part->rotationStart+part->rotationDelta != part->rotationStart)
+	{
+		part->currentRotation = lerp(part->rotationStart, part->rotationStart+part->rotationDelta, phase);
+	}
+	// TODO: do movement
+	VectorAdd(part->currentOrigin, part->velocity, part->currentOrigin);
+}
+
+static void CFxPrimitive_LineRender(FXPlayingParticle_t *part)
+{
+	polyVert_t verts[4];
+	vec3_t axis[3];
+	int i;
+	float scale;
+
+	if(part->lastRenderTime > backEnd.refdef.time - 50)
+	{
+		return;
+	}
+
+	scale = part->currentSize * 2.0f;
+
+	for(i = 0; i < 3; i++)
+	{
+		VectorCopy(backEnd.viewParms.or.axis[i], axis[i]);
+	}
+
+	if(part->currentRotation)
+		RotateAroundDirection(axis, part->currentRotation);
+
+	for(i = 0; i < 4; i++)
+	{
+		// Loop through each vert in the quad
+		VectorMA( part->currentOrigin,	sprite_template[i][0] * scale, axis[1], verts[i].xyz );
+		VectorMA( verts[i].xyz, sprite_template[i][1] * scale, axis[2], verts[i].xyz );
+
+		//Setup the UVs
+		verts[i].st[0] = sprite_texture_template[i][0];
+		verts[i].st[1] = sprite_texture_template[i][1];
+
+		//Setup the vertex modulation
+		verts[i].modulate[0] = (byte)(part->currentRGB[0] * 255);
+		verts[i].modulate[1] = (byte)(part->currentRGB[1] * 255);
+		verts[i].modulate[2] = (byte)(part->currentRGB[2] * 255);
+
+		// TODO: Use alpha chan? (copy from Elite Forces SDK?)
+		verts[i].modulate[3] = part->currentAlpha*255;
+	}
+
+	RE_AddPolyToScene(part->handle, 4, verts, 1);
+
+	//part->lastRenderTime = backEnd.refdef.time + 50;
+}
+
+void CFxPrimitive_CreateLinePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir)
+{
+	FXLineSegment_t *particle;
+	FXPlayingParticle_t part;
+	if(!segment)
+	{	// NULL segment pointer?
+		return;
+	}
+	if(!segment->SegmentData.FXParticleSegment)
+	{	// No particle segment data?
+		return;
+	}
+	if(segment->segmentType != EFXS_PARTICLE)
+	{	// Not a particle?
+		return;
+
+
+	}
+	particle = segment->SegmentData.FXParticleSegment;
+	Com_Memset(&part, 0, sizeof(part));
+
+	part.cullDist = flrand(particle->cullrange[0], particle->cullrange[1]);
+	part.startTime = backEnd.refdef.time + Q_irand(particle->delay[0], particle->delay[1]);
+	part.endTime = part.startTime + Q_irand(particle->life[0], particle->life[1]);
+	vecrandom(particle->origin[0], particle->origin[1], &part.originalOrigin);
+	if(!(segment->spawnflags & FXSFLAG_CHEAPORIGINCALC) || segment->spawnflags < 0)
+	{
+		// Cheap origin calculation if false - use origin listed
+		VectorAdd(part.originalOrigin, origin, part.originalOrigin);
+	}
+	VectorCopy(part.originalOrigin, part.currentOrigin);
+
+	VectorCopy(particle->velocity[Q_irand(0,1)], part.velocity);
+	VectorCopy(particle->acceleration[Q_irand(0,1)], part.acceleration);
+
+	part.handle = particle->shader.fieldHandles[Q_irand(0, particle->shader.numFields-1)];
+
+
+	vecrandom(particle->rgb.start.sv[0], particle->rgb.start.sv[1], &part.startRGB);
+	if(particle->rgb.flags != 0 || !(particle->rgb.flags & FXTLF_CONSTANT))
+	{
+		vecrandom(particle->rgb.end.ev[0], particle->rgb.end.ev[1], &part.endRGB);
+	}
+	else
+	{
+		VectorCopy(part.startRGB, part.endRGB);
+	}
+	part.RGBflags = particle->rgb.flags;
+	VectorCopy(part.startRGB, part.currentRGB);
+
+	part.startSize = part.currentSize = flrand(particle->size.start.sf[0], particle->size.start.sf[1]);
+	if(particle->size.flags != 0 || !(particle->size.flags & FXTLF_CONSTANT))
+	{
+		// TODO: make the distinction between wave, clamp, nonlinear, etc
+		part.endSize = flrand(particle->size.end.ef[0], particle->size.end.ef[1]);
+	}
+	else
+	{
+		part.endSize = part.startSize;
+	}
+	part.sizeFlags = particle->size.flags;
+
+	part.startAlpha = part.currentAlpha = flrand(particle->alpha.start.sf[0], particle->alpha.start.sf[1]);
+	if(particle->alpha.flags != 0 || !(particle->alpha.flags & FXTLF_CONSTANT))
+	{
+		// TODO: make the distinction between wave, clamp, nonlinear, etc
+		part.endAlpha = flrand(particle->alpha.end.ef[0], particle->alpha.end.ef[1]);
+	}
+	else
+	{
+		part.endAlpha = part.startAlpha;
+	}
+	part.alphaFlags = particle->alpha.flags;
+
+	// Do rotation bits
+	part.currentRotation = part.rotationStart = flrand(particle->rotation[0], particle->rotation[1]);
+	part.rotationDelta = flrand(particle->rotationDelta[0], particle->rotationDelta[1]);
+
+	part.velocity[0] = flrand(particle->velocity[0][0], particle->velocity[1][0]);
+	part.velocity[1] = flrand(particle->velocity[0][1], particle->velocity[1][1]);
+	part.velocity[2] = flrand(particle->velocity[0][2], particle->velocity[1][2]);
+
+	part.render = CFxPrimitive_ParticleRender;
+	part.think = CFxPrimitive_ParticleThink;
+	CFxScheduler_AddToScheduler(&part);
+}
+#ifdef WIN32
+#pragma endregion
+#endif
 #endif
