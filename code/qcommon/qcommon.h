@@ -1120,7 +1120,7 @@ const char *Sys_Basename( char *path );
 char *Sys_ConsoleInput(void);
 
 char **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );
-void	Sys_FreeFileList( char **list );
+void	Sys_FreeFileList( char **fileList );
 void	Sys_Sleep(int msec);
 
 qboolean Sys_LowPhysicalMemory( void );

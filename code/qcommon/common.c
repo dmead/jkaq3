@@ -2571,7 +2571,7 @@ void Com_Init( char *commandLine ) {
 #endif
 	FS_InitFilesystem ();
 
-	SE_Init( );
+	//SE_Init( );
 
 	Com_InitJournaling();
 
@@ -2604,6 +2604,8 @@ void Com_Init( char *commandLine ) {
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
+
+	SE_Init( );
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file

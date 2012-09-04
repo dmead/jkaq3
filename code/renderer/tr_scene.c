@@ -308,11 +308,15 @@ void RE_RenderScene( const refdef_t *fd ) {
 		return;
 	}
 
+
 	startTime = ri.Milliseconds();
 
 	if (!tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) ) {
 		ri.Error (ERR_DROP, "R_RenderScene: NULL worldmodel");
 	}
+
+	// Probably a good idea to do effects things here -- eez
+	CFxScheduler_RunSchedulerLoop();
 
 	Com_Memcpy( tr.refdef.text, fd->text, sizeof( tr.refdef.text ) );
 

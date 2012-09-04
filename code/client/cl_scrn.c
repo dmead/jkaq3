@@ -229,7 +229,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	while ( *s ) {
 		if ( !noColorEscape && Q_IsColorString( s ) ) {
 			if ( !forceColor ) {
-				Com_Memcpy( color, g_color_table[ColorIndex(*(s+1))], sizeof( color ) );
+				Com_Memcpy( color, ColorForIndex(ColorIndex(*(s+1))), sizeof( color ) );
 				color[3] = setColor[3];
 				re.SetColor( color );
 			}
@@ -278,7 +278,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 	while ( *s ) {
 		if ( Q_IsColorString( s ) ) {
 			if ( !forceColor ) {
-				Com_Memcpy( color, g_color_table[ColorIndex(*(s+1))], sizeof( color ) );
+				Com_Memcpy( color, ColorForIndex(ColorIndex(*(s+1))), sizeof( color ) );
 				color[3] = setColor[3];
 				re.SetColor( color );
 			}
@@ -344,7 +344,7 @@ void SCR_DrawDemoRecording( void ) {
 	pos = FS_FTell( clc.demofile );
 	sprintf( string, "RECORDING %s: %ik", clc.demoName, pos / 1024 );
 
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 20, 8, string, g_color_table[7], qtrue, qfalse );
+	SCR_DrawStringExt( 320 - strlen( string ) * 4, 20, 8, string, ColorForIndex(ColorIndex(COLOR_WHITE)), qtrue, qfalse );
 }
 
 
@@ -383,7 +383,7 @@ void SCR_DrawVoipMeter( void ) {
 	buffer[i] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[7], qtrue, qfalse );
+	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, ColorForIndex(ColorIndex(COLOR_WHITE)), qtrue, qfalse );
 }
 #endif
 
@@ -428,7 +428,7 @@ void SCR_DrawDebugGraph (void)
 	w = cls.glconfig.vidWidth;
 	x = 0;
 	y = cls.glconfig.vidHeight;
-	re.SetColor( g_color_table[0] );
+	re.SetColor( ColorForIndex(ColorIndex(COLOR_BLACK)) );
 	re.DrawStretchPic(x, y - cl_graphheight->integer, 
 		w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader );
 	re.SetColor( NULL );
@@ -484,7 +484,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
 	// unless they are displaying game renderings
 	if ( uiFullscreen || (clc.state != CA_ACTIVE && clc.state != CA_CINEMATIC) ) {
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 ) {
-			re.SetColor( g_color_table[0] );
+			re.SetColor( ColorForIndex(ColorIndex(COLOR_BLACK)) );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
 			re.SetColor( NULL );
 		}

@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
+#include "tr_fx.h"
 #include "qgl.h"
 #include "iqm.h"
 
@@ -49,7 +50,8 @@ typedef unsigned int glIndex_t;
 #define MAX_STATES_PER_SHADER 32
 #define MAX_STATE_NAME 32
 
-
+#define FONT_BITS	5
+#define MAX_FONTS		(1<<FONT_BITS)
 
 typedef struct dlight_s {
 	vec3_t	origin;
@@ -479,6 +481,12 @@ typedef struct skin_s {
 	skinSurface_t	*surfaces[MD3_MAX_SURFACES];
 } skin_t;
 
+typedef struct font_s {
+	char		name[MAX_QPATH];
+	qhandle_t	imageHandle;
+	dfontdat_t	fontData;
+} font_t;
+
 
 typedef struct {
 	int			originalBrushNumber;
@@ -730,13 +738,6 @@ typedef struct {
 	msurface_t	*firstSurface;
 	int			numSurfaces;
 } bmodel_t;
-
-typedef struct {
-	vec3_t		origin;
-	vec4_t		ambientColor;
-	vec4_t		directedColor;
-	vec3_t		direction;
-} bgridpoint_t;
 
 // ydnar: optimization
 #define WORLD_MAX_SKY_NODES 32
@@ -1067,6 +1068,9 @@ typedef struct {
 	int						numSkins;
 	skin_t					*skins[MAX_SKINS];
 
+	int						numFonts;
+	font_t					*fonts[MAX_FONTS];
+
 	float					sinTable[FUNCTABLE_SIZE];
 	float					squareTable[FUNCTABLE_SIZE];
 	float					triangleTable[FUNCTABLE_SIZE];
@@ -1354,9 +1358,9 @@ void		R_GammaCorrect( byte *buffer, int bufSize );
 
 void	R_ImageList_f( void );
 void	R_SkinList_f( void );
+void	R_FontList_f( void );
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=516
 const void *RB_TakeScreenshotCmd( const void *data );
-void	R_ScreenShot_f( void );
 
 void	R_InitFogTable( void );
 float	R_FogFactor( float s, float t );
@@ -1752,6 +1756,12 @@ typedef struct {
 	int		numDrawSurfs;
 } drawSurfsCommand_t;
 
+typedef enum {
+	SSF_TGA,
+	SSF_JPEG,
+	SSF_PNG
+} ssFormat_t;
+
 typedef struct {
 	int commandId;
 	int x;
@@ -1759,7 +1769,7 @@ typedef struct {
 	int width;
 	int height;
 	char *fileName;
-	qboolean jpeg;
+	ssFormat_t format;
 } screenshotCommand_t;
 
 typedef struct {
@@ -1846,6 +1856,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame );
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 void RE_SaveJPG(char * filename, int quality, int image_width, int image_height,
                 unsigned char *image_buffer, int padding);
+void RE_SavePNG(char * filename, int image_width, int image_height, byte *image_buffer, int num_bytes, int padding, qboolean flip);
 size_t RE_SaveJPGToBuffer(byte *buffer, size_t bufSize, int quality,
 		          int image_width, int image_height, byte *image_buffer, int padding);
 void RE_TakeVideoFrame( int width, int height,
@@ -1860,5 +1871,9 @@ int RE_Font_HeightPixels( const int iFontIndex, const float scale );
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale );
 
 extern int skyboxportal;
+
+// effects
+extern void CFxScheduler_Init(void);
+extern void CFxScheduler_Cleanup(void);
 
 #endif //TR_LOCAL_H

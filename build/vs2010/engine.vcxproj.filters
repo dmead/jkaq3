@@ -37,6 +37,9 @@
     <Filter Include="code\asm">
       <UniqueIdentifier>{7bda19f0-6f3a-477a-8a65-cea1d616b636}</UniqueIdentifier>
     </Filter>
+    <Filter Include="code\png">
+      <UniqueIdentifier>{039559bf-7758-47ee-a85f-c22cc4e2d925}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\renderer\iqm.h">
@@ -287,6 +290,36 @@
     </ClInclude>
     <ClInclude Include="..\..\code\sys\win_resource.h">
       <Filter>code\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\png\png.h">
+      <Filter>code\png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\png\pngconf.h">
+      <Filter>code\png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\png\pngpriv.h">
+      <Filter>code\png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\png\pnglibconf.h">
+      <Filter>code\png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\png\pngstruct.h">
+      <Filter>code\png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\png\pnginfo.h">
+      <Filter>code\png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\png\pngdebug.h">
+      <Filter>code\png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\zlib\deflate.h">
+      <Filter>code\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\zlib\trees.h">
+      <Filter>code\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\renderer\tr_fx.h">
+      <Filter>code\renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -937,6 +970,69 @@
     </ClCompile>
     <ClCompile Include="..\..\code\client\snd_as.c">
       <Filter>code\client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\png.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngerror.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngget.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngmem.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngpread.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngread.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngrio.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngrtran.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngrutil.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngset.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngtrans.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngwio.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngwrite.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngwtran.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\png\pngwutil.c">
+      <Filter>code\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\deflate.c">
+      <Filter>code\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\trees.c">
+      <Filter>code\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\zlib\compress.c">
+      <Filter>code\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_fx.c">
+      <Filter>code\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_fx_load.c">
+      <Filter>code\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_fx_primitives.c">
+      <Filter>code\renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
