@@ -462,5 +462,5 @@ int AS_AddLocalSet( const char *name, vec3_t listener_origin, vec3_t origin, int
 }
 
 sfxHandle_t AS_GetBModelSound( const char *name, int stage ) {
-	return 0;
+	return -1;
 }
