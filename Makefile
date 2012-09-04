@@ -193,6 +193,10 @@ ifndef USE_INTERNAL_JPEG
 USE_INTERNAL_JPEG=1
 endif
 
+ifndef USE_INTERNAL_PNG
+USE_INTERNAL_PNG=1
+endif
+
 ifndef USE_LOCAL_HEADERS
 USE_LOCAL_HEADERS=1
 endif
@@ -226,6 +230,7 @@ BLIBDIR=$(MOUNT_DIR)/botlib
 NDIR=$(MOUNT_DIR)/null
 UIDIR=$(MOUNT_DIR)/ui
 JPDIR=$(MOUNT_DIR)/jpeg-8c
+PNGDIR=$(MOUNT_DIR)/png
 SPEEXDIR=$(MOUNT_DIR)/libspeex
 ZDIR=$(MOUNT_DIR)/zlib
 Q3ASMDIR=$(MOUNT_DIR)/tools/asm
@@ -957,6 +962,13 @@ else
   RENDERER_LIBS += -ljpeg
 endif
 
+ifeq ($(USE_INTERNAL_PNG),1)
+  BASE_CFLAGS += -DUSE_INTERNAL_PNG
+  BASE_CFLAGS += -I$(PNGDIR)
+else
+  RENDERER_LIBS += -lpng
+endif
+
 ifeq ($(USE_FREETYPE),1)
   RENDERER_LIBS += -lfreetype
 endif
@@ -1491,6 +1503,9 @@ Q3ROBJ = \
   $(B)/renderer/tr_curve.o \
   $(B)/renderer/tr_flares.o \
   $(B)/renderer/tr_font.o \
+  $(B)/renderer/tr_fx.o \
+  $(B)/renderer/tr_fx_load.o \
+  $(B)/renderer/tr_fx_primitives.o \
   $(B)/renderer/tr_image.o \
   $(B)/renderer/tr_image_png.o \
   $(B)/renderer/tr_image_jpg.o \
@@ -1575,6 +1590,38 @@ ifneq ($(USE_INTERNAL_JPEG),0)
     $(B)/renderer/jutils.o
 endif
 
+ifneq ($(USE_INTERNAL_PNG),0)
+  Q3ROBJ += \
+    $(B)/renderer/png.o \
+    $(B)/renderer/pngerror.o \
+    $(B)/renderer/pngget.o \
+    $(B)/renderer/pngmem.o \
+    $(B)/renderer/pngpread.o \
+    $(B)/renderer/pngread.o \
+    $(B)/renderer/pngrio.o \
+    $(B)/renderer/pngrtran.o \
+    $(B)/renderer/pngrutil.o \
+    $(B)/renderer/pngset.o \
+    $(B)/renderer/pngtrans.o \
+    $(B)/renderer/pngwio.o \
+    $(B)/renderer/pngwrite.o \
+    $(B)/renderer/pngwtran.o \
+    $(B)/renderer/pngwutil.o
+endif
+
+ifeq ($(USE_INTERNAL_ZLIB),1)
+  Q3ROBJ += \
+    $(B)/renderer/adler32.o \
+    $(B)/renderer/compress.o \
+    $(B)/renderer/crc32.o \
+    $(B)/renderer/deflate.o \
+    $(B)/renderer/inffast.o \
+    $(B)/renderer/inflate.o \
+    $(B)/renderer/inftrees.o \
+    $(B)/renderer/trees.o \
+    $(B)/renderer/zutil.o
+endif
+
 ifeq ($(ARCH),i386)
   Q3OBJ += \
     $(B)/client/snd_mixa.o \
@@ -1654,10 +1701,13 @@ endif
 ifeq ($(USE_INTERNAL_ZLIB),1)
 Q3OBJ += \
   $(B)/client/adler32.o \
+  $(B)/client/compress.o \
   $(B)/client/crc32.o \
+  $(B)/client/deflate.o \
   $(B)/client/inffast.o \
   $(B)/client/inflate.o \
   $(B)/client/inftrees.o \
+  $(B)/client/trees.o \
   $(B)/client/zutil.o
 endif
 
@@ -1882,10 +1932,13 @@ endif
 ifeq ($(USE_INTERNAL_ZLIB),1)
 Q3DOBJ += \
   $(B)/ded/adler32.o \
+  $(B)/ded/compress.o \
   $(B)/ded/crc32.o \
+  $(B)/ded/deflate.o \
   $(B)/ded/inffast.o \
   $(B)/ded/inflate.o \
   $(B)/ded/inftrees.o \
+  $(B)/ded/trees.o \
   $(B)/ded/zutil.o
 endif
 
@@ -2437,6 +2490,12 @@ $(B)/renderer/%.o: $(SDLDIR)/%.c
 $(B)/renderer/%.o: $(JPDIR)/%.c
 	$(DO_REF_CC)
 
+$(B)/renderer/%.o: $(PNGDIR)/%.c
+	$(DO_REF_CC)
+
+$(B)/renderer/%.o: $(ZDIR)/%.c
+	$(DO_REF_CC)
+
 $(B)/renderer/%.o: $(RDIR)/%.c
 	$(DO_REF_CC)
 
@@ -2679,7 +2738,8 @@ ifeq ($(PLATFORM),mingw32)
 		USE_CURL_DLOPEN=$(USE_CURL_DLOPEN) \
 		USE_INTERNAL_SPEEX=$(USE_INTERNAL_SPEEX) \
 		USE_INTERNAL_ZLIB=$(USE_INTERNAL_ZLIB) \
-		USE_INTERNAL_JPEG=$(USE_INTERNAL_JPEG)
+		USE_INTERNAL_JPEG=$(USE_INTERNAL_JPEG) \
+		USE_INTERNAL_PNG=$(USE_INTERNAL_PNG)
 else
 	@$(MAKE) VERSION=$(VERSION) -C $(LOKISETUPDIR) V=$(V)
 endif
