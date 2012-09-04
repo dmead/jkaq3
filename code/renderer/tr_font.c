@@ -113,17 +113,17 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
 	fontData->mDescender = LittleShort(fontData->mDescender);
 	fontData->mKoreanHack = LittleShort(fontData->mKoreanHack);
 
-    // Hack to fix the numbers apparently.
-    if( !fontData->mHeight ) {
-        float pointSize = fontData->mPointSize;
-        float a = pointSize * 0.1f + 2.5f;
+	// Hack to fix the numbers apparently.
+	if( !fontData->mHeight ) {
+		float pointSize = fontData->mPointSize;
+		float a = pointSize * 0.1f + 2.5f;
 
-        fontData->mHeight = (short)pointSize;
-        fontData->mAscender = (short)(pointSize - a);
-        fontData->mDescender = (short)(pointSize - fontData->mAscender);
+		fontData->mHeight = (short)pointSize;
+		fontData->mAscender = (short)(pointSize - a);
+		fontData->mDescender = (short)(pointSize - fontData->mAscender);
 		ri.Printf( PRINT_DEVELOPER, "RE_RegisterFont( '%s' ) font contains empty height. estimating... h:%hi a:%hi d:%hi\n", name,
 			fontData->mHeight, fontData->mAscender, fontData->mDescender);
-    }
+	}
 
 	Com_Memcpy( &font->fontData, fontData, sizeof( dfontdat_t ) );
 
