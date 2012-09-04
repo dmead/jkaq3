@@ -299,7 +299,7 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 
 	for(i = 0; i < 3; i++)
 	{
-		VectorCopy(tr.refdef.viewaxis[i], axis[i]);
+		VectorCopy(backEnd.viewParms.or.axis[i], axis[i]);
 	}
 
 	if(part->currentRotation)
