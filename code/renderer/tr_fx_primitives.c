@@ -323,8 +323,7 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 		// TODO: Use alpha chan? (copy from Elite Forces SDK?)
 		// FIXME: NO EFFECT WTF
 		{
-			float currentAlpha = part->currentAlpha*123;
-			verts[i].modulate[3] = (byte)(currentAlpha);
+			verts[i].modulate[3] = (byte)(part->currentAlpha * 255);
 		}
 	}
 
