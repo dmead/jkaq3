@@ -1361,12 +1361,12 @@ void NPC_DefaultScriptFlags( gentity_t *ent )
 NPC_Spawn_Go
 -------------------------
 */
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 extern void G_CreateAnimalNPC( Vehicle_t **pVeh, const char *strAnimalType );
 extern void G_CreateSpeederNPC( Vehicle_t **pVeh, const char *strType );
 extern void G_CreateWalkerNPC( Vehicle_t **pVeh, const char *strAnimalType );
 extern void G_CreateFighterNPC( Vehicle_t **pVeh, const char *strType );
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 gentity_t *NPC_Spawn_Do( gentity_t *ent )
 {

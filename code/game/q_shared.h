@@ -13,7 +13,7 @@
 
 #define MAX_TEAMNAME 32
 
-#include "../qcommon/disablewarnings.h"
+//#include "../qcommon/disablewarnings.h"
 
 #include "teams.h" //npc team stuff
 
@@ -3120,6 +3120,7 @@ Ghoul2 Insert End
 */
 
 
+#if 0
 // define the new memory tags for the zone, used by all modules now
 //
 #define TAGDEF(blah) TAG_ ## blah
@@ -3127,6 +3128,7 @@ typedef enum {
 	#include "../qcommon/tags.h"
 };
 typedef char memtag_t;
+#endif
 
 //rww - conveniently toggle "gore" code, for model decals and stuff.
 #define _G2_GORE
