@@ -2019,7 +2019,7 @@ Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/ui_shared.o \
   \
   $(B)/$(BASEGAME)/game/q_math.o \
-  $(B)/$(BASEGAME)/qcommon/q_shared.o
+  $(B)/$(BASEGAME)/game/q_shared.o
 
 Q3CGOBJ = $(Q3CGOBJ_) $(B)/$(BASEGAME)/cgame/cg_syscalls.o
 Q3CGVMOBJ = $(Q3CGOBJ_:%.o=%.asm)
@@ -2090,7 +2090,7 @@ MPCGOBJ_ = \
   $(B)/$(MISSIONPACK)/cgame/ui_shared.o \
   \
   $(B)/$(MISSIONPACK)/game/q_math.o \
-  $(B)/$(MISSIONPACK)/qcommon/q_shared.o
+  $(B)/$(MISSIONPACK)/game/q_shared.o
 
 MPCGOBJ = $(MPCGOBJ_) $(B)/$(MISSIONPACK)/cgame/cg_syscalls.o
 MPCGVMOBJ = $(MPCGOBJ_:%.o=%.asm)
@@ -2198,7 +2198,7 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/w_saber.o \
   \
   $(B)/$(BASEGAME)/game/q_math.o \
-  $(B)/$(BASEGAME)/qcommon/q_shared.o
+  $(B)/$(BASEGAME)/game/q_shared.o
 
 Q3GOBJ = $(Q3GOBJ_) $(B)/$(BASEGAME)/game/g_syscalls.o
 Q3GVMOBJ = $(Q3GOBJ_:%.o=%.asm)
@@ -2304,7 +2304,7 @@ MPGOBJ_ = \
   $(B)/$(MISSIONPACK)/game/w_saber.o \
   \
   $(B)/$(MISSIONPACK)/game/q_math.o \
-  $(B)/$(MISSIONPACK)/qcommon/q_shared.o
+  $(B)/$(MISSIONPACK)/game/q_shared.o
 
 MPGOBJ = $(MPGOBJ_) $(B)/$(MISSIONPACK)/game/g_syscalls.o
 MPGVMOBJ = $(MPGOBJ_:%.o=%.asm)
@@ -2337,7 +2337,7 @@ Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/bg_weapons.o \
   \
   $(B)/$(BASEGAME)/game/q_math.o \
-  $(B)/$(BASEGAME)/qcommon/q_shared.o
+  $(B)/$(BASEGAME)/game/q_shared.o
 
 Q3UIOBJ = $(Q3UIOBJ_) $(B)/$(BASEGAME)/ui/ui_syscalls.o
 Q3UIVMOBJ = $(Q3UIOBJ_:%.o=%.asm)
@@ -2368,7 +2368,7 @@ MPUIOBJ_ = \
   $(B)/$(MISSIONPACK)/ui/bg_weapons.o \
   \
   $(B)/$(MISSIONPACK)/game/q_math.o \
-  $(B)/$(MISSIONPACK)/qcommon/q_shared.o
+  $(B)/$(MISSIONPACK)/game/q_shared.o
 
 MPUIOBJ = $(MPUIOBJ_) $(B)/$(MISSIONPACK)/ui/ui_syscalls.o
 MPUIVMOBJ = $(MPUIOBJ_:%.o=%.asm)

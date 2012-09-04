@@ -804,7 +804,7 @@ int BoxOnPlaneSide2 (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 */
 #if !( (defined __linux__ || __FreeBSD__) && (defined __i386__) && (!defined C_ONLY)) // rb010123
 
-#if defined __LCC__ || defined C_ONLY || !id386
+#if !defined( _MSC_VER ) || defined C_ONLY || !id386
 
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 {
@@ -1473,6 +1473,7 @@ int Q_irand(int value1, int value2)
 	return irand(value1, value2);
 }
 
+#ifdef Q3_VM 
 float powf ( float x, int y )
 {
 	float r = x;
@@ -1481,7 +1482,6 @@ float powf ( float x, int y )
 	return r;
 }
 
-#ifdef Q3_VM 
 //rwwRMG - needed for HandleEntityAdjustment
 double fmod( double x, double y )
 {

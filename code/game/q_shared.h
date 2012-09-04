@@ -6,6 +6,8 @@
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
+#define Q3_VERSION "iojamp 2.0"
+
 //NOTENOTE: Only change this to re-point ICARUS to a new script directory
 #define Q3_SCRIPT_DIR	"scripts"
 
@@ -51,6 +53,16 @@ extern int g_G2ClientAlloc;
 extern int g_G2AllocServer;
 #endif
 
+#if (defined _MSC_VER)
+#define Q_EXPORT __declspec(dllexport)
+#elif (defined __SUNPRO_C)
+#define Q_EXPORT __global
+#elif ((__GNUC__ >= 3) && (!__EMX__) && (!sun))
+#define Q_EXPORT __attribute__((visibility("default")))
+#else
+#define Q_EXPORT
+#endif
+
 /**********************************************************************
   VM Considerations
 
@@ -73,9 +85,6 @@ extern int g_G2AllocServer;
 
 #define assert(exp)     ((void)0)
 
-#define min(x,y) ((x)<(y)?(x):(y))
-#define max(x,y) ((x)>(y)?(x):(y))
-
 #else
 
 #include <assert.h>
@@ -88,12 +97,27 @@ extern int g_G2AllocServer;
 #include <ctype.h>
 #include <limits.h>
 
-// Special min treatment for Xbox C++ version
+#ifdef _MSC_VER
+  #include <io.h>
 
-#ifdef _XBOX
+  typedef __int64 int64_t;
+  typedef __int32 int32_t;
+  typedef __int16 int16_t;
+  typedef __int8 int8_t;
+  typedef unsigned __int64 uint64_t;
+  typedef unsigned __int32 uint32_t;
+  typedef unsigned __int16 uint16_t;
+  typedef unsigned __int8 uint8_t;
+#else
+  #include <stdint.h>
+#endif
+
 #define min(x,y) ((x)<(y)?(x):(y))
 #define max(x,y) ((x)>(y)?(x):(y))
 
+// Special treatment for Xbox C++ version
+
+#ifdef _XBOX
 #define tvector(T) std::vector< T >
 #define tdeque(T) std::deque< T >
 
@@ -1239,7 +1263,9 @@ float Q_rsqrt( float f );		// reciprocal square root
 signed char ClampChar( int i );
 signed short ClampShort( int i );
 
+#ifdef Q3_VM
 float powf ( float x, int y );
+#endif
 
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir );
@@ -1400,10 +1426,7 @@ typedef struct {
 #define VectorSet5(v,x,y,z,a,b)	((v)[0]=(x), (v)[1]=(y), (v)[2]=(z), (v)[3]=(a), (v)[4]=(b)) //rwwRMG - added
 #define Vector4Copy(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
 
-#ifdef __linux__
-#define	SnapVector(v) {v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
-#else 
-#ifndef __LCC__
+#ifdef _MSC_VER
 //pitiful attempt to reduce _ftol2 calls -rww
 static ID_INLINE void SnapVector( float *v )
 {
@@ -1427,8 +1450,7 @@ static ID_INLINE void SnapVector( float *v )
 }
 #else
 #define	SnapVector(v) {v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
-#endif // __LCC__
-#endif // __linux__
+#endif // _MSC_VER
 
 // just in case you do't want to use the macros
 vec_t _DotProduct( const vec3_t v1, const vec3_t v2 );

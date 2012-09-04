@@ -3683,11 +3683,12 @@ void Leaving_EditField(itemDef_t *item)
 qboolean Item_TextField_HandleKey(itemDef_t *item, int key);
 
 void Item_TextField_Paste( itemDef_t *item ) {
+#ifndef CGAME
 	char	cbd[2048];
 	int		pasteLen, i;
 	editFieldDef_t *editPtr = (editFieldDef_t*)item->typeData;
 
-	trap_GetClipboardData( cbd, MIN(editPtr->maxChars, 2048) );
+	trap_GetClipboardData( cbd, min(editPtr->maxChars, 2048) );
 
 	if ( !cbd ) {
 		return;
@@ -3698,6 +3699,7 @@ void Item_TextField_Paste( itemDef_t *item ) {
 	for ( i = 0 ; i < pasteLen ; i++ ) {
 		Item_TextField_HandleKey( item, (cbd[i] | K_CHAR_FLAG) );
 	}
+#endif
 }
 
 qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
