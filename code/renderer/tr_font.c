@@ -37,13 +37,15 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
 	char name[MAX_QPATH], nametga[MAX_QPATH];
 
 	if( !fontName ) {
-		ri.Printf( PRINT_ALL, "RE_RegisterFont: called with empty name\n" );
-		return 0;
+		ri.Error( ERR_FATAL, "RE_RegisterFont: NULL" );
+	}
+
+	if( !fontName[0] ) {
+		ri.Error( ERR_FATAL, "RE_RegisterFont: called with empty name" );
 	}
 
 	if ( strlen( fontName ) >= MAX_QPATH ) {
-		ri.Error( ERR_FATAL, "Font name exceeds MAX_QPATH\n" );
-		return 0;
+		ri.Error( ERR_FATAL, "Font name exceeds MAX_QPATH" );
 	}
 
 	Com_sprintf( name, sizeof( name ), "fonts/%s.fontdat", fontName );
@@ -69,8 +71,7 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
 
 	// allocate a new font
 	if ( tr.numFonts == MAX_FONTS ) {
-		ri.Printf( PRINT_WARNING, "WARNING: RE_RegisterFont( '%s' ) MAX_FONTS hit\n", name );
-		return 0;
+		ri.Error( ERR_FATAL, "RE_RegisterFont( '%s' ) MAX_FONTS hit", name );
 	}
 	tr.numFonts++;
 	font = ri.Hunk_Alloc( sizeof( font_t ), h_low );
@@ -89,7 +90,7 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
 	}
 
 	if( len != sizeof(dfontdat_t) ) {
-		ri.Error( ERR_DROP, "RE_RegisterFont: fontdat too short (%s)", name );
+		ri.Error( ERR_FATAL, "RE_RegisterFont( '%s' ) file size mismatch ( %i != %i )", name, len, sizeof(dfontdat_t) );
 	}
 
 	fontData = ri.Hunk_Alloc( sizeof( dfontdat_t ), h_low );
@@ -120,7 +121,8 @@ qhandle_t RE_RegisterFont( const char *fontName ) {
         fontData->mHeight = (short)pointSize;
         fontData->mAscender = (short)(pointSize - a);
         fontData->mDescender = (short)(pointSize - fontData->mAscender);
-		ri.Printf( PRINT_DEVELOPER, "RE_RegisterFont( '%s' ) font contains empty height. estimating... to %hi\n", name, fontData->mHeight);
+		ri.Printf( PRINT_DEVELOPER, "RE_RegisterFont( '%s' ) font contains empty height. estimating... h:%hi a:%hi d:%hi\n", name,
+			fontData->mHeight, fontData->mAscender, fontData->mDescender);
     }
 
 	Com_Memcpy( &font->fontData, fontData, sizeof( dfontdat_t ) );
@@ -172,7 +174,7 @@ void	R_FontList_f( void ) {
 	int			i;
 	font_t		*font;
 
-	ri.Printf (PRINT_ALL, "------------------\n");
+	ri.Printf (PRINT_ALL, "------------------------------------\n");
 
 	for ( i = 0 ; i < tr.numFonts ; i++ ) {
 		font = tr.fonts[i];
@@ -184,7 +186,7 @@ void	R_FontList_f( void ) {
 			font->fontData.mPointSize, font->fontData.mHeight, font->fontData.mAscender,
 			font->fontData.mDescender, font->fontData.mKoreanHack);
 	}
-	ri.Printf (PRINT_ALL, "------------------\n");
+	ri.Printf (PRINT_ALL, "------------------------------------\n");
 }
 
 int RE_Font_StrLenPixels( const char *text, const int iFontIndex, const float scale ) {
@@ -291,18 +293,18 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 		//	return;
 
 		RE_SetColor( rgba );
-		memcpy( &newColor[0], &rgba[0], sizeof( vec4_t ) );
+		Com_Memcpy( &newColor[0], &rgba[0], sizeof( vec4_t ) );
 		len = strlen( text );
 		if ( iCharLimit > 0 && len > iCharLimit ) {
 			len = iCharLimit;
 		}
 
 		count = 0;
-        yoffset = oy + (int)(0.5f + scale * (font->fontData.mHeight - (font->fontData.mDescender * 0.5f)));
+		yoffset = oy + (float)(0.5f + scale * (font->fontData.mHeight - (font->fontData.mDescender * 0.5f)));
 		while( s && *s && count < len ) {
 			glyph = &font->fontData.mGlyphs[(unsigned char)*s];
 			if( Q_IsColorString( s ) ) {
-				memcpy( newColor, ColorForIndex(ColorIndex( *( s + 1 ) )), sizeof( newColor ) );
+				Com_Memcpy( newColor, ColorForIndex(ColorIndex( *( s + 1 ) )), sizeof( newColor ) );
 				newColor[3] = rgba[3];
 				RE_SetColor( newColor );
 				s += 2;
@@ -315,7 +317,7 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 				 *   ----------------------- descender = lowest point below baseline
 				 */
 
-                float yadj = scale * glyph->baseline;
+				float yadj = scale * glyph->baseline;
 
 				if( setIndex & STYLE_DROPSHADOW ) {
 					dropShadow[3] = newColor[3];
