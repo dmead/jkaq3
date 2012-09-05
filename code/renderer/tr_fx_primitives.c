@@ -68,6 +68,10 @@ const	float	quad_st_template[][2] =
 	{   1.0f,  0.0f	}
 };
 
+#define Sqr(x) ( (x) * (x) )
+
+static const float maxcull = Sqr(MAX_FX_CULL);
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //																									 //
 //																									 //
@@ -78,14 +82,13 @@ const	float	quad_st_template[][2] =
 #ifdef WIN32
 #pragma region Sound Effects
 #endif
-extern void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
-static void CFXPRI_SoundDeath(FXPlayingParticle_t *part)
+static void CFxPrimitive_SoundDeath(FXPlayingParticle_t *part)
 {
 	// Play a sound
 	ri.StartSound(part->currentOrigin, -1, CHAN_AUTO, part->handle);
 }
 
-void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
+void CFxPrimitive_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 {	// Does not require dir
 	int i;
 	int countRand;
@@ -120,7 +123,7 @@ void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 			VectorAdd(part.originalOrigin, origin, part.originalOrigin);
 		}
 		VectorCopy(part.originalOrigin, part.currentOrigin);
-		part.death = CFXPRI_SoundDeath;
+		part.death = CFxPrimitive_SoundDeath;
 		CFxScheduler_AddToScheduler(&part);
 	}
 }
@@ -139,6 +142,29 @@ void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 #ifdef WIN32
 #pragma region Lights
 #endif
+static qboolean CFxPrimitive_LightCull(FXPlayingParticle_t *thisParticle)
+{
+	vec_t result;
+	//float nearcull = Sqr(fx_nearCull->value);
+	vec3_t	dir;
+
+	VectorSubtract(thisParticle->currentOrigin, backEnd.refdef.vieworg, dir);
+
+	// Particle is behind the player offscreen
+	if((DotProduct(backEnd.refdef.viewaxis[0], dir)) < 0)
+		return qtrue;
+
+	result = DistanceSquared(thisParticle->currentOrigin, backEnd.refdef.vieworg);
+	//if(nearcull > 0.0f && result <= nearcull)
+	//	return qtrue;
+	if(thisParticle->cullDist > 0 && result > thisParticle->cullDist)
+		return qtrue;
+	if(thisParticle->cullDist <= 0 && result > maxcull)
+		return qtrue;
+
+	return qfalse;
+}
+
 static void CFxPrimitive_LightThink(float phase, FXPlayingParticle_t *part)
 {
 	// Only care about things that change here.
@@ -221,6 +247,7 @@ void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
 
 	part.render = CFxPrimitive_LightRender;
 	part.think = CFxPrimitive_LightThink;
+	part.cull = CFxPrimitive_LightCull;
 	CFxScheduler_AddToScheduler(&part);
 }
 #ifdef WIN32
@@ -236,12 +263,35 @@ void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
 #ifdef WIN32
 #pragma region Particles
 #endif
+static qboolean CFxPrimitive_ParticleCull(FXPlayingParticle_t *thisParticle)
+{
+	vec_t result;
+	float nearcull = Sqr(fx_nearCull->value);
+	vec3_t	dir;
+
+	VectorSubtract(thisParticle->currentOrigin, backEnd.refdef.vieworg, dir);
+
+	// Particle is behind the player offscreen
+	if((DotProduct(backEnd.refdef.viewaxis[0], dir)) < 0)
+		return qtrue;
+
+	result = DistanceSquared(thisParticle->currentOrigin, backEnd.refdef.vieworg);
+	if(nearcull > 0.0f && result <= nearcull)
+		return qtrue;
+	if(thisParticle->cullDist > 0 && result > thisParticle->cullDist)
+		return qtrue;
+	if(thisParticle->cullDist <= 0 && result > maxcull)
+		return qtrue;
+
+	return qfalse;
+}
+
 static void CFxPrimitive_ParticleThink(float phase, FXPlayingParticle_t *part)
 {
 	// Only care about things that change here.
 	int i;
 
-	if(VectorCompare(part->startRGB, part->endRGB))		// This changes based on time, so do some sort of magic lerping
+	if(!VectorCompare(part->startRGB, part->endRGB))		// This changes based on time, so do some sort of magic lerping
 	{
 		// TODO: wave/clamp/nonlinear. BLAH.
 		if(part->RGBflags & FXTLF_NONLINEAR)
@@ -428,6 +478,7 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 
 	part.render = CFxPrimitive_ParticleRender;
 	part.think = CFxPrimitive_ParticleThink;
+	part.cull = CFxPrimitive_ParticleCull;
 	CFxScheduler_AddToScheduler(&part);
 }
 #ifdef WIN32

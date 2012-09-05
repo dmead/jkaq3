@@ -27,14 +27,10 @@ void CFxScheduler_RemoveFromScheduler(int effectID)
 	runningEffects = (FXPlayingParticle_t *)realloc(runningEffects, sizeof(*runningEffects)*numRunningEffects);
 }
 
-#define Sqr(x) ( (x) * (x) )
-
 // Perform actions on each particle
 void CFxScheduler_RunSchedulerLoop(void)
 {
 	int i;
-	vec_t result;
-	float nearcull = Sqr(fx_nearCull->value);
 
 	for(i = 0; i < numRunningEffects; i++)
 	{
@@ -59,29 +55,14 @@ void CFxScheduler_RunSchedulerLoop(void)
 		{
 			runningEffects[i].think(phase, &runningEffects[i]);
 		}
+
+		if(runningEffects[i].cull && runningEffects[i].cull(&runningEffects[i]) == qfalse)
 		{
-			// Check the culling on it
-			result = DistanceSquared(runningEffects[i].currentOrigin, backEnd.refdef.vieworg);
-			if(fx_nearCull->value > 0.0f && result <= nearcull)
+			// Rendering pass -- render the running effects in their current state
+			if(runningEffects[i].render)
 			{
-				// Cull if too close to the viewer
-				continue;
+				runningEffects[i].render(&runningEffects[i]);
 			}
-			if(runningEffects[i].cullDist > 0 && result > runningEffects[i].cullDist*runningEffects[i].cullDist)
-			{
-				// Saves on performance according to Ensiform --eez
-				continue;
-			}
-			if(runningEffects[i].cullDist <= 0 && result > Sqr(8192))
-			{
-				// Always cull after 8192
-				continue;
-			}
-		}
-		// Rendering pass -- render the running effects in their current state
-		if(runningEffects[i].render)
-		{
-			runningEffects[i].render(&runningEffects[i]);
 		}
 	}
 }
@@ -138,7 +119,7 @@ void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir)
 				CFxPrimitive_CreateParticlePrimitive(&file.segments[i], origin, dir);
 				break;
 			case EFXS_SOUND:
-				CFxPrimitives_CreateSoundPrimitive(&file.segments[i], origin);
+				CFxPrimitive_CreateSoundPrimitive(&file.segments[i], origin);
 				break;
 			case EFXS_TAIL:
 				break;

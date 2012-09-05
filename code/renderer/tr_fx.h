@@ -393,6 +393,8 @@ void CFxScheduler_Cleanup(void);
 
 // tr_fx.c
 
+#define MAX_FX_CULL 8192
+
 typedef struct FXPlayingParticle_s FXPlayingParticle_t;
 
 typedef struct FXPlayingParticle_s {
@@ -403,6 +405,7 @@ typedef struct FXPlayingParticle_s {
 	void (*death)(FXPlayingParticle_t *thisParticle);					// Played on effect death
 	void (*think)(float phase, FXPlayingParticle_t *thisParticle);		// Thinking
 	void (*render)(FXPlayingParticle_t *thisParticle);					// Render pass
+	qboolean (*cull)(FXPlayingParticle_t *thisParticle);				// Cull
 	// Origin and culling
 	vec3_t currentOrigin;
 	vec3_t originalOrigin;
@@ -446,7 +449,7 @@ void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir);
 // tr_fx_primitives.c
 
 void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin);
-void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin);
+void CFxPrimitive_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin);
 void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir);
 
 #endif

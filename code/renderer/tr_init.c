@@ -1260,6 +1260,7 @@ void R_Register( void )
 
 	fx_countScale = ri.Cvar_Get("fx_countScale", "1", CVAR_ARCHIVE);
 	fx_nearCull = ri.Cvar_Get("fx_nearCull", "16", CVAR_ARCHIVE);
+	ri.Cvar_CheckRange( fx_nearCull, 0, MAX_FX_CULL, qtrue );
 	fx_debug = ri.Cvar_Get("fx_debug", "0", 0);
 
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va("%d", MAX_POLYS), 0);
