@@ -108,7 +108,8 @@ void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 	{
 		FXPlayingParticle_t part;
 		Com_Memset(&part, 0, sizeof(part));
-		part.cullDist = flrand(sfx->cullrange[0], sfx->cullrange[1]);
+		part.cullDist = flrand(sfx->cullrange[0], sfx->cullrange[1])*2;
+		part.cullDist *= part.cullDist; // allows for VLSquared
 		part.startTime = backEnd.refdef.time + Q_irand(sfx->delay[0], sfx->delay[1]);
 		part.endTime = part.startTime + 1;
 		part.handle = sfx->sound.fieldHandles[Q_irand(0, sfx->sound.numFields-1)];
@@ -181,7 +182,8 @@ void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
 	light = segment->SegmentData.FXLightSegment;
 	Com_Memset(&part, 0, sizeof(part));
 
-	part.cullDist = flrand(light->cullrange[0], light->cullrange[1]);
+	part.cullDist = flrand(light->cullrange[0], light->cullrange[1])*2;
+	part.cullDist *= part.cullDist; // allows for VLSquared
 	part.startTime = backEnd.refdef.time + Q_irand(light->delay[0], light->delay[1]);
 	part.endTime = part.startTime + Q_irand(light->life[0], light->life[1]);
 	vecrandom(light->origin[0], light->origin[1], &part.originalOrigin);
@@ -289,6 +291,7 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 	vec3_t axis[3];
 	int i;
 	float scale;
+	qboolean notzeroaxis = qfalse;
 
 	//if(part->lastRenderTime > backEnd.refdef.time - 5)
 	//{
@@ -302,7 +305,15 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 		VectorCopy(backEnd.viewParms.or.axis[i], axis[i]);
 	}
 
-	if(part->currentRotation)
+	for(i = 0; i < 3; i++)
+	{
+		if(!VectorCompare(axis[i], vec3_origin)) {
+			notzeroaxis = qtrue;
+			break;
+		}
+	}
+
+	if(notzeroaxis && part->currentRotation)
 		RotateAroundDirection(axis, part->currentRotation);
 
 	for(i = 0; i < 4; i++)
@@ -353,7 +364,8 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 	particle = segment->SegmentData.FXParticleSegment;
 	Com_Memset(&part, 0, sizeof(part));
 
-	part.cullDist = flrand(particle->cullrange[0], particle->cullrange[1]);
+	part.cullDist = flrand(particle->cullrange[0], particle->cullrange[1])*2;
+	part.cullDist *= part.cullDist; // allows for VLSquared
 	part.startTime = backEnd.refdef.time + Q_irand(particle->delay[0], particle->delay[1]);
 	part.endTime = part.startTime + Q_irand(particle->life[0], particle->life[1]);
 	vecrandom(particle->origin[0], particle->origin[1], &part.originalOrigin);

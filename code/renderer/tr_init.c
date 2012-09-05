@@ -166,6 +166,10 @@ cvar_t	*r_marksOnTriangleMeshes;
 cvar_t	*r_aviMotionJpegQuality;
 cvar_t	*r_screenshotJpegQuality;
 
+cvar_t	*fx_countScale;
+cvar_t	*fx_nearCull;
+cvar_t	*fx_debug;
+
 cvar_t	*r_maxpolys;
 int		max_polys;
 cvar_t	*r_maxpolyverts;
@@ -1253,6 +1257,10 @@ void R_Register( void )
 
 	r_aviMotionJpegQuality = ri.Cvar_Get("r_aviMotionJpegQuality", "90", CVAR_ARCHIVE);
 	r_screenshotJpegQuality = ri.Cvar_Get("r_screenshotJpegQuality", "90", CVAR_ARCHIVE);
+
+	fx_countScale = ri.Cvar_Get("fx_countScale", "1", CVAR_ARCHIVE);
+	fx_nearCull = ri.Cvar_Get("fx_nearCull", "16", CVAR_ARCHIVE);
+	fx_debug = ri.Cvar_Get("fx_debug", "0", 0);
 
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va("%d", MAX_POLYS), 0);
 	r_maxpolyverts = ri.Cvar_Get( "r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);

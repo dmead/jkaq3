@@ -2123,6 +2123,7 @@ int CFxScheduler_RegisterEffect(const char *path)
 {
 	int i;
 	char finalPath[MAX_QPATH];
+	char *p;
 	if(path[0] <= 0 || path[0] == '\n' || path[0] == '\t' || path[0] == '\r')
 	{
 		return 0;	// Not valid
@@ -2138,6 +2139,13 @@ int CFxScheduler_RegisterEffect(const char *path)
 	else
 	{
 		Q_strncpyz(finalPath, path, sizeof(finalPath));
+	}
+
+	// Hacks to fix env//waterfall_mist.efx
+	p = strstr( finalPath, "//" );
+	while( p != NULL ) {
+		strcpy (p, p + 1);
+		p = strstr(p, "//");
 	}
 
 	COM_DefaultExtension(finalPath, sizeof(finalPath), ".efx");

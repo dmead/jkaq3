@@ -1236,7 +1236,11 @@ extern	cvar_t	*r_debugSort;
 extern	cvar_t	*r_printShaders;
 extern	cvar_t	*r_saveFontData;
 
-extern cvar_t	*r_marksOnTriangleMeshes;
+extern	cvar_t	*r_marksOnTriangleMeshes;
+
+extern	cvar_t	*fx_countScale;
+extern	cvar_t	*fx_nearCull;
+extern	cvar_t	*fx_debug;
 
 //====================================================================
 

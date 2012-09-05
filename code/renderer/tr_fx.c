@@ -27,10 +27,14 @@ void CFxScheduler_RemoveFromScheduler(int effectID)
 	runningEffects = (FXPlayingParticle_t *)realloc(runningEffects, sizeof(*runningEffects)*numRunningEffects);
 }
 
+#define Sqr(x) ( (x) * (x) )
+
 // Perform actions on each particle
 void CFxScheduler_RunSchedulerLoop(void)
 {
 	int i;
+	vec_t result;
+	float nearcull = Sqr(fx_nearCull->value);
 
 	for(i = 0; i < numRunningEffects; i++)
 	{
@@ -57,15 +61,18 @@ void CFxScheduler_RunSchedulerLoop(void)
 		}
 		{
 			// Check the culling on it
-			vec3_t result;
-			//float dist;
-			VectorSubtract(backEnd.refdef.vieworg, runningEffects[i].currentOrigin, result);
-			if(runningEffects[i].cullDist > 0 && VectorLengthSquared(result) > (runningEffects[i].cullDist*runningEffects[i].cullDist)*2)
+			result = DistanceSquared(runningEffects[i].currentOrigin, backEnd.refdef.vieworg);
+			if(fx_nearCull->value > 0.0f && result <= nearcull)
+			{
+				// Cull if too close to the viewer
+				continue;
+			}
+			if(runningEffects[i].cullDist > 0 && result > runningEffects[i].cullDist*runningEffects[i].cullDist)
 			{
 				// Saves on performance according to Ensiform --eez
 				continue;
 			}
-			else if(runningEffects[i].cullDist <= 0 && VectorLengthSquared(result) > (8192*8192))
+			if(runningEffects[i].cullDist <= 0 && result > Sqr(8192))
 			{
 				// Always cull after 8192
 				continue;
