@@ -385,10 +385,14 @@ typedef struct {
 extern int FX_numFXFiles;
 extern FXFile_t *FX_fxHandles;
 
+extern refdef_t *FX_fxRefDef;
+
+extern int FX_fxTime;
+
 
 qboolean CFxScheduler_ParseEffect(char *fileName);
 int CFxScheduler_RegisterEffect(const char *path);
-void CFxScheduler_Init(void);
+void CFxScheduler_Init(refdef_t *rd);
 void CFxScheduler_Cleanup(void);
 
 // tr_fx.c
@@ -441,7 +445,8 @@ typedef struct FXPlayingParticle_s {
 void CFxScheduler_AddToScheduler(FXPlayingParticle_t *particle);
 void CFxScheduler_RemoveFromScheduler(int effectID);
 void CFxScheduler_RunSchedulerLoop(void);
-void CFxScheduler_InitScheduler(void);
+void CFxScheduler_InitScheduler(refdef_t *rd);
+void CFxScheduler_AdjustTime(const int time);
 void CFxScheduler_FreeScheduler(void);
 void CFxScheduler_PlayEffect( const char *file, vec3_t org, vec3_t fwd );
 void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir);

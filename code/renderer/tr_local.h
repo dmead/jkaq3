@@ -1876,8 +1876,4 @@ void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, co
 
 extern int skyboxportal;
 
-// effects
-extern void CFxScheduler_Init(void);
-extern void CFxScheduler_Cleanup(void);
-
 #endif //TR_LOCAL_H

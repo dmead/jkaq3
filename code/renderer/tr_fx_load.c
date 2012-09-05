@@ -2162,6 +2162,9 @@ int CFxScheduler_RegisterEffect(const char *path)
 	int i;
 	char finalPath[MAX_QPATH];
 	char *p;
+	if(!FX_fxRefDef) // we weren't init'd yet (fuck you test fail)
+		return 0;
+
 	if(path[0] <= 0 || path[0] == '\n' || path[0] == '\t' || path[0] == '\r')
 	{
 		return 0;	// Not valid
@@ -2232,11 +2235,10 @@ void CFxScheduler_FreeShaderField(fxShaderList_t *field)
 	}
 }
 
-void CFxScheduler_Init(void)
+void CFxScheduler_Init(refdef_t *rd)
 {
 	CFxMemory_Init (1024);
-	CFxScheduler_InitScheduler();
-	//CFxScheduler_RegisterEffect("temp/shake");
+	CFxScheduler_InitScheduler(rd);
 }
 
 void CFxScheduler_Cleanup(void)

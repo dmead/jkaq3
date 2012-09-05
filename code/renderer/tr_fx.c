@@ -1,7 +1,11 @@
+//#include "tr_local.h"
 #include "tr_fx.h"
 
 FXPlayingParticle_t *runningEffects;
 static int numRunningEffects;
+
+refdef_t *FX_fxRefDef = NULL;
+int FX_fxTime = 0;
 
 // Add this effect to the list of objects that should be drawn
 void CFxScheduler_AddToScheduler(FXPlayingParticle_t *particle)
@@ -32,12 +36,15 @@ void CFxScheduler_RunSchedulerLoop(void)
 {
 	int i;
 
+	if( !FX_fxRefDef )
+		return;
+
 	for(i = 0; i < numRunningEffects; i++)
 	{
-		float phase = (backEnd.refdef.time - runningEffects[i].startTime)/ \
+		float phase = (FX_fxTime - runningEffects[i].startTime)/ \
 			((runningEffects[i].endTime > runningEffects[i].startTime) ? (runningEffects[i].endTime - runningEffects[i].startTime) : 0.0001f);				// Prevent divide by zero
 		// Kill pass -- weed out any FX that shouldn't belong
-		if(backEnd.refdef.time < runningEffects[i].startTime)
+		if(FX_fxTime < runningEffects[i].startTime)
 		{
 			continue;	// Effect shouldn't be playing...just chillax for a bit.
 		}
@@ -68,14 +75,24 @@ void CFxScheduler_RunSchedulerLoop(void)
 }
 
 // Allocate a little bit of memory for the scheduler
-void CFxScheduler_InitScheduler(void)
+void CFxScheduler_InitScheduler(refdef_t *rd)
 {
 	runningEffects = (FXPlayingParticle_t *)malloc(sizeof(FXPlayingParticle_t));
 	numRunningEffects = 0;
+	FX_fxRefDef = rd;
+}
+
+void CFxScheduler_AdjustTime(const int time)
+{
+	//if(!FX_fxRefDef)
+	//	return;
+	FX_fxTime = time;
 }
 
 void CFxScheduler_FreeScheduler(void)
 {
+	FX_fxRefDef = NULL;
+	//FX_fxTime = 0;
 	free(runningEffects);
 }
 

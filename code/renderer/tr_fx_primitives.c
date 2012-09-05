@@ -113,7 +113,7 @@ void CFxPrimitive_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin)
 		Com_Memset(&part, 0, sizeof(part));
 		part.cullDist = flrand(sfx->cullrange[0], sfx->cullrange[1])*2;
 		part.cullDist *= part.cullDist; // allows for VLSquared
-		part.startTime = backEnd.refdef.time + Q_irand(sfx->delay[0], sfx->delay[1]);
+		part.startTime = FX_fxTime + Q_irand(sfx->delay[0], sfx->delay[1]);
 		part.endTime = part.startTime + 1;
 		part.handle = sfx->sound.fieldHandles[Q_irand(0, sfx->sound.numFields-1)];
 		vecrandom(sfx->origin[0], sfx->origin[1], &part.originalOrigin);
@@ -148,13 +148,13 @@ static qboolean CFxPrimitive_LightCull(FXPlayingParticle_t *thisParticle)
 	//float nearcull = Sqr(fx_nearCull->value);
 	vec3_t	dir;
 
-	VectorSubtract(thisParticle->currentOrigin, backEnd.refdef.vieworg, dir);
+	VectorSubtract(thisParticle->currentOrigin, FX_fxRefDef->vieworg, dir);
 
 	// Particle is behind the player offscreen
-	if((DotProduct(backEnd.refdef.viewaxis[0], dir)) < 0)
+	if((DotProduct(FX_fxRefDef->viewaxis[0], dir)) < 0)
 		return qtrue;
 
-	result = DistanceSquared(thisParticle->currentOrigin, backEnd.refdef.vieworg);
+	result = DistanceSquared(thisParticle->currentOrigin, FX_fxRefDef->vieworg);
 	//if(nearcull > 0.0f && result <= nearcull)
 	//	return qtrue;
 	if(thisParticle->cullDist > 0 && result > thisParticle->cullDist)
@@ -210,7 +210,7 @@ void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin)
 
 	part.cullDist = flrand(light->cullrange[0], light->cullrange[1])*2;
 	part.cullDist *= part.cullDist; // allows for VLSquared
-	part.startTime = backEnd.refdef.time + Q_irand(light->delay[0], light->delay[1]);
+	part.startTime = FX_fxTime + Q_irand(light->delay[0], light->delay[1]);
 	part.endTime = part.startTime + Q_irand(light->life[0], light->life[1]);
 	vecrandom(light->origin[0], light->origin[1], &part.originalOrigin);
 	if(!(segment->spawnflags & FXSFLAG_CHEAPORIGINCALC) || segment->spawnflags < 0)
@@ -269,13 +269,13 @@ static qboolean CFxPrimitive_ParticleCull(FXPlayingParticle_t *thisParticle)
 	float nearcull = Sqr(fx_nearCull->value);
 	vec3_t	dir;
 
-	VectorSubtract(thisParticle->currentOrigin, backEnd.refdef.vieworg, dir);
+	VectorSubtract(thisParticle->currentOrigin, FX_fxRefDef->vieworg, dir);
 
 	// Particle is behind the player offscreen
-	if((DotProduct(backEnd.refdef.viewaxis[0], dir)) < 0)
+	if((DotProduct(FX_fxRefDef->viewaxis[0], dir)) < 0)
 		return qtrue;
 
-	result = DistanceSquared(thisParticle->currentOrigin, backEnd.refdef.vieworg);
+	result = DistanceSquared(thisParticle->currentOrigin, FX_fxRefDef->vieworg);
 	if(nearcull > 0.0f && result <= nearcull)
 		return qtrue;
 	if(thisParticle->cullDist > 0 && result > thisParticle->cullDist)
@@ -343,7 +343,7 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 	float scale;
 	qboolean notzeroaxis = qfalse;
 
-	//if(part->lastRenderTime > backEnd.refdef.time - 5)
+	//if(part->lastRenderTime > FX_fxTime - 5)
 	//{
 	//	return;
 	//}
@@ -352,7 +352,7 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 
 	for(i = 0; i < 3; i++)
 	{
-		VectorCopy(backEnd.viewParms.or.axis[i], axis[i]);
+		VectorCopy(FX_fxRefDef->viewaxis[i], axis[i]);
 	}
 
 	for(i = 0; i < 3; i++)
@@ -390,7 +390,7 @@ static void CFxPrimitive_ParticleRender(FXPlayingParticle_t *part)
 
 	RE_AddPolyToScene(part->handle, 4, verts, 1);
 
-	//part->lastRenderTime = backEnd.refdef.time + 5;
+	//part->lastRenderTime = FX_fxTime + 5;
 }
 
 void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir)
@@ -416,7 +416,7 @@ void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, v
 
 	part.cullDist = flrand(particle->cullrange[0], particle->cullrange[1])*2;
 	part.cullDist *= part.cullDist; // allows for VLSquared
-	part.startTime = backEnd.refdef.time + Q_irand(particle->delay[0], particle->delay[1]);
+	part.startTime = FX_fxTime + Q_irand(particle->delay[0], particle->delay[1]);
 	part.endTime = part.startTime + Q_irand(particle->life[0], particle->life[1]);
 	vecrandom(particle->origin[0], particle->origin[1], &part.originalOrigin);
 	if(!(segment->spawnflags & FXSFLAG_CHEAPORIGINCALC) || segment->spawnflags < 0)
@@ -550,7 +550,7 @@ static void CFxPrimitive_LineRender(FXPlayingParticle_t *part)
 	int i;
 	float scale;
 
-	if(part->lastRenderTime > backEnd.refdef.time - 50)
+	if(part->lastRenderTime > FX_fxTime - 50)
 	{
 		return;
 	}
@@ -559,7 +559,7 @@ static void CFxPrimitive_LineRender(FXPlayingParticle_t *part)
 
 	for(i = 0; i < 3; i++)
 	{
-		VectorCopy(backEnd.viewParms.or.axis[i], axis[i]);
+		VectorCopy(FX_fxRefDef->viewaxis[i], axis[i]);
 	}
 
 	if(part->currentRotation)
@@ -586,7 +586,7 @@ static void CFxPrimitive_LineRender(FXPlayingParticle_t *part)
 
 	RE_AddPolyToScene(part->handle, 4, verts, 1);
 
-	//part->lastRenderTime = backEnd.refdef.time + 50;
+	//part->lastRenderTime = FX_fxTime + 50;
 }
 
 void CFxPrimitive_CreateLinePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir)
@@ -611,7 +611,7 @@ void CFxPrimitive_CreateLinePrimitive(FXSegment_t *segment, vec3_t origin, vec3_
 	Com_Memset(&part, 0, sizeof(part));
 
 	part.cullDist = flrand(particle->cullrange[0], particle->cullrange[1]);
-	part.startTime = backEnd.refdef.time + Q_irand(particle->delay[0], particle->delay[1]);
+	part.startTime = FX_fxTime + Q_irand(particle->delay[0], particle->delay[1]);
 	part.endTime = part.startTime + Q_irand(particle->life[0], particle->life[1]);
 	vecrandom(particle->origin[0], particle->origin[1], &part.originalOrigin);
 	if(!(segment->spawnflags & FXSFLAG_CHEAPORIGINCALC) || segment->spawnflags < 0)

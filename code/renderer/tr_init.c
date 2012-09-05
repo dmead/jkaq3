@@ -1380,7 +1380,7 @@ void R_Init( void ) {
 	R_InitFonts();
 
 	// Effects
-	CFxScheduler_Init();
+	//CFxScheduler_Init();
 
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
@@ -1401,7 +1401,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	ri.Printf( PRINT_ALL, "RE_Shutdown( %i )\n", destroyWindow );
 
 	// Effects
-	CFxScheduler_Cleanup();
+	//CFxScheduler_Cleanup();
 
 	ri.Cmd_RemoveCommand ("modellist");
 	ri.Cmd_RemoveCommand ("screenshot");
@@ -1504,6 +1504,11 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	// FX System
 	re.PlayEffect = CFxScheduler_PlayEffect;
 	re.PlayEffectID = CFxScheduler_PlayEffectID;
+
+	re.FX_AdjustTime = CFxScheduler_AdjustTime;
+	re.RunFX = CFxScheduler_RunSchedulerLoop;
+	re.InitFX = CFxScheduler_Init;
+	re.ShutdownFX = CFxScheduler_Cleanup;
 
 	re.SetColor = RE_SetColor;
 	re.DrawStretchPic = RE_StretchPic;
