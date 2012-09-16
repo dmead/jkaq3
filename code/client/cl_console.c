@@ -216,18 +216,15 @@ void Con_Dump_f (void)
 			buffer[i] = line[i] & 0xff;
 		for (x=con.linewidth-1 ; x>=0 ; x--)
 		{
-			if (buffer[x] <= ' ')
+			if (buffer[x] == ' ')
 				buffer[x] = 0;
 			else
 				break;
 		}
 #ifdef _WIN32
-		buffer[x+1] = '\r';
-		buffer[x+2] = '\n';
-		buffer[x+3] = 0;
+		Q_strcat(buffer, sizeof(buffer), "\r\n");
 #else
-		buffer[x+1] = '\n';
-		buffer[x+2] = 0;
+		Q_strcat(buffer, sizeof(buffer), "\n");
 #endif
 		FS_Write(buffer, strlen(buffer), f);
 	}
