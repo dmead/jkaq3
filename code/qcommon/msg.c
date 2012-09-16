@@ -890,7 +890,7 @@ netField_t entityStateFields [] =
 	{ NETF( customRGBA[3] ),                 8  },
 	{ NETF( customRGBA[0] ),                 8  },
 	{ NETF( speed ),                         0  },
-	{ NETF( clientNum ),                     8  },
+	{ NETF( clientNum ),                    10  },
 	{ NETF( apos.trBase[2] ),                0  },
 	{ NETF( apos.trTime ),                  32  },
 	{ NETF( customRGBA[1] ),                 8  },
@@ -981,9 +981,9 @@ netField_t entityStateFields [] =
 	{ NETF( userInt1 ),                      1  },
 	{ NETF( userInt2 ),                      1  },
 	{ NETF( userInt3 ),                      1  },
-	{ NETF( userFloat1 ),                    0  },
-	{ NETF( userFloat2 ),                    0  },
-	{ NETF( userFloat3 ),                    0  },
+	{ NETF( userFloat1 ),                    1  },
+	{ NETF( userFloat2 ),                    1  },
+	{ NETF( userFloat3 ),                    1  },
 	{ NETF( userVec1[0] ),                   1  },
 	{ NETF( userVec1[1] ),                   1  },
 	{ NETF( userVec1[2] ),                   1  },
@@ -1269,7 +1269,7 @@ netField_t playerStateFields [] =
 	{ PSF( bobCycle ),                        8 },
 	{ PSF( weaponTime ),                    -16 },
 	{ PSF( delta_angles[1] ),                16 },
-	{ PSF( speed ),                          16 },
+	{ PSF( speed ),                           0 },
 	{ PSF( legsAnim ),                       16 },
 	{ PSF( delta_angles[0] ),                16 },
 	{ PSF( torsoAnim ),                      16 },
@@ -1420,6 +1420,10 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		Com_Memset (&dummy, 0, sizeof(dummy));
 	}
 
+	// As of now there's no support in playerstate for vehicles
+	// and by default we write 0, expand upon this for vehicle support.
+	MSG_WriteBits(msg, 0, 1);
+
 	numFields = ARRAY_LEN( playerStateFields );
 
 	lc = 0;
@@ -1485,7 +1489,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 	}
 	ammobits = 0;
-	for (i=0 ; i<MAX_WEAPONS ; i++) {
+	for (i=0 ; i<16 ; i++) {					// Only transfer 16 bits
 		if (to->ammo[i] != from->ammo[i]) {
 			ammobits |= 1<<i;
 		}
@@ -1510,7 +1514,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		for (i=0 ; i<MAX_STATS ; i++) {
 			if (statsbits & (1<<i) ) {
 				if( i == 4 ) // STAT_WEAPONS = 4 (32 bits)
-					MSG_WriteLong (msg, to->stats[i]);
+					MSG_WriteBits(msg, to->stats[i], MAX_WEAPONS);		// Only send enough bits for MAX_WEAPONS.
 				else
 					MSG_WriteShort (msg, to->stats[i]);
 			}
@@ -1533,8 +1537,8 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 
 	if ( ammobits ) {
 		MSG_WriteBits( msg, 1, 1 );	// changed
-		MSG_WriteBits( msg, ammobits, MAX_WEAPONS );
-		for (i=0 ; i<MAX_WEAPONS ; i++)
+		MSG_WriteBits( msg, ammobits, 16 );
+		for (i=0 ; i<16 ; i++)
 			if (ammobits & (1<<i) )
 				MSG_WriteShort (msg, to->ammo[i]);
 	} else {
@@ -1591,6 +1595,13 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 		print = 0;
 	}
 
+	// There's no support for different playerstate fields at the moment.
+	// But the there's 2 different scenarios from the default one.
+	// One is an array with 58 fields, and one is with 69 fields. These two are used with vehicles.
+	// The default one has 137 fields.
+	if(MSG_ReadBits(msg, 1) || isVehiclePS)
+		Com_Error( ERR_DROP, "unsupported playerState field count" );
+	
 	numFields = ARRAY_LEN( playerStateFields );
 	lc = MSG_ReadByte(msg);
 
@@ -1650,7 +1661,7 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 			for (i=0 ; i<MAX_STATS ; i++) {
 				if (bits & (1<<i) ) {
 					if( i == 4 ) // STAT_WEAPONS )
-						to->stats[i] = MSG_ReadLong(msg);
+						to->stats[i] = MSG_ReadBits(msg, MAX_WEAPONS); // For jampded compatability this needs to be 19
 					else
 						to->stats[i] = MSG_ReadShort(msg);
 				}
@@ -1668,11 +1679,12 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 			}
 		}
 
+		// Ammo only transfers 16 bits, even though the array is the same size as MAX_WEAPONS
 		// parse ammo
 		if ( MSG_ReadBits( msg, 1 ) ) {
 			LOG("PS_AMMO");
-			bits = MSG_ReadBits (msg, MAX_WEAPONS);
-			for (i=0 ; i<MAX_WEAPONS ; i++) {
+			bits = MSG_ReadBits (msg, 16);
+			for (i=0 ; i<16 ; i++) {
 				if (bits & (1<<i) ) {
 					to->ammo[i] = MSG_ReadShort(msg);
 				}
