@@ -890,7 +890,7 @@ netField_t entityStateFields [] =
 	{ NETF( customRGBA[3] ),                 8  },
 	{ NETF( customRGBA[0] ),                 8  },
 	{ NETF( speed ),                         0  },
-	{ NETF( clientNum ),                     8  },
+	{ NETF( clientNum ),       GENTITYNUM_BITS  },
 	{ NETF( apos.trBase[2] ),                0  },
 	{ NETF( apos.trTime ),                  32  },
 	{ NETF( customRGBA[1] ),                 8  },
@@ -981,9 +981,9 @@ netField_t entityStateFields [] =
 	{ NETF( userInt1 ),                      1  },
 	{ NETF( userInt2 ),                      1  },
 	{ NETF( userInt3 ),                      1  },
-	{ NETF( userFloat1 ),                    0  },
-	{ NETF( userFloat2 ),                    0  },
-	{ NETF( userFloat3 ),                    0  },
+	{ NETF( userFloat1 ),                    1  },
+	{ NETF( userFloat2 ),                    1  },
+	{ NETF( userFloat3 ),                    1  },
 	{ NETF( userVec1[0] ),                   1  },
 	{ NETF( userVec1[1] ),                   1  },
 	{ NETF( userVec1[2] ),                   1  },
@@ -1171,7 +1171,7 @@ void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to,
 	}
 
 	// shownet 2/3 will interleave with other printed info, -1 will
-	// just print the delta records`
+	// just print the delta records
 	if ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) {
 		print = 1;
 		Com_Printf( "%3i: #%-3i ", msg->readcount, to->number );
@@ -1269,7 +1269,7 @@ netField_t playerStateFields [] =
 	{ PSF( bobCycle ),                        8 },
 	{ PSF( weaponTime ),                    -16 },
 	{ PSF( delta_angles[1] ),                16 },
-	{ PSF( speed ),                          16 },
+	{ PSF( speed ),                           0 },
 	{ PSF( legsAnim ),                       16 },
 	{ PSF( delta_angles[0] ),                16 },
 	{ PSF( torsoAnim ),                      16 },
