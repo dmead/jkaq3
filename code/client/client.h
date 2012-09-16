@@ -59,6 +59,7 @@ typedef struct {
 
 	int				cmdNum;			// the next cmdNum the server is expecting
 	playerState_t	ps;						// complete information about the current player at this time
+	playerState_t	vps;			//vehicle I'm riding's playerstate (if applicable) -rww
 
 	int				numEntities;			// all of the entities that need to be presented
 	int				parseEntitiesNum;		// at the time of this snapshot
