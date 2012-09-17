@@ -47,8 +47,6 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\out\obj\JAMP\engine\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">engine</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Downloads\SDL-1.2.14\include;C:\Downloads\SDL_image-1.2.10\include;C:\Downloads\SDL_gfx-2.0.22;C:\Program Files (x86)\Autodesk\Autodesk 3ds Max 2011 SDK\maxsdk\include;D:\Program Files\Microsoft DirectX SDK (June 2010)\Include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Downloads\SDL-1.2.14\lib;C:\Downloads\SDL_image-1.2.10\lib;C:\Downloads\SDL_gfx-2.0.22\Release;C:\Program Files (x86)\Autodesk\Autodesk 3ds Max 2011 SDK\maxsdk\lib;D:\Program Files\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
