@@ -2,7 +2,7 @@
 //
 // bg_misc.c -- both games misc functions, all completely stateless
 
-#include "../qcommon/q_shared.h"
+#include "../game/q_shared.h"
 #include "../game/bg_public.h"
 #include "../game/bg_strap.h"
 

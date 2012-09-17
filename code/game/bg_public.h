@@ -8,6 +8,7 @@
 #ifndef __BG_PUBLIC_H__
 #define __BG_PUBLIC_H__
 
+#include "q_shared.h"
 #include "bg_weapons.h"
 #include "anims.h"
 #include "bg_vehicles.h"

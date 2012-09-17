@@ -20,7 +20,7 @@
 #endif
 #endif
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 
 void BG_AttachToRancor( void *ghoul2,
 					   float rancYaw,
@@ -121,4 +121,4 @@ qboolean BG_GetRootSurfNameWithVariant( void *ghoul2, const char *rootSurfName, 
 	return qfalse;
 }
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
