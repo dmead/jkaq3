@@ -933,6 +933,15 @@ void CL_ParseSetGame( msg_t *msg ) {
 	// Jampded calls NET_LoadOverrides with 0 and 1 as argument at the end of this function.
 }
 
+/*
+=====================
+CL_ParseMapChange
+=====================
+*/
+void CL_ParseMapChange( msg_t *msg ) {
+	if( cgvm )
+		VM_Call( cgvm, CG_MAP_CHANGE );
+}
 
 /*
 =====================
@@ -985,7 +994,7 @@ void CL_ParseServerMessage( msg_t *msg ) {
 		switch ( cmd ) {
 		default:
 			Com_Error (ERR_DROP,"CL_ParseServerMessage: Illegible server message");
-			break;			
+			break;
 		case svc_nop:
 			break;
 		case svc_serverCommand:
@@ -1001,6 +1010,9 @@ void CL_ParseServerMessage( msg_t *msg ) {
 		case svc_setgame:				
 			CL_ParseSetGame( msg );
 			break;
+		case svc_mapchange:
+			CL_ParseMapChange( msg );
+			break;
 		case svc_download:
 			CL_ParseDownload( msg );
 			break;
@@ -1012,5 +1024,3 @@ void CL_ParseServerMessage( msg_t *msg ) {
 		}
 	}
 }
-
-
