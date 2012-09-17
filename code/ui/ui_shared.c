@@ -8811,7 +8811,7 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item, int handle )
 		}
 			
 		//a normal StringAlloc ptr
-		if ((int)string > 0)	
+		if (string > 0)	
 		{
 			if (*string == '}') 
 			{
