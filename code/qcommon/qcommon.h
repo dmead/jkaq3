@@ -621,6 +621,8 @@ qboolean FS_CreatePath (char *OSPath);
 
 vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const char *name, int enableDll);
 
+qboolean FS_FindPureDLL(const char *name);
+
 char   *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 qboolean FS_CompareZipChecksum(const char *zipfile);
 

@@ -1453,6 +1453,24 @@ vmInterpret_t FS_FindVM(void **startSearch, char *found, int foundlen, const cha
 	return -1;
 }
 
+qboolean FS_FindPureDLL(const char *name)
+{
+	char dllName[MAX_OSPATH];
+	fileHandle_t h;
+
+	if(!fs_searchpaths)
+		Com_Error(ERR_FATAL, "Filesystem call made without initialization");
+
+	Com_sprintf(dllName, sizeof(dllName), "%s" ARCH_STRING DLL_EXT, name);
+
+	if(FS_FOpenFileRead(dllName, &h, qtrue) > 0)
+	{
+		FS_FCloseFile( h );
+		return qtrue;
+	}
+	return qfalse;
+}
+
 /*
 =================
 FS_Read
