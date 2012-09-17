@@ -752,6 +752,23 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		re.PlayEffectID(args[1], VMA(2), VMA(3));
 		return 0;
 
+	case CG_FX_ADD_SCHEDULED_EFFECTS:
+		// We don't give a flying fuck about skyportal fx for now
+		if( args[1] != 0 )
+			return 0;
+		re.RunFX();
+		return 0;
+	case CG_FX_INIT_SYSTEM:
+		re.InitFX( VMA(1) );
+		return 0;
+	case CG_FX_FREE_SYSTEM:
+		re.ShutdownFX();
+		return 0;
+
+	case CG_FX_ADJUST_TIME:
+		re.FX_AdjustTime(args[1]);
+		return 0;
+
 #if 0
 
 	case CG_MEMSET:

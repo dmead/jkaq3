@@ -2571,7 +2571,7 @@ void Com_Init( char *commandLine ) {
 #endif
 	FS_InitFilesystem ();
 
-	//SE_Init( );
+	SE_Init( ); // uses zone for readfile/freefile
 
 	Com_InitJournaling();
 
@@ -2604,8 +2604,6 @@ void Com_Init( char *commandLine ) {
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
-
-	SE_Init( );
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
@@ -3127,6 +3125,8 @@ Com_Shutdown
 =================
 */
 void Com_Shutdown (void) {
+	SE_Shutdown();
+
 	if (logfile) {
 		FS_FCloseFile (logfile);
 		logfile = 0;

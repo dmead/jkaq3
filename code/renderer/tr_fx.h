@@ -1,5 +1,6 @@
 #ifndef __TR_FX_H
 #define __TR_FX_H
+
 #include "tr_local.h"
 
 // tr_fx_load.c
@@ -384,13 +385,19 @@ typedef struct {
 extern int FX_numFXFiles;
 extern FXFile_t *FX_fxHandles;
 
+extern refdef_t *FX_fxRefDef;
+
+extern int FX_fxTime;
+
 
 qboolean CFxScheduler_ParseEffect(char *fileName);
 int CFxScheduler_RegisterEffect(const char *path);
-void CFxScheduler_Init(void);
+void CFxScheduler_Init(refdef_t *rd);
 void CFxScheduler_Cleanup(void);
 
 // tr_fx.c
+
+#define MAX_FX_CULL 8192
 
 typedef struct FXPlayingParticle_s FXPlayingParticle_t;
 
@@ -402,6 +409,7 @@ typedef struct FXPlayingParticle_s {
 	void (*death)(FXPlayingParticle_t *thisParticle);					// Played on effect death
 	void (*think)(float phase, FXPlayingParticle_t *thisParticle);		// Thinking
 	void (*render)(FXPlayingParticle_t *thisParticle);					// Render pass
+	qboolean (*cull)(FXPlayingParticle_t *thisParticle);				// Cull
 	// Origin and culling
 	vec3_t currentOrigin;
 	vec3_t originalOrigin;
@@ -437,7 +445,8 @@ typedef struct FXPlayingParticle_s {
 void CFxScheduler_AddToScheduler(FXPlayingParticle_t *particle);
 void CFxScheduler_RemoveFromScheduler(int effectID);
 void CFxScheduler_RunSchedulerLoop(void);
-void CFxScheduler_InitScheduler(void);
+void CFxScheduler_InitScheduler(refdef_t *rd);
+void CFxScheduler_AdjustTime(const int time);
 void CFxScheduler_FreeScheduler(void);
 void CFxScheduler_PlayEffect( const char *file, vec3_t org, vec3_t fwd );
 void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir);
@@ -445,7 +454,7 @@ void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir);
 // tr_fx_primitives.c
 
 void CFxPrimitive_CreateLightPrimitive(FXSegment_t *segment, vec3_t origin);
-void CFxPrimitives_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin);
+void CFxPrimitive_CreateSoundPrimitive(FXSegment_t *segment, vec3_t origin);
 void CFxPrimitive_CreateParticlePrimitive(FXSegment_t *segment, vec3_t origin, vec3_t dir);
 
 #endif

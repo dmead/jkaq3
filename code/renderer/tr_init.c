@@ -166,6 +166,10 @@ cvar_t	*r_marksOnTriangleMeshes;
 cvar_t	*r_aviMotionJpegQuality;
 cvar_t	*r_screenshotJpegQuality;
 
+cvar_t	*fx_countScale;
+cvar_t	*fx_nearCull;
+cvar_t	*fx_debug;
+
 cvar_t	*r_maxpolys;
 int		max_polys;
 cvar_t	*r_maxpolyverts;
@@ -1254,6 +1258,11 @@ void R_Register( void )
 	r_aviMotionJpegQuality = ri.Cvar_Get("r_aviMotionJpegQuality", "90", CVAR_ARCHIVE);
 	r_screenshotJpegQuality = ri.Cvar_Get("r_screenshotJpegQuality", "90", CVAR_ARCHIVE);
 
+	fx_countScale = ri.Cvar_Get("fx_countScale", "1", CVAR_ARCHIVE);
+	fx_nearCull = ri.Cvar_Get("fx_nearCull", "16", CVAR_ARCHIVE);
+	ri.Cvar_CheckRange( fx_nearCull, 0, MAX_FX_CULL, qtrue );
+	fx_debug = ri.Cvar_Get("fx_debug", "0", 0);
+
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va("%d", MAX_POLYS), 0);
 	r_maxpolyverts = ri.Cvar_Get( "r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
 
@@ -1371,7 +1380,7 @@ void R_Init( void ) {
 	R_InitFonts();
 
 	// Effects
-	CFxScheduler_Init();
+	//CFxScheduler_Init();
 
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
@@ -1392,7 +1401,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	ri.Printf( PRINT_ALL, "RE_Shutdown( %i )\n", destroyWindow );
 
 	// Effects
-	CFxScheduler_Cleanup();
+	//CFxScheduler_Cleanup();
 
 	ri.Cmd_RemoveCommand ("modellist");
 	ri.Cmd_RemoveCommand ("screenshot");
@@ -1495,6 +1504,11 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	// FX System
 	re.PlayEffect = CFxScheduler_PlayEffect;
 	re.PlayEffectID = CFxScheduler_PlayEffectID;
+
+	re.FX_AdjustTime = CFxScheduler_AdjustTime;
+	re.RunFX = CFxScheduler_RunSchedulerLoop;
+	re.InitFX = CFxScheduler_Init;
+	re.ShutdownFX = CFxScheduler_Cleanup;
 
 	re.SetColor = RE_SetColor;
 	re.DrawStretchPic = RE_StretchPic;

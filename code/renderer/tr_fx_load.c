@@ -2,8 +2,46 @@
 
 FXFile_t parsedfile;
 int FX_numFXFiles;
+int FX_fxFilesCapacity;
 FXFile_t *FX_fxHandles;
 qboolean justEndedField = qfalse;
+
+static void CFxMemory_Init ( int initialSize )
+{
+	FX_fxHandles = (FXFile_t *)malloc (sizeof (FXFile_t) * initialSize);
+	FX_numFXFiles = 0;
+	FX_fxFilesCapacity = initialSize;
+}
+
+static FXFile_t *CFxMemory_Alloc()
+{
+    FXFile_t *fxFile = NULL;
+	if ( FX_numFXFiles >= FX_fxFilesCapacity )
+	{
+		int newSize = (int)(FX_fxFilesCapacity * 1.5f);
+		FXFile_t *newFxFiles = (FXFile_t *)realloc (FX_fxHandles, sizeof (FXFile_t) * newSize);
+		if ( newFxFiles == NULL )
+		{
+			ri.Printf (PRINT_ERROR, "Failed to allocate memory for additional FX files.\n");
+			return NULL;
+		}
+
+		FX_fxHandles = newFxFiles;
+		FX_fxFilesCapacity = newSize;
+	}
+
+	fxFile = &FX_fxHandles[FX_numFXFiles];
+	FX_numFXFiles++;
+
+	return fxFile;
+}
+
+static void CFxMemory_Free()
+{
+	free (FX_fxHandles);
+	FX_fxHandles = NULL;
+	FX_numFXFiles = 0;
+}
 
 //
 //		Functions that parse a specific type of field in the .efx file
@@ -2123,6 +2161,10 @@ int CFxScheduler_RegisterEffect(const char *path)
 {
 	int i;
 	char finalPath[MAX_QPATH];
+	char *p;
+	if(!FX_fxRefDef) // we weren't init'd yet (fuck you test fail)
+		return 0;
+
 	if(path[0] <= 0 || path[0] == '\n' || path[0] == '\t' || path[0] == '\r')
 	{
 		return 0;	// Not valid
@@ -2138,6 +2180,13 @@ int CFxScheduler_RegisterEffect(const char *path)
 	else
 	{
 		Q_strncpyz(finalPath, path, sizeof(finalPath));
+	}
+
+	// Hacks to fix env//waterfall_mist.efx
+	p = strstr( finalPath, "//" );
+	while( p != NULL ) {
+		strcpy (p, p + 1);
+		p = strstr(p, "//");
 	}
 
 	COM_DefaultExtension(finalPath, sizeof(finalPath), ".efx");
@@ -2161,11 +2210,11 @@ int CFxScheduler_RegisterEffect(const char *path)
 	else
 	{
 		// Allocate a little bit of mem and assign the file
-		FX_fxHandles = (FXFile_t *)realloc(FX_fxHandles, sizeof(FXFile_t) * (FX_numFXFiles+1));
+		FXFile_t *fxFile = (FXFile_t *)CFxMemory_Alloc();
 		CFxScheduler_RunSecondPass();
-		FX_fxHandles[FX_numFXFiles] = parsedfile;
-		FX_numFXFiles++;
-		return FX_numFXFiles-1;
+		*fxFile = parsedfile;
+
+		return fxFile - FX_fxHandles;
 	}
 }
 
@@ -2186,12 +2235,10 @@ void CFxScheduler_FreeShaderField(fxShaderList_t *field)
 	}
 }
 
-void CFxScheduler_Init(void)
+void CFxScheduler_Init(refdef_t *rd)
 {
-	FX_numFXFiles = 0;
-	FX_fxHandles = (FXFile_t*)malloc(sizeof(FXFile_t));
-	CFxScheduler_InitScheduler();
-	//CFxScheduler_RegisterEffect("temp/shake");
+	CFxMemory_Init (1024);
+	CFxScheduler_InitScheduler(rd);
 }
 
 void CFxScheduler_Cleanup(void)
@@ -2268,6 +2315,6 @@ void CFxScheduler_Cleanup(void)
 
 		free(FX_fxHandles[i].segments);
 	}
-	free(FX_fxHandles);
+    CFxMemory_Free();
 	CFxScheduler_FreeScheduler();
 }

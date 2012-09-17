@@ -24,8 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "q_shared.h"
 #include "qcommon.h"
 
-/* TODO: This only loads on firsttime Com_Init, so a filesystem restart or cvar change wont cause a reload*/
-
 // Need larger buffer for credits and a few others
 static	char	se_token[BIG_INFO_STRING];
 static	char	se_parsename[MAX_TOKEN_CHARS];
@@ -190,93 +188,116 @@ void SE_SkipRestOfLine ( char **data ) {
 static	cvar_t		*se_debug;
 static	cvar_t		*se_language;
 
-typedef unsigned int uInt;
+typedef struct stringRef_s {
+	char *key;
+	char *value;
 
-#define MAX_POOL_SIZE	512000
+	struct stringRef_s* next;
+} stringRef_t;
 
-static char		se_pool[MAX_POOL_SIZE];
-static int		se_poolSize = 0;
-static int		se_poolTail = MAX_POOL_SIZE;
+#define HASH_SIZE		2048
+static	stringRef_t*	hashTable[HASH_SIZE];
 
-void *SE_Alloc ( int size )
+stringRef_t current;
+size_t numStrings;
+size_t capacity;
+stringRef_t *strings;
+
+void SE_InitLang( void/*const char *lang*/ );
+void SE_Init( void/*int initialSize*/ )
 {
-	se_poolSize = ((se_poolSize + 0x00000003) & 0xfffffffc);
+	Com_Memset(&current, 0, sizeof(current));
+	Com_Memset(hashTable, 0, sizeof(hashTable));
+	strings = (stringRef_t *)malloc (sizeof (stringRef_t) * 4096/*initialSize*/);
+	numStrings = 0;
+	capacity = 4096/*initialSize*/;
+	SE_InitLang();
+}
 
-	if (se_poolSize + size > se_poolTail)
+static stringRef_t *Alloc( void )
+{
+	stringRef_t *str = NULL;
+	if ( numStrings >= capacity )
 	{
-		Com_Error( ERR_FATAL, "SE_Alloc: buffer exceeded tail (%d > %d)", se_poolSize + size, se_poolTail);
-		return 0;
+		int newSize = (int)(capacity * 1.5f);
+		stringRef_t *newStrings = (stringRef_t *)realloc (strings, sizeof (stringRef_t) * newSize);
+		if ( newStrings == NULL )
+		{
+			Com_Error (ERR_FATAL, "Failed to allocate memory for additional string references.\n");
+			return NULL;
+		}
+
+		strings = newStrings;
+		capacity = newSize;
 	}
 
-	se_poolSize += size;
+	str = &strings[numStrings];
+	numStrings++;
 
-	return &se_pool[se_poolSize-size];
+	return str;
 }
 
-char *SE_StringAlloc ( const char *source )
+void SE_Shutdown( void )
 {
-	char *dest;
+	int i;
 
-	dest = SE_Alloc ( strlen ( source ) + 1 );
-	strcpy ( dest, source );
-	return dest;
-}
+	for(i = 0; i < numStrings; i++)
+	{
+		free(strings[i].key);
+		free(strings[i].value);
+	}
 
-qboolean SE_OutOfMemory ( void )
-{
-	return se_poolSize >= MAX_POOL_SIZE;
+	free(strings);
+	strings = NULL;
+	numStrings = 0;
 }
 
 /*
 ================
-FNV32
+return a hash value for the filename
 ================
 */
-uInt FNV32( const char *value, qboolean caseSensitive ) {
-	uInt hval = 0x811c9dc5;
-	const byte *s = (const byte *)(value);
-	if ( caseSensitive ) {
-		while ( *s != '\0' ) {
-			hval ^= (uInt)(*s++);
-			hval += (hval<<1) + (hval<<4) + (hval<<7) + (hval<<8) + (hval<<24);
-		}
-	} else {
-		while ( *s != '\0' ) {
-			hval ^= (uInt)(tolower(*s++));
-			hval += (hval<<1) + (hval<<4) + (hval<<7) + (hval<<8) + (hval<<24);
-		}
+#ifdef __GNUCC__
+  #warning TODO: check if long is ok here 
+#endif
+static long generateHashValue(const char *fname, const int size)
+{
+	int		i;
+	long	hash;
+	char	letter;
+
+	hash = 0;
+	i = 0;
+	while (fname[i] != '\0') {
+		letter = tolower(fname[i]);
+		if (letter =='.') break;				// don't include extension
+		if (letter =='\\') letter = '/';		// damn path names
+		if (letter == PATH_SEP) letter = '/';		// damn path names
+		hash+=(long)(letter)*(i+119);
+		i++;
 	}
-	return hval;
+	hash = (hash ^ (hash >> 10) ^ (hash >> 20));
+	hash &= (size-1);
+	return hash;
 }
 
-#define MAX_TRANS_STRINGS	4096
-#define MAX_TRANS_STRING	4096
+stringRef_t *FindString( const char *key )
+{
+	int			hash;
+	stringRef_t	*str;
 
-typedef struct stringEd_s {
-	char *reference;
-	char *translated;
-
-	uInt refhash;
-} stringEd_t;
-
-stringEd_t strings[MAX_TRANS_STRINGS];
-int numStrings;
-
-static stringEd_t* FindString( const char *reference ) {
-	stringEd_t *str, *max = &strings[numStrings];
-	uInt hash = FNV32( reference, qfalse );
-
-	if( reference == NULL || reference[0] == 0 ) {
+	if ( key[0] == 0 ) {
 		return NULL;
 	}
 
-	str = strings;
+	hash = generateHashValue(key, HASH_SIZE);
 
-	for( ; str < max; str++ ) {
-		if( !str->reference )
-			continue;
-
-		if( str->refhash == hash && !Q_stricmp( str->reference, reference ) ) {
+	//
+	// see if the string is already loaded
+	//
+	for (str = hashTable[hash]; str; str = str->next) {
+		if ( !Q_stricmp( str->key, key ) ) {
+			// match found
 			return str;
 		}
 	}
@@ -284,32 +305,31 @@ static stringEd_t* FindString( const char *reference ) {
 	return NULL;
 }
 
-/* Ensures that newlines "\n" are converted to real '\n' (from g_spawn.c) */
-char *SE_NewString( const char *string ) {
-	char	*newb, *new_p;
-	int		i,l;
-	
-	l = strlen(string) + 1;
+// replaces all occurances of "\n" with '\n'
+char *SE_NewLines(char *str) {
+	char *d, *c, *s;
 
-	newb = (char *) SE_Alloc( l );
-
-	new_p = newb;
-
-	// turn \n into a real linefeed
-	for ( i=0 ; i< l ; i++ ) {
-		if (string[i] == '\\' && i < l-1) {
-			i++;
-			if (string[i] == 'n') {
-				*new_p++ = '\n';
-			} else {
-				*new_p++ = '\\';
+	if(!*str)
+		return str;
+	s = str;
+	while(*str) {
+		if(*str == '\\') {
+			d = str;
+			c = str;
+			*str++;
+			if(*str && *str == 'n') {
+				*d = '\n';
+				while(*++str) {
+					*++d = *str;
+				}
+				*++d = '\0';
+				str = c;
+				continue;
 			}
-		} else {
-			*new_p++ = string[i];
 		}
+		*str++;
 	}
-	
-	return newb;
+	return s;
 }
 
 void SE_Load( const char *title, const char *language ) {
@@ -317,10 +337,8 @@ void SE_Load( const char *title, const char *language ) {
 		char	*c;
 		void	*v;
 	} langfile;
-	char *text_p, *token;
-	stringEd_t *str;
-	char reference[MAX_QPATH];
-	char translated[MAX_TRANS_STRING];
+	char *text_p;
+	int hash;
 
 	FS_ReadFile( language, &langfile.v );
 	if ( !langfile.c ) {
@@ -332,81 +350,124 @@ void SE_Load( const char *title, const char *language ) {
 
 	SE_BeginParseSession( language );
 
-	do {
-		token = SE_Parse( &text_p );
-		if ( !strcmp( "ENDMARKER", token ) ) {
+	while(1)
+	{
+		char *token = SE_Parse( &text_p );
+		if( !token || !token[0] )
+		{
 			break;
 		}
-		if ( !strcmp( "VERSION", token ) ) {
-			//token = COM_Parse( &text_p );
-			SE_SkipRestOfLine( &text_p );
-			continue;
+
+		if(!strcmp(token, "ENDMARKER"))
+		{
+			break;
 		}
-		if ( !strcmp( "CONFIG", token ) ) {
-			//token = COM_Parse( &text_p );
-			SE_SkipRestOfLine( &text_p );
-			continue;
+		else if(!strcmp(token, "VERSION"))
+		{
+			SE_SkipRestOfLine(&text_p);
 		}
-		if ( !strcmp( "FILENOTES", token ) ) {
-			//token = COM_Parse( &text_p );
-			SE_SkipRestOfLine( &text_p );
-			continue;
+		else if(!strcmp(token, "CONFIG"))
+		{
+			SE_SkipRestOfLine(&text_p);
 		}
-		if ( !strcmp( "REFERENCE", token ) ) {
-			token = SE_ParseExt( &text_p, qfalse );
-			Q_strncpyz( reference, va("%s_%s", title, token), MAX_QPATH );
-			token = SE_Parse( &text_p );
-			if ( !strcmp( "NOTES", token ) ) {
-				SE_SkipRestOfLine( &text_p );
-				token = SE_Parse( &text_p ); // look for LANG_ENGLISH
-				if ( !strcmp( "LANG_ENGLISH", token ) ) {
-					token = SE_ParseExt( &text_p, qfalse );
-					Q_strncpyz( translated, token, MAX_TRANS_STRING );
+		else if(!strcmp(token, "FILENOTES"))
+		{
+			SE_SkipRestOfLine(&text_p);
+		}
+		else if(!strcmp(token, "REFERENCE"))
+		{
+			char *reftok = SE_ParseExt(&text_p, qfalse);
+			if(reftok && reftok[0])
+			{
+				if ( strlen( reftok ) >= MAX_QPATH ) {
+					Com_Error( ERR_FATAL, "String reference %s exceeds MAX_QPATH", reftok );
+				}
+				Com_Memset(&current, 0, sizeof(current));
+				current.key = (char *)malloc(strlen(title)+1+strlen(reftok)+1);
+				strcpy(current.key, title);
+				strcat(current.key, "_");
+				strcat(current.key, reftok);
+
+				while(1)
+				{
+					char *tok = SE_Parse(&text_p);
+					if(!tok || !tok[0])
+					{
+						break;
+					}
+					if(!strcmp(tok, "ENDMARKER"))
+					{
+						break;
+					}
+					else if(!strcmp(tok, "NOTES"))
+					{
+						SE_SkipRestOfLine(&text_p);
+					}
+					else if(!Q_strncmp(tok, "LANG_", 5))
+					{
+						char *valtok = SE_ParseExt(&text_p, qfalse);
+						if(valtok && valtok[0])
+						{
+							char *temp;
+							if ( strlen( valtok ) >= BIG_INFO_STRING ) {
+								Com_Error( ERR_FATAL, "String value in ref %s exceeds BIG_INFO_STRING", reftok );
+							}
+							temp = SE_NewLines(valtok);
+							current.value = (char *)malloc(strlen(temp)+1);
+							strcpy(current.value, temp);
+						}
+						break;
+					}
+				}
+
+				if(current.value && current.value[0])
+				{
+					stringRef_t *str = Alloc();
+					*str = current;
+					hash = generateHashValue(current.key, HASH_SIZE);
+					str->next = hashTable[hash];
+					hashTable[hash] = str;
 				}
 			}
-			else if ( !strcmp( "LANG_ENGLISH", token ) ) {
-				token = SE_ParseExt( &text_p, qfalse );
-				Q_strncpyz( translated, token, MAX_TRANS_STRING );
-			}
-
-			if( numStrings == MAX_TRANS_STRINGS ) {
-				if(!com_errorEntered)
-					Com_Error(ERR_FATAL, "MAX_TRANS_STRINGS hit");
-
-				FS_FreeFile( langfile.v );
-				return;
-			}
-
-			str = SE_Alloc( sizeof ( stringEd_t ) );
-
-			str->reference = SE_StringAlloc( reference );
-			str->refhash = FNV32( reference, qfalse );
-			str->translated = SE_NewString( translated );
-
-			strings[numStrings] = *str;
-
-			numStrings++;
-			continue;
 		}
-	} while ( token );
+	}
 
 	SE_BeginParseSession( "" );
 
 	FS_FreeFile( langfile.v );
 }
 
+void SE_InitLang( void/*const char *lang*/ )
+{
+	char    **fileList;
+	int numFiles, i;
+	char	title[MAX_QPATH];
+
+	fileList = FS_ListFiles( "strings/english", ".str", &numFiles );
+
+	if( numFiles > 128 )
+		numFiles = 128;
+
+	for ( i = 0; i < numFiles; i++ ) {
+		COM_StripExtension( fileList[i], title, MAX_QPATH );
+		SE_Load( title, va( "strings/english/%s", fileList[i] ) );
+	}
+
+	FS_FreeFileList(fileList);
+}
+
 // Compare is expected in FILENAME_REFERENCE format
 // above stores FILENAME_(each reference) into each individual .reference
 int SE_GetStringBuffer( const char *compare, char *buffer, int bufferSize ) {
-	stringEd_t *str;
+	stringRef_t *str;
 
 	if( !buffer )
 		return 0;
 
 	str = FindString( compare );
 
-	if( str && str->translated && *str->translated ) {
-		Q_strncpyz( buffer, str->translated, bufferSize );
+	if( str && str->value && str->value[0] ) {
+		Q_strncpyz( buffer, str->value, bufferSize );
 		return 1;
 	}
 	else
@@ -416,39 +477,16 @@ int SE_GetStringBuffer( const char *compare, char *buffer, int bufferSize ) {
 }
 
 char *SE_GetString( const char *compare ) {
-	static char text[MAX_STRING_CHARS] = { 0 };
-
-	stringEd_t *str;
+	static char text[2][MAX_STRING_CHARS] = { 0 };
+	static int index = 0;
+	stringRef_t *str;
 
 	str = FindString( compare );
 
-	if( str && str->translated && *str->translated ) {
-		Q_strncpyz( text, str->translated, sizeof(text) );
-		return text;
+	if( str && str->value && str->value[0] ) {
+		Q_strncpyz( text[index], str->value, sizeof(text[0]) );
+		return text[index];
 	}
 	else
 		return "";
-}
-
-void SE_Shutdown( void ) {
-}
-
-void SE_Init( void ) {
-	char    **fileList;
-	int numFiles, i;
-	char	title[MAX_QPATH];
-
-	se_debug = Cvar_Get( "se_debug", "0", CVAR_TEMP );
-	se_language = Cvar_Get( "se_language", "english", CVAR_ARCHIVE|CVAR_NORESTART );
-
-	fileList = FS_ListFiles( "strings/english", ".str", &numFiles );
-
-	if( numFiles > 128 )
-		numFiles = 128;
-
-	for ( i = 0; i < numFiles; i++ ) {
-		COM_StripExtension( fileList[i], title, MAX_QPATH );
-		Q_strupr( title );
-		SE_Load( title, va( "strings/english/%s", fileList[i] ) );
-	}
 }

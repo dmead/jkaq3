@@ -460,6 +460,24 @@ static void CL_ParseServerInfo(void)
 
 /*
 ==================
+CL_ParseUnknownCall
+
+I have no name for this function, and I'm not sure what it's used for yet.
+It needs to process 2 bytes that normally seem to give 0. If it's not, there will be additional information.
+So for now it's just handling cases with 0 as the result.
+(sub_421F10 in jampded)
+==================
+*/
+static void CL_ParseUnknownCall(msg_t *msg)
+{
+	short result = (short)MSG_ReadShort(msg);
+
+	if(result)
+		Com_Error (ERR_DROP,"CL_ParseUnknownCall: Received unknown data from the server.");
+}
+
+/*
+==================
 CL_ParseGamestate
 ==================
 */
@@ -531,6 +549,9 @@ void CL_ParseGamestate( msg_t *msg ) {
 
 	// parse useful values out of CS_SERVERINFO
 	CL_ParseServerInfo();
+
+	// There's a function call here that is currently unknown
+	CL_ParseUnknownCall(msg);
 
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
@@ -861,6 +882,66 @@ void CL_ParseCommandString( msg_t *msg ) {
 	Q_strncpyz( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
 }
 
+//void CL_UnknownCall()
+//{
+//	char *dirName = Cvar_VariableString("fs_game");
+//	if(dirName[0] && (!dirName || Q_stricmp("base", dirName)))
+//	{
+//		char *basePath = Cvar_VariableString("fs_basepath");
+//		char *homePath = Cvar_VariableString("fs_homepath");
+//
+//		if(basePath[0])
+//			FS_AddGameDirectory(basePath, dirName);
+//
+//		if(!homePath[0] || !basePath[0] || Q_stricmp(basePath, homePath))
+//			FS_AddGameDirectory(homePath, dirName);
+//	}
+//
+//}
+
+/*
+=====================
+CL_ParseSetGame
+=====================
+*/
+void CL_ParseSetGame( msg_t *msg ) {
+	int i;
+	char buf;
+	char gameDir[MAX_QPATH] = { 0 };
+
+	for(i = 0; i < MAX_QPATH; i++)
+	{
+		buf = (char)MSG_ReadByte(msg);
+		if(msg->readcount <= msg->cursize)
+		{
+			if(!buf)
+				break;
+		}
+		else
+		{
+			buf = -1;
+		}
+		gameDir[i] = buf;
+	}
+
+	// Since iojamp already manages this, this function is purely here to manage the incoming message from jampded.
+	// Uncomment the below 2 lines + CL_UnknownCall to make it replicate jamp.exe functionality. Seems to cause some aliasing issues.
+
+	//Cvar_Set2("fs_game", gameDir, qtrue);
+	//CL_UnknownCall();
+
+	// Jampded calls NET_LoadOverrides with 0 and 1 as argument at the end of this function.
+}
+
+/*
+=====================
+CL_ParseMapChange
+=====================
+*/
+void CL_ParseMapChange( msg_t *msg ) {
+	if( cgvm )
+		VM_Call( cgvm, CG_MAP_CHANGE );
+}
 
 /*
 =====================
@@ -913,7 +994,7 @@ void CL_ParseServerMessage( msg_t *msg ) {
 		switch ( cmd ) {
 		default:
 			Com_Error (ERR_DROP,"CL_ParseServerMessage: Illegible server message");
-			break;			
+			break;
 		case svc_nop:
 			break;
 		case svc_serverCommand:
@@ -924,6 +1005,13 @@ void CL_ParseServerMessage( msg_t *msg ) {
 			break;
 		case svc_snapshot:
 			CL_ParseSnapshot( msg );
+			break;
+		// I was told that this was already handled. But jampded will still send the packets expecting something to handle it.
+		case svc_setgame:				
+			CL_ParseSetGame( msg );
+			break;
+		case svc_mapchange:
+			CL_ParseMapChange( msg );
 			break;
 		case svc_download:
 			CL_ParseDownload( msg );
@@ -936,5 +1024,3 @@ void CL_ParseServerMessage( msg_t *msg ) {
 		}
 	}
 }
-
-

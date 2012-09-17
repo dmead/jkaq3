@@ -635,6 +635,10 @@ static void SV_SendClientGameState( client_t *client ) {
 	// write the checksum feed
 	MSG_WriteLong( &msg, sv.checksumFeed);
 
+	// There's something unknown going on here at the moment.
+	// For now we're just going with default of adding a 0 short to keep jampded compatability.
+	MSG_WriteShort( &msg, 0);
+
 	// deliver this to the client
 	SV_SendMessageToClient( &msg, client );
 }

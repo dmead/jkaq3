@@ -1,7 +1,11 @@
+//#include "tr_local.h"
 #include "tr_fx.h"
 
 FXPlayingParticle_t *runningEffects;
 static int numRunningEffects;
+
+refdef_t *FX_fxRefDef = NULL;
+int FX_fxTime = 0;
 
 // Add this effect to the list of objects that should be drawn
 void CFxScheduler_AddToScheduler(FXPlayingParticle_t *particle)
@@ -32,12 +36,15 @@ void CFxScheduler_RunSchedulerLoop(void)
 {
 	int i;
 
+	if( !FX_fxRefDef )
+		return;
+
 	for(i = 0; i < numRunningEffects; i++)
 	{
-		float phase = (backEnd.refdef.time - runningEffects[i].startTime)/ \
+		float phase = (FX_fxTime - runningEffects[i].startTime)/ \
 			((runningEffects[i].endTime > runningEffects[i].startTime) ? (runningEffects[i].endTime - runningEffects[i].startTime) : 0.0001f);				// Prevent divide by zero
 		// Kill pass -- weed out any FX that shouldn't belong
-		if(backEnd.refdef.time < runningEffects[i].startTime)
+		if(FX_fxTime < runningEffects[i].startTime)
 		{
 			continue;	// Effect shouldn't be playing...just chillax for a bit.
 		}
@@ -55,39 +62,37 @@ void CFxScheduler_RunSchedulerLoop(void)
 		{
 			runningEffects[i].think(phase, &runningEffects[i]);
 		}
+
+		if(runningEffects[i].cull && runningEffects[i].cull(&runningEffects[i]) == qfalse)
 		{
-			// Check the culling on it
-			vec3_t result;
-			//float dist;
-			VectorSubtract(backEnd.refdef.vieworg, runningEffects[i].currentOrigin, result);
-			if(runningEffects[i].cullDist > 0 && VectorLengthSquared(result) > (runningEffects[i].cullDist*runningEffects[i].cullDist)*2)
+			// Rendering pass -- render the running effects in their current state
+			if(runningEffects[i].render)
 			{
-				// Saves on performance according to Ensiform --eez
-				continue;
+				runningEffects[i].render(&runningEffects[i]);
 			}
-			else if(runningEffects[i].cullDist <= 0 && VectorLengthSquared(result) > (8192*8192))
-			{
-				// Always cull after 8192
-				continue;
-			}
-		}
-		// Rendering pass -- render the running effects in their current state
-		if(runningEffects[i].render)
-		{
-			runningEffects[i].render(&runningEffects[i]);
 		}
 	}
 }
 
 // Allocate a little bit of memory for the scheduler
-void CFxScheduler_InitScheduler(void)
+void CFxScheduler_InitScheduler(refdef_t *rd)
 {
 	runningEffects = (FXPlayingParticle_t *)malloc(sizeof(FXPlayingParticle_t));
 	numRunningEffects = 0;
+	FX_fxRefDef = rd;
+}
+
+void CFxScheduler_AdjustTime(const int time)
+{
+	//if(!FX_fxRefDef)
+	//	return;
+	FX_fxTime = time;
 }
 
 void CFxScheduler_FreeScheduler(void)
 {
+	FX_fxRefDef = NULL;
+	//FX_fxTime = 0;
 	free(runningEffects);
 }
 
@@ -131,7 +136,7 @@ void CFxScheduler_PlayEffectID(qhandle_t handle, vec3_t origin, vec3_t dir)
 				CFxPrimitive_CreateParticlePrimitive(&file.segments[i], origin, dir);
 				break;
 			case EFXS_SOUND:
-				CFxPrimitives_CreateSoundPrimitive(&file.segments[i], origin);
+				CFxPrimitive_CreateSoundPrimitive(&file.segments[i], origin);
 				break;
 			case EFXS_TAIL:
 				break;

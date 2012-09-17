@@ -75,6 +75,11 @@ typedef struct {
 	void	(*PlayEffectID)( int id, vec3_t org, vec3_t fwd );
 	void	(*PlayEffect)( const char *file, vec3_t org, vec3_t fwd );
 
+	void	(*FX_AdjustTime)(const int time);
+	void	(*RunFX)(void);
+	void	(*InitFX)(refdef_t *rd);
+	void	(*ShutdownFX)(void);
+
 	void	(*SetColor)( const float *rgba );	// NULL = 1,1,1,1
 	void	(*DrawStretchPic) ( float x, float y, float w, float h, 
 		float s1, float t1, float s2, float t2, qhandle_t hShader );	// 0 = white

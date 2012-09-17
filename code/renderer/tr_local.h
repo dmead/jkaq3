@@ -1236,7 +1236,11 @@ extern	cvar_t	*r_debugSort;
 extern	cvar_t	*r_printShaders;
 extern	cvar_t	*r_saveFontData;
 
-extern cvar_t	*r_marksOnTriangleMeshes;
+extern	cvar_t	*r_marksOnTriangleMeshes;
+
+extern	cvar_t	*fx_countScale;
+extern	cvar_t	*fx_nearCull;
+extern	cvar_t	*fx_debug;
 
 //====================================================================
 
@@ -1871,9 +1875,5 @@ int RE_Font_HeightPixels( const int iFontIndex, const float scale );
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale );
 
 extern int skyboxportal;
-
-// effects
-extern void CFxScheduler_Init(void);
-extern void CFxScheduler_Cleanup(void);
 
 #endif //TR_LOCAL_H
