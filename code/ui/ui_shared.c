@@ -59,6 +59,7 @@ extern void UI_CacheSaberGlowGraphics( void );
 #ifdef CGAME
 
 extern int trap_Key_GetCatcher( void ) ;
+extern void trap_GetClipboardData( char *buf, int bufsize );
 extern void trap_Key_SetCatcher( int catcher );
 extern void trap_Cvar_Set( const char *var_name, const char *value );
 
@@ -3680,7 +3681,8 @@ void Leaving_EditField(itemDef_t *item)
 	}
 }
 
-qboolean Item_TextField_HandleKey(itemDef_t *item, int key);
+// FIXME: Not sure where this came from. It's not in ioquake3 and I can't find it in JKA's source but it prevents the cgame build
+/*qboolean Item_TextField_HandleKey(itemDef_t *item, int key);
 
 void Item_TextField_Paste( itemDef_t *item ) {
 	char	cbd[2048];
@@ -3698,7 +3700,7 @@ void Item_TextField_Paste( itemDef_t *item ) {
 	for ( i = 0 ; i < pasteLen ; i++ ) {
 		Item_TextField_HandleKey( item, (cbd[i] | K_CHAR_FLAG) );
 	}
-}
+}*/
 
 qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 	char buff[2048];
@@ -3717,11 +3719,12 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 		if ( key & K_CHAR_FLAG ) {
 			key &= ~K_CHAR_FLAG;
 
-
+			// FIXME: Not sure where this came from. It's not in ioquake3 and I can't find it in JKA's source but it prevents the cgame build
+			/*
 			if (key == 'v' - 'a' + 1 )	{	// ctrl-v is paste
 				Item_TextField_Paste( item );
 	    		return qtrue;
-			}
+			}*/
 
 
 			if ( key == 'c' - 'a' + 1 ) {	// ctrl-c clears the field
