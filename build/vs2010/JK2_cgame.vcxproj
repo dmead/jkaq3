@@ -112,7 +112,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>.\../Debug/JK2cgame/JK2_cgame.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)JK2_cgame.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\../Debug/JK2cgame/</AssemblerListingLocation>
       <ObjectFileName>.\../Debug/JK2cgame/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Debug/JK2cgame/</ProgramDataBaseFileName>
