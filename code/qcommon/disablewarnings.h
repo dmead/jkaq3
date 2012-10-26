@@ -34,5 +34,6 @@
 //rww (for vc.net, warning numbers changed apparently):
 #pragma warning(disable : 4213)		//nonstandard extension used : cast on l-value
 #pragma warning(disable : 4245)		//signed/unsigned mismatch
+#pragma warning(disable : 4996)		//The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name
 
 #endif

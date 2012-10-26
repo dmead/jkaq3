@@ -648,7 +648,9 @@ typedef struct mg_animstate_s {
 #define	LIGHTMAP_WIDTH		128
 #define	LIGHTMAP_HEIGHT		128
 
+#undef MAX_WORLD_COORD
 #define MAX_WORLD_COORD		( 128*1024 )
+#undef MIN_WORLD_COORD
 #define MIN_WORLD_COORD		( -128*1024 )
 #define WORLD_SIZE			( MAX_WORLD_COORD - MIN_WORLD_COORD )
 

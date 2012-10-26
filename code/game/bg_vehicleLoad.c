@@ -194,7 +194,7 @@ static qboolean BG_ParseVehWeaponParm( vehWeaponInfo_t *vehWeapon, char *parmNam
 				{ //just use 1024 bytes in case we want to write over the string
 #ifdef _JK2MP
 					*(char **)(b+vehWeaponFields[i].ofs) = (char *)BG_Alloc(1024);//(char *)BG_Alloc(strlen(value));
-					strcpy(*(char **)(b+vehWeaponFields[i].ofs), value);
+					strcpy_s(*(char **)(b+vehWeaponFields[i].ofs), 1024, value);
 #else
 					(*(char **)(b+vehWeaponFields[i].ofs)) = G_NewString( value );
 #endif
@@ -202,7 +202,7 @@ static qboolean BG_ParseVehWeaponParm( vehWeaponInfo_t *vehWeapon, char *parmNam
 				
 				break;
 			case VF_VECTOR:
-				_iFieldsRead = sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
+				_iFieldsRead = sscanf_s(value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
 				assert(_iFieldsRead==3 );
 				if (_iFieldsRead!=3)
 				{
@@ -868,7 +868,7 @@ static qboolean BG_ParseVehicleParm( vehicleInfo_t *vehicle, char *parmName, cha
 				{ //just use 128 bytes in case we want to write over the string
 #ifdef _JK2MP
 					*(char **)(b+vehicleFields[i].ofs) = (char *)BG_Alloc(128);//(char *)BG_Alloc(strlen(value));
-					strcpy(*(char **)(b+vehicleFields[i].ofs), value);
+					strcpy_s(*(char **)(b+vehicleFields[i].ofs), 128, value);
 #else
 					(*(char **)(b+vehicleFields[i].ofs)) = G_NewString( value );
 #endif
@@ -876,7 +876,7 @@ static qboolean BG_ParseVehicleParm( vehicleInfo_t *vehicle, char *parmName, cha
 				
 				break;
 			case VF_VECTOR:
-				_iFieldsRead = sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
+				_iFieldsRead = sscanf_s(value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
 				assert(_iFieldsRead==3 );
 				if (_iFieldsRead!=3)
 				{
@@ -1457,7 +1457,7 @@ void BG_VehWeaponLoadParms( void )
 			// Don't let it end on a } because that should be a stand-alone token.
 			if ( totallen && *(marker-1) == '}' )
 			{
-				strcat( marker, " " );
+				strcat_s( marker, MAX_VEH_WEAPON_DATA_SIZE, " " );
 				totallen++;
 				marker++; 
 			}
@@ -1465,7 +1465,7 @@ void BG_VehWeaponLoadParms( void )
 			if ( totallen + len >= MAX_VEH_WEAPON_DATA_SIZE ) {
 				Com_Error(ERR_DROP, "Vehicle Weapon extensions (*.vwp) are too large" );
 			}
-			strcat( marker, tempReadBuffer );
+			strcat_s( marker, MAX_VEH_WEAPON_DATA_SIZE, tempReadBuffer );
 #ifdef _JK2MP
 			trap_FS_FCloseFile( f );
 #else
@@ -1549,7 +1549,7 @@ void BG_VehicleLoadParms( void )
 			// Don't let it end on a } because that should be a stand-alone token.
 			if ( totallen && *(marker-1) == '}' )
 			{
-				strcat( marker, " " );
+				strcat_s( marker, MAX_VEHICLE_DATA_SIZE, " " );
 				totallen++;
 				marker++; 
 			}
@@ -1557,7 +1557,7 @@ void BG_VehicleLoadParms( void )
 			if ( totallen + len >= MAX_VEHICLE_DATA_SIZE ) {
 				Com_Error(ERR_DROP, "Vehicle extensions (*.veh) are too large" );
 			}
-			strcat( marker, tempReadBuffer );
+			strcat_s( marker, MAX_VEHICLE_DATA_SIZE, tempReadBuffer );
 #ifdef _JK2MP
 			trap_FS_FCloseFile( f );
 #else
@@ -1607,7 +1607,7 @@ void BG_GetVehicleModelName(char *modelname)
 		Com_Error(ERR_DROP, "BG_GetVehicleModelName:  couldn't find vehicle %s", vehName);
 	}
 
-    strcpy(modelname, g_vehicleInfo[vIndex].model);	
+    strcpy_s(modelname, MAX_QPATH, g_vehicleInfo[vIndex].model);	
 }
 
 void BG_GetVehicleSkinName(char *skinname)
@@ -1628,7 +1628,7 @@ void BG_GetVehicleSkinName(char *skinname)
 	}
 	else
 	{
-		strcpy(skinname, g_vehicleInfo[vIndex].skin);	
+		strcpy_s(skinname, MAX_QPATH, g_vehicleInfo[vIndex].skin);	
 	}
 }
 
