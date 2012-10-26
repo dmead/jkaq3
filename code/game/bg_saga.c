@@ -658,7 +658,7 @@ void BG_SiegeTranslateForcePowers(char *buf, siegeClass_t *siegeClass)
 
 				if (!Q_stricmp(checkPower, "FP_JUMP"))
 				{ //haqery
-                    strcpy_s(checkPower, sizeof(checkPower), "FP_LEVITATION");
+                    strcpy(checkPower, "FP_LEVITATION");
 				}
 
 				while (FPTable[k].id != -1 && FPTable[k].name[0])
@@ -782,7 +782,7 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 	{
 		if (!BG_SiegeGetPairedValue(classInfo, "description", descBuffer->desc))
 		{
-			strcpy_s(descBuffer->desc, sizeof(descBuffer->desc), "DESCRIPTION UNAVAILABLE");
+			strcpy(descBuffer->desc, "DESCRIPTION UNAVAILABLE");
 		}
 
 		//Hit this assert?  Memory has already been trashed.  Increase
@@ -795,7 +795,7 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 	//Parse name
 	if (BG_SiegeGetPairedValue(classInfo, "name", parseBuf))
 	{
-		strcpy_s(bgSiegeClasses[bgNumSiegeClasses].name, sizeof(bgSiegeClasses[bgNumSiegeClasses].name), parseBuf);
+		strcpy(bgSiegeClasses[bgNumSiegeClasses].name, parseBuf);
 	}
 	else
 	{
@@ -805,7 +805,7 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 	//Parse forced model
 	if (BG_SiegeGetPairedValue(classInfo, "model", parseBuf))
 	{
-		strcpy_s(bgSiegeClasses[bgNumSiegeClasses].forcedModel, sizeof(bgSiegeClasses[bgNumSiegeClasses].forcedModel), parseBuf);
+		strcpy(bgSiegeClasses[bgNumSiegeClasses].forcedModel, parseBuf);
 	}
 	else
 	{ //It's ok if there isn't one, it's optional.
@@ -815,7 +815,7 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 	//Parse forced skin
 	if (BG_SiegeGetPairedValue(classInfo, "skin", parseBuf))
 	{
-		strcpy_s(bgSiegeClasses[bgNumSiegeClasses].forcedSkin, sizeof(bgSiegeClasses[bgNumSiegeClasses].forcedSkin), parseBuf);
+		strcpy(bgSiegeClasses[bgNumSiegeClasses].forcedSkin, parseBuf);
 	}
 	else
 	{ //It's ok if there isn't one, it's optional.
@@ -825,7 +825,7 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 	//Parse first saber
 	if (BG_SiegeGetPairedValue(classInfo, "saber1", parseBuf))
 	{
-		strcpy_s(bgSiegeClasses[bgNumSiegeClasses].saber1, sizeof(bgSiegeClasses[bgNumSiegeClasses].saber1), parseBuf);
+		strcpy(bgSiegeClasses[bgNumSiegeClasses].saber1, parseBuf);
 	}
 	else
 	{ //It's ok if there isn't one, it's optional.
@@ -835,7 +835,7 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 	//Parse second saber
 	if (BG_SiegeGetPairedValue(classInfo, "saber2", parseBuf))
 	{
-		strcpy_s(bgSiegeClasses[bgNumSiegeClasses].saber2, sizeof(bgSiegeClasses[bgNumSiegeClasses].saber2), parseBuf);
+		strcpy(bgSiegeClasses[bgNumSiegeClasses].saber2, parseBuf);
 	}
 	else
 	{ //It's ok if there isn't one, it's optional.
@@ -1195,8 +1195,8 @@ void BG_SiegeLoadClasses(siegeClassDesc_t *descBuffer)
 	for (i = 0; i < numFiles; i++, fileptr += filelen+1)
 	{
 		filelen = strlen(fileptr);
-		strcpy_s(filename, MAX_QPATH, "ext_data/Siege/Classes/");
-		strcat_s(filename, MAX_QPATH, fileptr);
+		strcpy(filename, "ext_data/Siege/Classes/");
+		strcat(filename, fileptr);
 
 		if (descBuffer)
 		{
@@ -1257,7 +1257,7 @@ void BG_SiegeParseTeamFile(const char *filename)
 
 	if (BG_SiegeGetPairedValue(teamInfo, "name", parseBuf))
 	{
-		strcpy_s(bgSiegeTeams[bgNumSiegeTeams].name, sizeof(bgSiegeTeams[bgNumSiegeTeams].name), parseBuf);
+		strcpy(bgSiegeTeams[bgNumSiegeTeams].name, parseBuf);
 	}
 	else
 	{
@@ -1280,7 +1280,7 @@ void BG_SiegeParseTeamFile(const char *filename)
 	{
 		while (success && i < MAX_SIEGE_CLASSES)
 		{ //keep checking for group values named class# up to MAX_SIEGE_CLASSES until we can't find one.
-			strcpy_s(lookString, sizeof(lookString), va("class%i", i));
+			strcpy(lookString, va("class%i", i));
 
 			success = BG_SiegeGetPairedValue(teamInfo, lookString, parseBuf);
 
@@ -1328,8 +1328,8 @@ void BG_SiegeLoadTeams(void)
 	for (i = 0; i < numFiles; i++, fileptr += filelen+1)
 	{
 		filelen = strlen(fileptr);
-		strcpy_s(filename, sizeof(filename), "ext_data/Siege/Teams/");
-		strcat_s(filename, sizeof(filename), fileptr);
+		strcpy(filename, "ext_data/Siege/Teams/");
+		strcat(filename, fileptr);
 		BG_SiegeParseTeamFile(filename);
 	}
 }
@@ -1447,7 +1447,7 @@ qboolean BG_SiegeCheckClassLegality(int team, char *classname)
 	}
 
 	//Didn't find it, so copy the name of the first valid class over it.
-	strcpy_s(classname, 512, (*teamPtr)->classes[0]->name);
+	strcpy(classname, (*teamPtr)->classes[0]->name);
 
 	return qfalse;
 }

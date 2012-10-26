@@ -316,7 +316,7 @@ const char *String_Alloc(const char *p) {
 	len = strlen(p);
 	if (len + strPoolIndex + 1 < STRING_POOL_SIZE) {
 		int ph = strPoolIndex;
-		strcpy_s(&strPool[strPoolIndex], STRING_POOL_SIZE, p);
+		strcpy(&strPool[strPoolIndex], p);
 		strPoolIndex += len + 1;
 
 		str = strHandle[hash];
@@ -390,7 +390,7 @@ void PC_SourceWarning(int handle, char *format, ...) {
 	static char string[4096];
 
 	va_start (argptr, format);
-	vsprintf_s (string, sizeof(string), format, argptr);
+	vsprintf (string, format, argptr);
 	va_end (argptr);
 
 	filename[0] = '\0';
@@ -412,7 +412,7 @@ void PC_SourceError(int handle, char *format, ...) {
 	static char string[4096];
 
 	va_start (argptr, format);
-	vsprintf_s (string, sizeof(string), format, argptr);
+	vsprintf (string, format, argptr);
 	va_end (argptr);
 
 	filename[0] = '\0';
@@ -5005,7 +5005,7 @@ void Item_Text_Wrapped_Paint(itemDef_t *item) {
 	start = textPtr;
 	p = strchr(textPtr, '\r');
 	while (p && *p) {
-		strncpy_s(buff, sizeof(buff), start, p-start+1);
+		strncpy(buff, start, p-start+1);
 		buff[p-start] = '\0';
 		DC->drawText(x, y, item->textscale, color, buff, 0, 0, item->textStyle, item->iMenuFont);
 		y += height + 2;
@@ -5501,13 +5501,13 @@ void BindingFromName(const char *cvar) {
 
 					trap_SP_GetStringTextString("MENUS_KEYBIND_OR",sOR, sizeof(sOR));
 
-					strcat_s( g_nameBind1, sizeof(g_nameBind1), va(" %s ",sOR));
-					strcat_s( g_nameBind1, sizeof(g_nameBind1), g_nameBind2 );
+					strcat( g_nameBind1, va(" %s ",sOR));
+					strcat( g_nameBind1, g_nameBind2 );
 				}
 			return;
 		}
 	}
-	strcpy_s(g_nameBind1, sizeof(g_nameBind1), "???");
+	strcpy(g_nameBind1, "???");
 }
 
 void Item_Slider_Paint(itemDef_t *item) {
