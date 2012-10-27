@@ -542,6 +542,7 @@ static int srcCount = 0;
 static int srcActiveCnt = 0;
 static qboolean alSourcesInitialised = qfalse;
 static vec3_t lastListenerOrigin = { 0.0f, 0.0f, 0.0f };
+static int lastListenerNumber;
 
 typedef struct sentity_s
 {
@@ -573,9 +574,6 @@ static void _S_AL_SanitiseVector( vec3_t v, int line )
 		VectorClear( v );
 	}
 }
-
-
-#define AL_THIRD_PERSON_THRESHOLD_SQ (48.0f*48.0f)
 
 /*
 =================
@@ -641,7 +639,7 @@ static qboolean S_AL_HearingThroughEntity( int entityNum )
 {
 	float	distanceSq;
 
-	if( clc.clientNum == entityNum )
+	if( lastListenerNumber == entityNum )
 	{
 		// FIXME: <tim@ngus.net> 28/02/06 This is an outrageous hack to detect
 		// whether or not the player is rendering in third person or not. We can't
@@ -653,7 +651,7 @@ static qboolean S_AL_HearingThroughEntity( int entityNum )
 				entityList[ entityNum ].origin,
 				lastListenerOrigin );
 
-		if( distanceSq > AL_THIRD_PERSON_THRESHOLD_SQ )
+		if( distanceSq > THIRD_PERSON_THRESHOLD_SQ )
 			return qfalse; //we're the player, but third person
 		else
 			return qtrue;  //we're the player
@@ -1159,9 +1157,12 @@ static
 void S_AL_StartLocalSound(sfxHandle_t sfx, int channel)
 {
 	srcHandle_t src;
-	
-	if(S_AL_CheckInput(0, sfx))
+
+	if (sfx < 0 || sfx >= numSfx)
+	{
+		Com_Printf(S_COLOR_YELLOW "S_StartLocalSound: handle %i out of range\n", sfx);
 		return;
+	}
 
 	// Try to grab a source
 	src = S_AL_SrcAlloc(SRCPRI_LOCAL, -1, channel);
@@ -1183,7 +1184,7 @@ static void S_AL_MuteSound( int entnum, int entchannel )
 	int i;
 
 	if (entnum < 0 || entnum > MAX_GENTITIES)
-		Com_Error(ERR_DROP, "ERROR: S_AL_MuteSound: bad entitynum %i", entnum);
+		Com_Error(ERR_DROP, "S_MuteSound: bad entitynum %i", entnum);
 
 	for(i = 0; i < srcCount; i++)
 	{
@@ -1214,15 +1215,24 @@ static void S_AL_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandl
 
 	if(origin)
 	{
-		if(S_AL_CheckInput(0, sfx))
+		if (sfx < 0 || sfx >= numSfx)
+		{
+			Com_Printf(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfx);
 			return;
+		}
 		
 		VectorCopy(origin, sorigin);
 	}
 	else
 	{
-		if(S_AL_CheckInput(entnum, sfx))
+		if (entnum < 0 || entnum > MAX_GENTITIES)
+			Com_Error(ERR_DROP, "S_StartSound: bad entitynum %i", entnum);
+
+		if (sfx < 0 || sfx >= numSfx)
+		{
+			Com_Printf(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfx);
 			return;
+		}
 
 		if(S_AL_HearingThroughEntity(entnum))
 		{
@@ -1292,8 +1302,14 @@ static void S_AL_SrcLoop( alSrcPriority_t priority, sfxHandle_t sfx,
 	src_t		*curSource;
 	vec3_t		sorigin, svelocity;
 
-	if(S_AL_CheckInput(entityNum, sfx))
+	if (entityNum < 0 || entityNum > MAX_GENTITIES)
+		Com_Error(ERR_DROP, "S_Add%sLoopingSound: bad entitynum %i", (priority == SRCPRI_AMBIENT) ? "Real" : "", entityNum);
+
+	if (sfx < 0 || sfx >= numSfx)
+	{
+		Com_Printf(S_COLOR_YELLOW "S_Add%sLoopingSound: handle %i out of range\n", (priority == SRCPRI_AMBIENT) ? "Real" : "", sfx);
 		return;
+	}
 
 	// Do we need to allocate a new source for this entity
 	if( !sent->srcAllocated )
@@ -2174,6 +2190,7 @@ void S_AL_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int 
 	orientation[0] = axis[0][0]; orientation[1] = axis[0][1]; orientation[2] = axis[0][2];
 	orientation[3] = axis[2][0]; orientation[4] = axis[2][1]; orientation[5] = axis[2][2];
 
+	lastListenerNumber = entityNum;
 	VectorCopy( sorigin, lastListenerOrigin );
 
 	// Set OpenAL listener paramaters

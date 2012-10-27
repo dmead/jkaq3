@@ -35,8 +35,6 @@ int			r_firstScenePoly;
 
 int			r_numpolyverts;
 
-int			skyboxportal;
-
 
 /*
 ====================
@@ -101,13 +99,16 @@ void R_AddPolygonSurfaces( void ) {
 	int			i;
 	shader_t	*sh;
 	srfPoly_t	*poly;
+// JBravo: Fog fixes
+	int		fogMask;
 
 	tr.currentEntityNum = REFENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_REFENTITYNUM_SHIFT;
+	fogMask = -((tr.refdef.rdflags & RDF_NOFOG) == 0);
 
 	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys ; i++, poly++ ) {
 		sh = R_GetShaderByHandle( poly->hShader );
-		R_AddDrawSurf( ( void * )poly, sh, poly->fogIndex, qfalse );
+		R_AddDrawSurf( ( void * )poly, sh, poly->fogIndex & fogMask, qfalse, qfalse );
 	}
 }
 
@@ -129,8 +130,10 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 	}
 
 	if ( !hShader ) {
-		ri.Printf( PRINT_WARNING, "WARNING: RE_AddPolyToScene: NULL poly shader\n");
-		return;
+		// This isn't a useful warning, and an hShader of zero isn't a null shader, it's
+		// the default shader.
+		//ri.Printf( PRINT_WARNING, "WARNING: RE_AddPolyToScene: NULL poly shader\n");
+		//return;
 	}
 
 	for ( j = 0; j < numPolys; j++ ) {
@@ -153,7 +156,7 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 		
 		Com_Memcpy( poly->verts, &verts[numVerts*j], numVerts * sizeof( *verts ) );
 
-		if ( glConfig2.hardwareType == GLHW_RAGEPRO ) {
+		if ( glConfig.hardwareType == GLHW_RAGEPRO ) {
 			poly->verts->modulate[0] = 255;
 			poly->verts->modulate[1] = 255;
 			poly->verts->modulate[2] = 255;
@@ -207,6 +210,11 @@ RE_AddRefEntityToScene
 =====================
 */
 void RE_AddRefEntityToScene( const refEntity_t *ent ) {
+#ifdef REACTION
+	// JBravo: Mirrored models
+	vec3_t cross;
+#endif
+
 	if ( !tr.registered ) {
 		return;
 	}
@@ -228,6 +236,12 @@ void RE_AddRefEntityToScene( const refEntity_t *ent ) {
 
 	backEndData[tr.smpFrame]->entities[r_numentities].e = *ent;
 	backEndData[tr.smpFrame]->entities[r_numentities].lightingCalculated = qfalse;
+
+#ifdef REACTION
+	// JBravo: Mirrored models
+	CrossProduct(ent->axis[0], ent->axis[1], cross);
+	backEndData[tr.smpFrame]->entities[r_numentities].mirrored = (DotProduct(ent->axis[2], cross) < 0.f);
+#endif
 
 	r_numentities++;
 }
@@ -252,7 +266,7 @@ void RE_AddDynamicLightToScene( const vec3_t org, float intensity, float r, floa
 		return;
 	}
 	// these cards don't have the correct blend mode
-	if ( glConfig2.hardwareType == GLHW_RIVA128 || glConfig2.hardwareType == GLHW_PERMEDIA2 ) {
+	if ( glConfig.hardwareType == GLHW_RIVA128 || glConfig.hardwareType == GLHW_PERMEDIA2 ) {
 		return;
 	}
 	dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
@@ -308,15 +322,11 @@ void RE_RenderScene( const refdef_t *fd ) {
 		return;
 	}
 
-
 	startTime = ri.Milliseconds();
 
 	if (!tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) ) {
 		ri.Error (ERR_DROP, "R_RenderScene: NULL worldmodel");
 	}
-
-	// Probably a good idea to do effects things here -- eez
-	//CFxScheduler_RunSchedulerLoop();
 
 	Com_Memcpy( tr.refdef.text, fd->text, sizeof( tr.refdef.text ) );
 
@@ -334,10 +344,6 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	tr.refdef.time = fd->time;
 	tr.refdef.rdflags = fd->rdflags;
-
-	if ( fd->rdflags & RDF_SKYBOXPORTAL ) {
-		skyboxportal = 1;
-	}
 
 	// copy the areamask data over and note if it has changed, which
 	// will force a reset of the visible leafs even if the view hasn't moved
@@ -359,6 +365,74 @@ void RE_RenderScene( const refdef_t *fd ) {
 		}
 	}
 
+	tr.refdef.sunDir[3] = 0.0f;
+	tr.refdef.sunCol[3] = 1.0f;
+	tr.refdef.sunAmbCol[3] = 1.0f;
+
+	VectorCopy(tr.sunDirection, tr.refdef.sunDir);
+	if ( (tr.refdef.rdflags & RDF_NOWORLDMODEL) || !(r_depthPrepass->value) ){
+		tr.refdef.colorScale = 1.0f;
+		VectorSet(tr.refdef.sunCol, 0, 0, 0);
+		VectorSet(tr.refdef.sunAmbCol, 0, 0, 0);
+	}
+	else if (r_forceSun->integer == 1)
+	{
+		float scale = pow(2, r_mapOverBrightBits->integer - tr.overbrightBits - 8);
+		tr.refdef.colorScale = r_forceSunMapLightScale->value;
+		VectorScale(tr.sunLight, scale * r_forceSunLightScale->value, tr.refdef.sunCol);
+		VectorScale(tr.sunLight, scale * r_forceSunAmbientScale->value, tr.refdef.sunAmbCol);
+	}
+	else
+	{
+		float scale = pow(2, r_mapOverBrightBits->integer - tr.overbrightBits - 8);
+		tr.refdef.colorScale = tr.mapLightScale;
+		VectorScale(tr.sunLight,   scale, tr.refdef.sunCol);
+		VectorScale(tr.sunAmbient, scale, tr.refdef.sunAmbCol);
+	}
+
+	if (r_forceAutoExposure->integer)
+	{
+		tr.refdef.autoExposureMinMax[0] = r_forceAutoExposureMin->value;
+		tr.refdef.autoExposureMinMax[1] = r_forceAutoExposureMax->value;
+	}
+	else
+	{
+		tr.refdef.autoExposureMinMax[0] = tr.autoExposureMinMax[0];
+		tr.refdef.autoExposureMinMax[1] = tr.autoExposureMinMax[1];
+	}
+
+	if (r_forceToneMap->integer)
+	{
+		tr.refdef.toneMinAvgMaxLinear[0] = pow(2, r_forceToneMapMin->value);
+		tr.refdef.toneMinAvgMaxLinear[1] = pow(2, r_forceToneMapAvg->value);
+		tr.refdef.toneMinAvgMaxLinear[2] = pow(2, r_forceToneMapMax->value);
+	}
+	else
+	{
+		tr.refdef.toneMinAvgMaxLinear[0] = pow(2, tr.toneMinAvgMaxLevel[0]);
+		tr.refdef.toneMinAvgMaxLinear[1] = pow(2, tr.toneMinAvgMaxLevel[1]);
+		tr.refdef.toneMinAvgMaxLinear[2] = pow(2, tr.toneMinAvgMaxLevel[2]);
+	}
+
+//#ifdef REACTION
+	// Makro - copy exta info if present
+	if (fd->rdflags & RDF_EXTRA) {
+		const refdefex_t* extra = (const refdefex_t*) (fd+1);
+
+		tr.refdef.blurFactor = extra->blurFactor;
+
+		if (fd->rdflags & RDF_SUNLIGHT)
+		{
+			VectorCopy(extra->sunDir,    tr.refdef.sunDir);
+			VectorCopy(extra->sunCol,    tr.refdef.sunCol);
+			VectorCopy(extra->sunAmbCol, tr.refdef.sunAmbCol);
+		}
+	} 
+	else
+	{
+		tr.refdef.blurFactor = 0.0f;
+	}
+//#endif
 
 	// derived info
 
@@ -376,11 +450,14 @@ void RE_RenderScene( const refdef_t *fd ) {
 	tr.refdef.numPolys = r_numpolys - r_firstScenePoly;
 	tr.refdef.polys = &backEndData[tr.smpFrame]->polys[r_firstScenePoly];
 
+	tr.refdef.num_pshadows = 0;
+	tr.refdef.pshadows = &backEndData[tr.smpFrame]->pshadows[0];
+
 	// turn off dynamic lighting globally by clearing all the
 	// dlights if it needs to be disabled or if vertex lighting is enabled
 	if ( r_dynamiclight->integer == 0 ||
 		 r_vertexLight->integer == 1 ||
-		 glConfig2.hardwareType == GLHW_PERMEDIA2 ) {
+		 glConfig.hardwareType == GLHW_PERMEDIA2 ) {
 		tr.refdef.num_dlights = 0;
 	}
 
@@ -391,6 +468,26 @@ void RE_RenderScene( const refdef_t *fd ) {
 	// each scene / view.
 	tr.frameSceneNum++;
 	tr.sceneCount++;
+
+	// SmileTheory: playing with shadow mapping
+	if (!( fd->rdflags & RDF_NOWORLDMODEL ) && tr.refdef.num_dlights && r_dlightMode->integer >= 2)
+	{
+		R_RenderDlightCubemaps(fd);
+	}
+
+	/* playing with more shadows */
+	if(!( fd->rdflags & RDF_NOWORLDMODEL ) && r_shadows->integer == 4)
+	{
+		R_RenderPshadowMaps(fd);
+	}
+
+	// playing with even more shadows
+	if(!( fd->rdflags & RDF_NOWORLDMODEL ) && (r_forceSun->integer || tr.sunShadows))
+	{
+		R_RenderSunShadowMaps(fd, 0);
+		R_RenderSunShadowMaps(fd, 1);
+		R_RenderSunShadowMaps(fd, 2);
+	}
 
 	// setup view parms for the initial view
 	//
@@ -410,6 +507,11 @@ void RE_RenderScene( const refdef_t *fd ) {
 	
 	parms.stereoFrame = tr.refdef.stereoFrame;
 
+	if (glRefConfig.framebufferObject)
+	{
+		parms.targetFbo = tr.renderFbo;
+	}
+
 	VectorCopy( fd->vieworg, parms.or.origin );
 	VectorCopy( fd->viewaxis[0], parms.or.axis[0] );
 	VectorCopy( fd->viewaxis[1], parms.or.axis[1] );
@@ -417,7 +519,15 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
 
+	if(!( fd->rdflags & RDF_NOWORLDMODEL ) && r_depthPrepass->value && ((r_forceSun->integer) || tr.sunShadows))
+	{
+		parms.flags = VPF_USESUNLIGHT;
+	}
+
 	R_RenderView( &parms );
+
+	if(!( fd->rdflags & RDF_NOWORLDMODEL ))
+		R_AddPostProcessCmd();
 
 	// the next scene rendered in this frame will tack on after this one
 	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;
