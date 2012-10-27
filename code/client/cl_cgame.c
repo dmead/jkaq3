@@ -263,7 +263,6 @@ void CL_ConfigstringModified( void ) {
 		// parse serverId and other cvars
 		CL_SystemInfoChanged();
 	}
-
 }
 
 
@@ -998,7 +997,6 @@ void CL_CGameRendering( stereoFrame_t stereo ) {
 	VM_Debug( 0 );
 }
 
-
 /*
 =================
 CL_AdjustTimeDelta
@@ -1069,7 +1067,6 @@ void CL_AdjustTimeDelta( void ) {
 		Com_Printf( "%i ", cl.serverTimeDelta );
 	}
 }
-
 
 /*
 ==================
@@ -1294,6 +1291,3 @@ void CL_SetCGameTime( void ) {
 	}
 
 }
-
-
-

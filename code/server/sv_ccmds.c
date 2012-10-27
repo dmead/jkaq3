@@ -1219,7 +1219,6 @@ void SV_Heartbeat_f( void ) {
 	svs.nextHeartbeatTime = -9999999;
 }
 
-
 /*
 ===========
 SV_Serverinfo_f
@@ -1231,7 +1230,6 @@ static void SV_Serverinfo_f( void ) {
 	Com_Printf ("Server info settings:\n");
 	Info_Print ( Cvar_InfoString( CVAR_SERVERINFO ) );
 }
-
 
 /*
 ===========
@@ -1350,7 +1348,6 @@ static void SV_DumpUser_f( void ) {
 	Com_Printf( "--------\n" );
 	Info_Print( cl->userinfo );
 }
-
 
 /*
 =================

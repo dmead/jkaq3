@@ -577,7 +577,6 @@ void CL_ParseGamestate( msg_t *msg ) {
 	Cvar_Set( "cl_paused", "0" );
 }
 
-
 //=====================================================================
 
 /*
@@ -854,7 +853,6 @@ void CL_ParseVoip ( msg_t *msg ) {
 	clc.voipIncomingSequence[sender] = sequence + frames;
 }
 #endif
-
 
 /*
 =====================

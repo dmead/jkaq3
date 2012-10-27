@@ -3762,7 +3762,6 @@ static void CL_SetServerInfoByAddress(netadr_t from, const char *info, int ping)
 			CL_SetServerInfo(&cls.favoriteServers[i], info, ping);
 		}
 	}
-
 }
 
 /*

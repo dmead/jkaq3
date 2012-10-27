@@ -41,7 +41,6 @@ snd_stream_t	*s_backgroundStream = NULL;
 static char		s_backgroundLoop[MAX_QPATH];
 //static char		s_backgroundMusic[MAX_QPATH]; //TTimo: unused
 
-
 // =======================================================================
 // Internal sound data & structures
 // =======================================================================
