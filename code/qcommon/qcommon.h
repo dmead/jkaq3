@@ -270,6 +270,8 @@ extern int demo_protocols[];
 #define MASTER_SERVER_NAME	"masterjk3.ravensoft.com"
 #endif
 
+#define JKHUB_MASTER_SERVER_NAME	"master.jkhub.org"
+
 #define	PORT_MASTER			29060
 #define	PORT_UPDATE			29061
 #define	PORT_SERVER			29070
