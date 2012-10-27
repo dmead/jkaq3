@@ -674,7 +674,10 @@ void SVC_Info( netadr_t from ) {
 		va("%i", sv_maxclients->integer - sv_privateClients->integer ) );
 	Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ) );
 	Info_SetValueForKey( infostring, "pure", va("%i", sv_pure->integer ) );
-	Info_SetValueForKey(infostring, "g_needpass", va("%d", Cvar_VariableIntegerValue("g_needpass")));
+	Info_SetValueForKey(infostring, "needpass", va("%d", Cvar_VariableIntegerValue("g_needpass")));
+	Info_SetValueForKey(infostring, "fdisable", va("%d", Cvar_VariableIntegerValue("g_forcePowerDisable")));
+	Info_SetValueForKey(infostring, "wdisable", va("%d", Cvar_VariableIntegerValue("g_weaponDisable")));
+	Info_SetValueForKey(infostring, "truejedi", va("%d", Cvar_VariableIntegerValue("g_jediVmerc")));
 
 #ifdef USE_VOIP
 	if (sv_voip->integer) {
