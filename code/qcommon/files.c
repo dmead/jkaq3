@@ -2995,7 +2995,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring ) {
 		// Ok, see if we have this pak file
 		havepak = qfalse;
 
-		// never autodownload any of the jk3 paks
+		// never autodownload any of the JA paks
 		if(FS_idPak(fs_serverReferencedPakNames[i], BASEGAME, NUM_RV_PAKS))
 		{
 			continue;
@@ -3260,7 +3260,7 @@ Check whether any of the original rv pak files are present,
 and start up in standalone mode, if there are none and a
 different com_basegame was set.
 Note: If you're building a game that doesn't depend on the
-JK3 media assets0.pk3, you'll want to remove this by defining
+JA media assets0.pk3, you'll want to remove this by defining
 STANDALONE in q_shared.h
 ===================
 */
@@ -3291,7 +3291,7 @@ static void FS_CheckPak0( void )
 						"**************************************************\n"
 						"WARNING: " BASEGAME "/assets0.pk3 is present but its checksum (%u)\n"
 						"is not correct. Please re-copy assets0.pk3 from your\n"
-						"legitimate JK3 CDROM.\n"
+						"legitimate JA CDROM.\n"
 						"**************************************************\n\n\n",
 						curpack->checksum );
 				}
@@ -3378,7 +3378,7 @@ static void FS_CheckPak0( void )
 		{
 			Q_strcat(errorText, sizeof(errorText),
 				"\"assets0.pk3\" is missing. Please copy it "
-				"from your legitimate JK3 CDROM. ");
+				"from your legitimate JA CDROM. ");
 		}
 
 		if((foundPak & 0x04) != 0x04)
@@ -3389,7 +3389,7 @@ static void FS_CheckPak0( void )
 		}
 
 		Q_strcat(errorText, sizeof(errorText),
-			va("Also check that your jamp2 executable is in "
+			va("Also check that your iojamp executable is in "
 			"the correct place and that every file "
 			"in the \"%s\" directory is present and readable", BASEGAME));
 
@@ -3402,7 +3402,7 @@ static void FS_CheckPak0( void )
 
 		Com_sprintf(errorText, sizeof(errorText),
 			"\"bonus.pk3\" is missing. Please re-install it "
-			"from the Jedi Academy Bonus Maps download. ", PATH_SEP);
+			"from the Jedi Academy Bonus Maps download. ");
 
 		Com_Error(ERR_FATAL, "%s", errorText);
 	}

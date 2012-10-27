@@ -858,8 +858,8 @@ int SV_WriteDownloadToClient(client_t *cl, msg_t *msg)
 				Com_sprintf(errorMessage, sizeof(errorMessage), "File \"%s\" is not referenced and cannot be downloaded.", cl->downloadName);
 			}
 			else if (idPack) {
-				Com_Printf("clientDownload: %d : \"%s\" cannot download raven jk3 pk3 files\n", (int) (cl - svs.clients), cl->downloadName);
-				Com_sprintf(errorMessage, sizeof(errorMessage), "Cannot autodownload raven jk3 pk3 file \"%s\"", cl->downloadName);
+				Com_Printf("clientDownload: %d : \"%s\" cannot download raven ja pk3 files\n", (int) (cl - svs.clients), cl->downloadName);
+				Com_sprintf(errorMessage, sizeof(errorMessage), "Cannot autodownload raven ja pk3 file \"%s\"", cl->downloadName);
 			}
 			else if ( !(sv_allowDownload->integer & DLF_ENABLE) ||
 				(sv_allowDownload->integer & DLF_NO_UDP) ) {
