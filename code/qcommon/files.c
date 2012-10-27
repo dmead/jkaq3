@@ -1086,6 +1086,15 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 	if(filename == NULL)
 		Com_Error(ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed");
 
+	if(!filename[0])
+	{
+		if(file == NULL)
+			return qfalse;
+
+		*file = 0;
+		return -1;
+	}
+
 	// qpaths are not supposed to have a leading slash
 	if(filename[0] == '/' || filename[0] == '\\')
 		filename++;
@@ -1331,6 +1340,18 @@ long FS_FOpenFileRead(const char *filename, fileHandle_t *file, qboolean uniqueF
 
 	if(!fs_searchpaths)
 		Com_Error(ERR_FATAL, "Filesystem call made without initialization");
+
+	if(filename == NULL)
+		Com_Error(ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed");
+
+	if(!filename[0])
+	{
+		if(file == NULL)
+			return qfalse;
+
+		*file = 0;
+		return -1;
+	}
 
 	for(search = fs_searchpaths; search; search = search->next)
 	{
