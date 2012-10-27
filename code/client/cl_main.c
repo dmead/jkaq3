@@ -3058,8 +3058,17 @@ Borrowed from TurtleArena
 ============
 */
 void CL_DrawLoadingScreen( void ) {
+	qhandle_t hShader;
+
 	re.BeginFrame( STEREO_CENTER );
 
+	// Need to draw extra stuff or screen is completely white for some shaders.
+	re.SetColor( ColorForIndex(ColorIndex(COLOR_BLACK)) );
+	re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
+	re.SetColor( NULL );
+
+	// get loading shader
+	cls.splashShader = re.RegisterShaderNoMip( "splash" );
 	SCR_DrawPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, cls.splashShader );
 
 	if( com_speeds->integer ) {
@@ -3078,17 +3087,17 @@ void CL_InitRenderer( void ) {
 	// this sets up the renderer and calls R_Init
 	re.BeginRegistration( &cls.glconfig, &cls.glconfig2 );
 
-	cls.splashShader = re.RegisterShaderNoMip( "splash" );
+	cls.whiteShader = re.RegisterShader( "white" );
 
-	// Draw loading screen the first time the game starts.
+	// draw loading screen when the game is starting up
 	/* Borrowed from TurtleArena */
-	if( !com_fullyInitialized ) {
+	if (!cls.drawnLoadingScreen) {
 		CL_DrawLoadingScreen();
+		cls.drawnLoadingScreen = qtrue;
 	}
 
 	// load character sets
 	cls.charSetShader = re.RegisterShaderNoMip( "gfx/2d/charsgrid_med" );
-	cls.whiteShader = re.RegisterShader( "white" );
 	cls.consoleShader = re.RegisterShader( "console" );
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;
@@ -3433,6 +3442,7 @@ void CL_Init( void ) {
 		CL_ClearState();
 		clc.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
 		cls.oldGameSet = qfalse;
+		cls.drawnLoadingScreen = qfalse;
 	}
 
 	cls.realtime = 0;
