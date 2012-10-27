@@ -66,7 +66,7 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">.\../Final\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">.\../Final/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Binaries\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Binaries\base\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\out\obj\JAMP\JK2game\Debug\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(SH)|Win32'">Debug(SH)\</OutDir>
