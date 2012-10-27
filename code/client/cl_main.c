@@ -1226,6 +1226,8 @@ void CL_ShutdownAll(qboolean shutdownRef)
 	CL_ShutdownCGame();
 	// shutdown UI
 	CL_ShutdownUI();
+	// shutdown the fx
+	FX_Shutdown();
 
 	// shutdown the renderer
 	if(shutdownRef)
@@ -1236,6 +1238,7 @@ void CL_ShutdownAll(qboolean shutdownRef)
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
 	cls.rendererStarted = qfalse;
+	cls.fxStarted = qfalse;
 	cls.soundRegistered = qfalse;
 }
 
@@ -1844,6 +1847,8 @@ void CL_Vid_Restart_f( void ) {
 		CL_ShutdownUI();
 		// shutdown the CGame
 		CL_ShutdownCGame();
+		// shutdown the fx
+		FX_Shutdown();
 		// shutdown the renderer and clear the renderer interface
 		CL_ShutdownRef();
 		// client is no longer pure untill new checksums are sent
@@ -1853,6 +1858,7 @@ void CL_Vid_Restart_f( void ) {
 		// reinitialize the filesystem if the game directory or checksum has changed
 
 		cls.rendererStarted = qfalse;
+		cls.fxStarted = qfalse;
 		cls.uiStarted = qfalse;
 		cls.cgameStarted = qfalse;
 		cls.soundRegistered = qfalse;
@@ -3108,6 +3114,11 @@ void CL_StartHunkUsers( qboolean rendererOnly ) {
 	if ( !cls.rendererStarted ) {
 		cls.rendererStarted = qtrue;
 		CL_InitRenderer();
+	}
+
+	if ( !cls.fxStarted ) {
+		cls.fxStarted = qtrue;
+		FX_Init();
 	}
 
 	if ( rendererOnly ) {

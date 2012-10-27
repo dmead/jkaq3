@@ -52,7 +52,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\code\SDL12\include;..\..\code\libcurl;..\..\code\AL;..\..\code\libspeex\include;..\..\code\zlib;..\..\code\jpeg-8c;..\..\code\mad;..\..\code\png;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_DEBUG;BOTLIB;USE_ICON;USE_CURL;USE_CURL_DLOPEN;USE_OPENAL;USE_OPENAL_DLOPEN;USE_VOIP;HAVE_CONFIG_H;USE_LOCAL_HEADERS;USE_INTERNAL_JPEG;_JK2MP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_DEBUG;BOTLIB;USE_ICON;USE_CURL;USE_CURL_DLOPEN;USE_OPENAL;USE_OPENAL_DLOPEN;USE_VOIP;HAVE_CONFIG_H;USE_LOCAL_HEADERS;USE_INTERNAL_JPEG;USE_INTERNAL_PNG;_JK2MP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -111,6 +111,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\code\client\fx_local.h" />
     <ClInclude Include="..\..\code\png\png.h" />
     <ClInclude Include="..\..\code\png\pngconf.h" />
     <ClInclude Include="..\..\code\png\pngdebug.h" />
@@ -206,6 +207,22 @@
     <ClInclude Include="..\..\code\sys\win_resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\code\client\fx_load.c" />
+    <ClCompile Include="..\..\code\client\fx_main.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_camerashake.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_cylinder.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_decal.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_electricity.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_emitter.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_flash.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_fxrunner.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_light.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_line.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_orparticle.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_particle.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_sound.c" />
+    <ClCompile Include="..\..\code\client\fx_primitive_tail.c" />
     <ClCompile Include="..\..\code\client\snd_as.c" />
     <ClCompile Include="..\..\code\libspeex\modes_wb.c" />
     <ClCompile Include="..\..\code\png\png.c" />
@@ -238,7 +255,9 @@
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_font.c">
     </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_fx.c" />
+    <ClCompile Include="..\..\code\renderer\tr_fx.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_fx_load.c" />
     <ClCompile Include="..\..\code\renderer\tr_fx_primitives.c" />
     <ClCompile Include="..\..\code\renderer\tr_image.c">

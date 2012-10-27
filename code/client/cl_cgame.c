@@ -730,43 +730,43 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		}
 	case CG_MEMORY_REMAINING:
 		return Hunk_MemoryRemaining();
-  case CG_KEY_ISDOWN:
+	case CG_KEY_ISDOWN:
 		return Key_IsDown( args[1] );
-  case CG_KEY_GETCATCHER:
+	case CG_KEY_GETCATCHER:
 		return Key_GetCatcher();
-  case CG_KEY_SETCATCHER:
+	case CG_KEY_SETCATCHER:
 		// Don't allow the cgame module to close the console
 		Key_SetCatcher( args[1] | ( Key_GetCatcher( ) & KEYCATCH_CONSOLE ) );
-    return 0;
-  case CG_KEY_GETKEY:
+		return 0;
+	case CG_KEY_GETKEY:
 		return Key_GetKey( VMA(1) );
 
 	case CG_FX_REGISTER_EFFECT:
-		return re.RegisterEffect(VMA(1));
+		return FX_RegisterEffect(VMA(1));
 
 	case CG_FX_PLAY_EFFECT:
-		re.PlayEffect(VMA(1), VMA(2), VMA(3));
+		FX_PlayEffect(VMA(1), VMA(2), VMA(3));
 		return 0;
 
 	case CG_FX_PLAY_EFFECT_ID:
-		re.PlayEffectID(args[1], VMA(2), VMA(3));
+		FX_PlayEffectID(args[1], VMA(2), VMA(3));
 		return 0;
 
 	case CG_FX_ADD_SCHEDULED_EFFECTS:
 		// We don't give a flying fuck about skyportal fx for now
 		if( args[1] != 0 )
 			return 0;
-		re.RunFX();
+		FX_Scheduler_AddEffects(qfalse);
 		return 0;
 	case CG_FX_INIT_SYSTEM:
-		re.InitFX( VMA(1) );
+		FX_SystemInit(VMA(1));
 		return 0;
 	case CG_FX_FREE_SYSTEM:
-		re.ShutdownFX();
+		FX_SystemShutdown();
 		return 0;
 
 	case CG_FX_ADJUST_TIME:
-		re.FX_AdjustTime(args[1]);
+		FX_AdjustTime(args[1]);
 		return 0;
 
 #if 0
@@ -987,8 +987,6 @@ qboolean CL_GameCommand( void ) {
 
 	return VM_Call( cgvm, CG_CONSOLE_COMMAND );
 }
-
-
 
 /*
 =====================

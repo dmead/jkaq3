@@ -40,6 +40,9 @@
     <Filter Include="code\png">
       <UniqueIdentifier>{039559bf-7758-47ee-a85f-c22cc4e2d925}</UniqueIdentifier>
     </Filter>
+    <Filter Include="code\client\fx">
+      <UniqueIdentifier>{3ed6b310-8732-4dee-9e90-23538aa89335}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\renderer\iqm.h">
@@ -320,6 +323,9 @@
     </ClInclude>
     <ClInclude Include="..\..\code\renderer\tr_fx.h">
       <Filter>code\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\client\fx_local.h">
+      <Filter>code\client\fx</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1025,14 +1031,62 @@
     <ClCompile Include="..\..\code\zlib\compress.c">
       <Filter>code\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_fx.c">
-      <Filter>code\renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_fx_load.c">
       <Filter>code\renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_fx_primitives.c">
       <Filter>code\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_fx.c">
+      <Filter>code\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_load.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_main.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_camerashake.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_cylinder.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_decal.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_electricity.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_emitter.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_flash.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_fxrunner.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_light.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_line.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_orparticle.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_particle.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_sound.c">
+      <Filter>code\client\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\client\fx_primitive_tail.c">
+      <Filter>code\client\fx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
