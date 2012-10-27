@@ -60,6 +60,7 @@
 #define false qfalse
 #define true qtrue
 
+#undef sqrtf
 #define sqrtf sqrt
 #define Q_flrand flrand
 

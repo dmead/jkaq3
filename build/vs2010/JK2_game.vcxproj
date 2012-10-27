@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>JK2game</ProjectName>
+    <SccProjectName />
+    <SccAuxPath />
+    <SccLocalPath />
+    <SccProvider />
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\../Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\../Release/JK2game\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Binaries\base\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\out\obj\JAMP\JK2game\Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;MISSIONPACK;QAGAME;_JK2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\../Release/JK2game/JK2_game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\../Release/JK2game/</AssemblerListingLocation>
+      <ObjectFileName>.\../Release/JK2game/</ObjectFileName>
+      <ProgramDataBaseFileName>.\../Release/JK2game/</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../Release/jampgamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\../Release/jampgamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>../Release/jampgamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SetChecksum>true</SetChecksum>
+      <BaseAddress>0x20000000</BaseAddress>
+      <ImportLibrary>.\../Release/jampgamex86.lib</ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDebug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\../Release/JK2_game.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDebug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;BUILDING_REF_GL;Debug;WIN32;_WINDOWS;MISSIONPACK;QAGAME;_JK2;JK2AWARDS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(IntDir)JK2_game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\../Debug/JK2game/</AssemblerListingLocation>
+      <ObjectFileName>.\../Debug/JK2game/</ObjectFileName>
+      <ProgramDataBaseFileName>.\../Debug/JK2game/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)jampgamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(TargetDir)jampgamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(TargetDir)jampgamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <ImportLibrary>$(TargetDir)jampgamex86.lib</ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_Debug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\../Debug/JK2_game.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_Debug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\code\game\AnimalNPC.c" />
+    <ClCompile Include="..\..\code\game\FighterNPC.c" />
+    <ClCompile Include="..\..\code\game\NPC.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Atst.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Default.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Droid.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_GalakMech.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Grenadier.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Howler.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_ImperialProbe.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Interrogator.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Jedi.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Mark1.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Mark2.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_MineMonster.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Rancor.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Remote.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Seeker.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Sentry.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Sniper.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Stormtrooper.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Utils.c" />
+    <ClCompile Include="..\..\code\game\NPC_AI_Wampa.c" />
+    <ClCompile Include="..\..\code\game\NPC_behavior.c" />
+    <ClCompile Include="..\..\code\game\NPC_combat.c" />
+    <ClCompile Include="..\..\code\game\NPC_goal.c" />
+    <ClCompile Include="..\..\code\game\NPC_misc.c" />
+    <ClCompile Include="..\..\code\game\NPC_move.c" />
+    <ClCompile Include="..\..\code\game\NPC_reactions.c" />
+    <ClCompile Include="..\..\code\game\NPC_senses.c" />
+    <ClCompile Include="..\..\code\game\NPC_sounds.c" />
+    <ClCompile Include="..\..\code\game\NPC_spawn.c" />
+    <ClCompile Include="..\..\code\game\NPC_stats.c" />
+    <ClCompile Include="..\..\code\game\NPC_utils.c" />
+    <ClCompile Include="..\..\code\game\SpeederNPC.c" />
+    <ClCompile Include="..\..\code\game\WalkerNPC.c" />
+    <ClCompile Include="..\..\code\game\ai_main.c" />
+    <ClCompile Include="..\..\code\game\ai_util.c" />
+    <ClCompile Include="..\..\code\game\ai_wpnav.c" />
+    <ClCompile Include="..\..\code\game\bg_g2_utils.c" />
+    <ClCompile Include="..\..\code\game\bg_lib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\code\game\bg_misc.c" />
+    <ClCompile Include="..\..\code\game\bg_panimate.c" />
+    <ClCompile Include="..\..\code\game\bg_pmove.c" />
+    <ClCompile Include="..\..\code\game\bg_saber.c" />
+    <ClCompile Include="..\..\code\game\bg_saberLoad.c" />
+    <ClCompile Include="..\..\code\game\bg_saga.c" />
+    <ClCompile Include="..\..\code\game\bg_slidemove.c" />
+    <ClCompile Include="..\..\code\game\bg_vehicleLoad.c" />
+    <ClCompile Include="..\..\code\game\bg_weapons.c" />
+    <ClCompile Include="..\..\code\game\g_ICARUScb.c" />
+    <ClCompile Include="..\..\code\game\g_active.c" />
+    <ClCompile Include="..\..\code\game\g_arenas.c" />
+    <ClCompile Include="..\..\code\game\g_bot.c" />
+    <ClCompile Include="..\..\code\game\g_client.c" />
+    <ClCompile Include="..\..\code\game\g_cmds.c" />
+    <ClCompile Include="..\..\code\game\g_combat.c" />
+    <ClCompile Include="..\..\code\game\g_exphysics.c" />
+    <ClCompile Include="..\..\code\game\g_items.c" />
+    <ClCompile Include="..\..\code\game\g_log.c" />
+    <ClCompile Include="..\..\code\game\g_main.c" />
+    <ClCompile Include="..\..\code\game\g_mem.c" />
+    <ClCompile Include="..\..\code\game\g_misc.c" />
+    <ClCompile Include="..\..\code\game\g_missile.c" />
+    <ClCompile Include="..\..\code\game\g_mover.c" />
+    <ClCompile Include="..\..\code\game\g_nav.c" />
+    <ClCompile Include="..\..\code\game\g_navnew.c" />
+    <ClCompile Include="..\..\code\game\g_object.c" />
+    <ClCompile Include="..\..\code\game\g_saga.c" />
+    <ClCompile Include="..\..\code\game\g_session.c" />
+    <ClCompile Include="..\..\code\game\g_spawn.c" />
+    <ClCompile Include="..\..\code\game\g_strap.c" />
+    <ClCompile Include="..\..\code\game\g_svcmds.c" />
+    <ClCompile Include="..\..\code\game\g_syscalls.c" />
+    <ClCompile Include="..\..\code\game\g_target.c" />
+    <ClCompile Include="..\..\code\game\g_team.c" />
+    <ClCompile Include="..\..\code\game\g_timer.c" />
+    <ClCompile Include="..\..\code\game\g_trigger.c" />
+    <ClCompile Include="..\..\code\game\g_turret.c" />
+    <ClCompile Include="..\..\code\game\g_turret_G2.c" />
+    <ClCompile Include="..\..\code\game\g_utils.c" />
+    <ClCompile Include="..\..\code\game\g_vehicleTurret.c" />
+    <ClCompile Include="..\..\code\game\g_vehicles.c" />
+    <ClCompile Include="..\..\code\game\g_weapon.c" />
+    <ClCompile Include="..\..\code\game\q_math.c" />
+    <ClCompile Include="..\..\code\game\q_shared.c" />
+    <ClCompile Include="..\..\code\game\tri_coll_test.c" />
+    <ClCompile Include="..\..\code\game\w_force.c" />
+    <ClCompile Include="..\..\code\game\w_saber.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\code\ghoul2\G2.h" />
+    <ClInclude Include="..\..\code\game\ai.h" />
+    <ClInclude Include="..\..\code\game\ai_main.h" />
+    <ClInclude Include="..\..\code\game\anims.h" />
+    <ClInclude Include="..\..\code\cgame\animtable.h" />
+    <ClInclude Include="..\..\code\game\b_local.h" />
+    <ClInclude Include="..\..\code\game\b_public.h" />
+    <ClInclude Include="..\..\code\game\be_aas.h" />
+    <ClInclude Include="..\..\code\game\be_ai_char.h" />
+    <ClInclude Include="..\..\code\game\be_ai_chat.h" />
+    <ClInclude Include="..\..\code\game\be_ai_gen.h" />
+    <ClInclude Include="..\..\code\game\be_ai_goal.h" />
+    <ClInclude Include="..\..\code\game\be_ai_move.h" />
+    <ClInclude Include="..\..\code\game\be_ai_weap.h" />
+    <ClInclude Include="..\..\code\game\be_ea.h" />
+    <ClInclude Include="..\..\code\game\bg_lib.h" />
+    <ClInclude Include="..\..\code\game\bg_local.h" />
+    <ClInclude Include="..\..\code\game\bg_public.h" />
+    <ClInclude Include="..\..\code\game\bg_saga.h" />
+    <ClInclude Include="..\..\code\game\bg_strap.h" />
+    <ClInclude Include="..\..\code\game\bg_vehicles.h" />
+    <ClInclude Include="..\..\code\game\bg_weapons.h" />
+    <ClInclude Include="..\..\code\game\botlib.h" />
+    <ClInclude Include="..\..\code\cgame\cg_local.h" />
+    <ClInclude Include="..\..\code\cgame\cg_public.h" />
+    <ClInclude Include="..\..\code\game\chars.h" />
+    <ClInclude Include="..\..\code\qcommon\disablewarnings.h" />
+    <ClInclude Include="..\..\code\game\g_ICARUScb.h" />
+    <ClInclude Include="..\..\code\game\g_headers.h" />
+    <ClInclude Include="..\..\code\game\g_local.h" />
+    <ClInclude Include="..\..\code\game\g_nav.h" />
+    <ClInclude Include="..\..\code\game\g_public.h" />
+    <ClInclude Include="..\..\code\game\g_team.h" />
+    <ClInclude Include="..\..\code\game\inv.h" />
+    <ClInclude Include="..\..\code\game\match.h" />
+    <ClInclude Include="..\..\ui\menudef.h" />
+    <ClInclude Include="..\..\code\game\npc_headers.h" />
+    <ClInclude Include="..\..\code\game\q_shared.h" />
+    <ClInclude Include="..\..\code\game\say.h" />
+    <ClInclude Include="..\..\code\game\surfaceflags.h" />
+    <ClInclude Include="..\..\code\game\syn.h" />
+    <ClInclude Include="..\..\code\qcommon\tags.h" />
+    <ClInclude Include="..\..\code\game\teams.h" />
+    <ClInclude Include="..\..\code\cgame\tr_types.h" />
+    <ClInclude Include="..\..\code\game\w_saber.h" />
+    <ClInclude Include="..\..\code\icarus\Q3_Interface.h" />
+    <ClInclude Include="..\..\code\icarus\interpreter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JK2_game.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\code\win32\JK2game.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

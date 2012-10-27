@@ -892,6 +892,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		//re.DuplicateGhoul2(VMA(1), VMA(2));
 		return 0;
 
+	case CG_G2_PLAYANIM:
+		return qtrue;
+
+	case CG_G2_ANGLEOVERRIDE:
+		return qtrue;
+
 	default:
 		return 0;
 //	        assert(0);

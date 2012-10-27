@@ -2536,7 +2536,7 @@ qboolean	trap_G2API_SkinlessModel(void *ghlInfo, int modelIndex);
 
 //rww - for adding gore (or whatever) shaders to the g2 model
 int			trap_G2API_GetNumGoreMarks(void *ghlInfo, int modelIndex);
-void		trap_G2API_AddSkinGore(void *ghlInfo,SSkinGoreData *gore);
+void		trap_G2API_AddSkinGore(void *ghlInfo, SSkinGoreData *gore);
 void		trap_G2API_ClearSkinGore ( void* ghlInfo );
 
 int			trap_G2API_Ghoul2Size ( void* ghlInfo );
