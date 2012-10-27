@@ -77,7 +77,7 @@ SV_ExpandNewlines
 Converts newlines to "\n" so a line prints nicer
 ===============
 */
-static char	*SV_ExpandNewlines( char *in ) {
+char	*SV_ExpandNewlines( char *in ) {
 	static	char	string[1024];
 	int		l;
 
@@ -205,8 +205,9 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 		Com_Printf ("broadcast: %s\n", SV_ExpandNewlines((char *)message) );
 	}
 
-	if( com_dedicated->integer && !strncmp( (char *)message, "chat", 4 ) ) {
-		Com_Printf( "broadcast: %s\n", SV_ExpandNewlines( (char *)message ) );
+	// hack to echo chats to console
+	if ( com_dedicated->integer && !strncmp( (char *)message, "chat", 4 ) ) {
+		Com_Printf ("%s\n", SV_ExpandNewlines((char *)message));
 	}
 
 	// send the data to all relevent clients
