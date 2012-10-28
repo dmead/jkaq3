@@ -208,7 +208,6 @@ void CL_UpdateMumble(void)
 }
 #endif
 
-
 #ifdef USE_VOIP
 static
 void CL_UpdateVoipIgnore(const char *idstr, qboolean ignore)
@@ -292,7 +291,6 @@ void CL_Voip_f( void )
 		           "       voip gain <playerID#> [value]\n");
 	}
 }
-
 
 static
 void CL_VoipNewGeneration(void)
@@ -636,7 +634,6 @@ void CL_WriteDemoMessage ( msg_t *msg, int headerBytes ) {
 	FS_Write ( msg->data + headerBytes, len, clc.demofile );
 }
 
-
 /*
 ====================
 CL_StopRecording_f
@@ -723,7 +720,7 @@ void CL_Record_f( void ) {
 		return;
 	}
 
-  // sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
+	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) ) {
 		Com_Printf (S_COLOR_YELLOW "WARNING: You should set 'g_synchronousClients 1' for smoother demo recording\n");
 	}
@@ -1163,7 +1160,6 @@ void CL_PlayDemo_f( void ) {
 	clc.firstDemoFrameSkipped = qfalse;
 }
 
-
 /*
 ====================
 CL_StartDemoLoop
@@ -1200,7 +1196,6 @@ void CL_NextDemo( void ) {
 	Cbuf_AddText ("\n");
 	Cbuf_Execute();
 }
-
 
 //======================================================================
 
@@ -1496,7 +1491,6 @@ void CL_Disconnect( qboolean showMainMenu ) {
 		noGameRestart = qfalse;
 }
 
-
 /*
 ===================
 CL_ForwardCommandToServer
@@ -1601,7 +1595,6 @@ void CL_Disconnect_f( void ) {
 		Com_Error (ERR_DISCONNECT, "Disconnected from server");
 	}
 }
-
 
 /*
 ================
@@ -3008,7 +3001,6 @@ void CL_Frame ( int msec ) {
 	cls.framecount++;
 }
 
-
 //============================================================================
 
 /*
@@ -3034,8 +3026,6 @@ static __attribute__ ((format (printf, 2, 3))) void QDECL CL_RefPrintf( int prin
 		Com_DPrintf (S_COLOR_RED "%s", msg);		// red
 	}
 }
-
-
 
 /*
 ============
@@ -3607,7 +3597,6 @@ void CL_Init( void ) {
 	}
 #endif
 
-
 	// cgame might not be initialized before menu is used
 	Cvar_Get ("cg_viewsize", "100", CVAR_ARCHIVE );
 	// Make sure cg_stereoSeparation is zero as that variable is deprecated and should not be used anymore.
@@ -3659,7 +3648,6 @@ void CL_Init( void ) {
 
 	Com_Printf( "----- Client Initialization Complete -----\n" );
 }
-
 
 /*
 ===============
@@ -3727,7 +3715,6 @@ void CL_Shutdown(char *finalmsg, qboolean disconnect, qboolean quit)
 	Key_SetCatcher( 0 );
 
 	Com_Printf( "-----------------------\n" );
-
 }
 
 static void CL_SetServerInfo(serverInfo_t *server, const char *info, int ping) {

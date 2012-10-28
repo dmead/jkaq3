@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "speex/speex_preprocess.h"
 #endif
 
-// file full of random crap that gets used to create cl_guid
+// file full of random crap that gets used to create ja_guid
 #define QKEY_FILE "jakey"
 #define QKEY_SIZE 2048
 

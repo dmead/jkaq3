@@ -113,7 +113,6 @@ void S_Base_SoundInfo(void) {
 	Com_Printf("----------------------\n" );
 }
 
-
 #ifdef USE_VOIP
 static
 void S_Base_StartCapture( void )
@@ -147,8 +146,6 @@ void S_Base_MasterGain( float val )
 }
 #endif
 
-
-
 /*
 =================
 S_Base_SoundList
@@ -177,8 +174,6 @@ void S_Base_SoundList( void ) {
 	Com_Printf ("Total resident: %i\n", total);
 	S_DisplayFreeMemory();
 }
-
-
 
 void S_ChannelFree(channel_t *v) {
 	v->thesfx = NULL;
@@ -213,8 +208,6 @@ void S_ChannelSetup( void ) {
 	freelist = p + MAX_CHANNELS - 1;
 	Com_DPrintf("Channel memory manager started\n");
 }
-
-
 
 // =======================================================================
 // Load a sound
@@ -314,7 +307,6 @@ void S_DefaultSound( sfx_t *sfx ) {
 	sfx->soundLength = 512;
 	sfx->soundData = SND_malloc();
 	sfx->soundData->next = NULL;
-
 
 	for ( i = 0 ; i < sfx->soundLength ; i++ ) {
 		sfx->soundData->sndChunk[i] = i;
@@ -535,7 +527,6 @@ static qboolean S_Base_HearingThroughEntity( int entityNum, vec3_t origin )
 		return qfalse; //not the player
 }
 
-
 /*
 ====================
 S_Base_StartSoundEx
@@ -548,8 +539,8 @@ Entchannel 0 will never override a playing sound
 void S_Base_StartSoundEx(vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle, qboolean localSound ) {
 	channel_t	*ch;
 	sfx_t		*sfx;
-  int i, oldest, chosen, time;
-  int	inplay, allowed;
+	int i, oldest, chosen, time;
+	int	inplay, allowed;
 	qboolean	fullVolume;
 
 	if ( !s_soundStarted || s_soundMuted ) {
@@ -696,7 +687,6 @@ void S_Base_StartLocalSound( sfxHandle_t sfxHandle, int channelNum ) {
 
 	S_Base_StartSoundEx(NULL, listener_number, channelNum, sfxHandle, qtrue );
 }
-
 
 /*
 ==================
@@ -878,8 +868,6 @@ void S_Base_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_
 	loopSounds[entityNum].doppler = qfalse;
 }
 
-
-
 /*
 ==================
 S_AddLoopSounds
@@ -895,7 +883,6 @@ void S_AddLoopSounds (void) {
 	channel_t	*ch;
 	loopSound_t	*loop, *loop2;
 	static int	loopFrame;
-
 
 	numLoopChannels = 0;
 
@@ -1125,7 +1112,6 @@ void S_Base_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
 	VectorCopy( origin, loopSounds[entityNum].origin );
 }
 
-
 /*
 ============
 S_Respatialize
@@ -1172,7 +1158,6 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 	// add loopsounds
 	S_AddLoopSounds ();
 }
-
 
 /*
 ========================
@@ -1300,7 +1285,6 @@ void S_GetSoundtime(void)
 	}
 }
 
-
 void S_Update_(void) {
 	unsigned        endtime;
 	int				samps;
@@ -1351,8 +1335,6 @@ void S_Update_(void) {
 	if (endtime - s_soundtime > samps)
 		endtime = s_soundtime + samps;
 
-
-
 	SNDDMA_BeginPainting ();
 
 	S_PaintChannels (endtime);
@@ -1361,8 +1343,6 @@ void S_Update_(void) {
 
 	lastTime = thisTime;
 }
-
-
 
 /*
 ===============================================================================
@@ -1427,7 +1407,7 @@ void S_Base_StartBackgroundTrack( const char *intro, const char *loop ){
 	}
 
 #if 0
-	/* JKA uses mp3s which doesn't have 22k stereo music files */
+	/* JA uses mp3s which doesn't have 22k stereo music files */
 	if(s_backgroundStream->info.channels != 2 || s_backgroundStream->info.rate != 22050) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: music file %s is not 22k stereo\n", intro );
 	}
@@ -1507,10 +1487,8 @@ void S_UpdateBackgroundTrack( void ) {
 				return;
 			}
 		}
-
 	}
 }
-
 
 /*
 ======================

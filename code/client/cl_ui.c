@@ -84,7 +84,6 @@ void LAN_SaveServersToCache( void ) {
 	FS_FCloseFile(fileOut);
 }
 
-
 /*
 ====================
 LAN_ResetPings
@@ -204,7 +203,6 @@ static void LAN_RemoveServer(int source, const char *addr) {
 		}
 	}
 }
-
 
 /*
 ====================
@@ -522,7 +520,6 @@ static void LAN_MarkServerVisible(int source, int n, qboolean visible ) {
 		}
 	}
 }
-
 
 /*
 =======================

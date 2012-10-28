@@ -39,12 +39,10 @@ qboolean	chat_team;
 
 int			chat_playerNum;
 
-
 qboolean	key_overstrikeMode;
 
 int				anykeydown;
 qkey_t		keys[MAX_KEYS];
-
 
 typedef struct {
 	char	*name;
@@ -88,7 +86,6 @@ keyname_t keynames[] =
 
 	{"CAPSLOCK", A_CAPSLOCK},
 
-	
 	{"F1", A_F1},
 	{"F2", A_F2},
 	{"F3", A_F3},
@@ -333,7 +330,6 @@ EDIT FIELDS
 =============================================================================
 */
 
-
 /*
 ===================
 Field_Draw
@@ -410,7 +406,6 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int width, int size, q
 			str[0] = cursorChar;
 			str[1] = 0;
 			SCR_DrawBigString( x + ( edit->cursor - prestep - i ) * size, y, str, 1.0, qfalse );
-
 		}
 	}
 }
@@ -588,7 +583,6 @@ void Field_CharEvent( field_t *edit, int ch ) {
 		edit->buffer[edit->cursor] = ch;
 		edit->cursor++;
 	}
-
 
 	if ( edit->cursor >= edit->widthInChars ) {
 		edit->scroll++;
@@ -770,7 +764,6 @@ void Console_Key (int key) {
 
 //============================================================================
 
-
 /*
 ================
 Message_Key
@@ -790,12 +783,9 @@ void Message_Key( int key ) {
 	if ( key == A_ENTER || key == A_KP_ENTER )
 	{
 		if ( chatField.buffer[0] && clc.state == CA_ACTIVE ) {
-			if (chat_playerNum != -1 )
-
+			if ( chat_playerNum != -1 )
 				Com_sprintf( buffer, sizeof( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
-
-			else if (chat_team)
-
+			else if ( chat_team )
 				Com_sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
 			else
 				Com_sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
@@ -812,16 +802,13 @@ void Message_Key( int key ) {
 
 //============================================================================
 
-
 qboolean Key_GetOverstrikeMode( void ) {
 	return key_overstrikeMode;
 }
 
-
 void Key_SetOverstrikeMode( qboolean state ) {
 	key_overstrikeMode = state;
 }
-
 
 /*
 ===================
@@ -932,7 +919,6 @@ char *Key_KeynumToString( int keynum ) {
 	return tinystr;
 }
 
-
 /*
 ===================
 Key_SetBinding
@@ -956,7 +942,6 @@ void Key_SetBinding( int keynum, const char *binding ) {
 	cvar_modifiedFlags |= CVAR_ARCHIVE;
 }
 
-
 /*
 ===================
 Key_GetBinding
@@ -975,18 +960,17 @@ char *Key_GetBinding( int keynum ) {
 Key_GetKey
 ===================
 */
+int Key_GetKey( const char *binding ) {
+	int i;
 
-int Key_GetKey(const char *binding) {
-  int i;
-
-  if (binding) {
-  	for (i=0 ; i < MAX_KEYS ; i++) {
-      if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
-        return i;
-      }
-    }
-  }
-  return -1;
+	if (binding) {
+		for (i=0 ; i < MAX_KEYS ; i++) {
+			if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
+				return i;
+			}
+		}
+	}
+	return -1;
 }
 
 /*
@@ -1256,7 +1240,6 @@ void CL_KeyDownEvent( int key, unsigned time )
 		return;
 	}
 
-
 	// keys can still be used for bound actions
 	if ( ( key < 128 || key == A_MOUSE1 ) &&
 		( clc.demoplaying || clc.state == CA_CINEMATIC ) && Key_GetCatcher( ) == 0 ) {
@@ -1404,7 +1387,6 @@ void CL_CharEvent( int key ) {
 		Field_CharEvent( &g_consoleField, key );
 	}
 }
-
 
 /*
 ===================

@@ -121,7 +121,7 @@ void S_TransferStereo16 (unsigned long *pbuf, int endtime)
 
 	while (ls_paintedtime < endtime)
 	{
-	// handle recirculating buffer issues
+		// handle recirculating buffer issues
 		lpos = ls_paintedtime & ((dma.samples>>1)-1);
 
 		snd_out = (short *) pbuf + (lpos<<1);
@@ -132,7 +132,7 @@ void S_TransferStereo16 (unsigned long *pbuf, int endtime)
 
 		snd_linear_count <<= 1;
 
-	// write a linear blast of samples
+		// write a linear blast of samples
 		S_WriteLinearBlastStereo16 ();
 
 		snd_p += snd_linear_count;
@@ -161,7 +161,6 @@ void S_TransferPaintBuffer(int endtime)
 
 	pbuf = (unsigned long *)dma.buffer;
 
-
 	if ( s_testsound->integer ) {
 		int		i;
 		int		count;
@@ -171,7 +170,6 @@ void S_TransferPaintBuffer(int endtime)
 		for (i=0 ; i<count ; i++)
 			paintbuffer[i].left = paintbuffer[i].right = sin((s_paintedtime+i)*0.1)*20000*256;
 	}
-
 
 	if (dma.samplebits == 16 && dma.channels == 2)
 	{	// optimized case
@@ -217,7 +215,6 @@ void S_TransferPaintBuffer(int endtime)
 		}
 	}
 }
-
 
 /*
 ===============================================================================
@@ -441,9 +438,6 @@ static void S_PaintChannelFrom16_scalar( channel_t *ch, const sfx_t *sc, int cou
 
 		ooff = sampleOffset;
 		samples = chunk->sndChunk;
-		
-
-
 
 		for ( i=0 ; i<count ; i++ ) {
 

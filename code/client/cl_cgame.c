@@ -54,7 +54,9 @@ void CL_GetGlconfig( glconfig_t *glconfig ) {
 }
 
 /*
+====================
 CL_GetRealRes
+====================
 */
 void CL_GetRealRes( float *width, float *height ) {
 	*width = cls.glconfig.vidWidth;
@@ -88,7 +90,6 @@ qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd ) {
 int CL_GetCurrentCmdNumber( void ) {
 	return cl.cmdNumber;
 }
-
 
 /*
 ====================
@@ -204,7 +205,6 @@ void CL_CgameError( const char *string ) {
 	Com_Error( ERR_DROP, "%s", string );
 }
 
-
 /*
 =====================
 CL_ConfigstringModified
@@ -264,7 +264,6 @@ void CL_ConfigstringModified( void ) {
 		CL_SystemInfoChanged();
 	}
 }
-
 
 /*
 ===================
@@ -390,7 +389,6 @@ rescan:
 	// cgame can now act on the command
 	return qtrue;
 }
-
 
 /*
 ====================
@@ -906,7 +904,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	return 0;
 }
 
-
 /*
 ====================
 CL_InitCGame
@@ -976,7 +973,6 @@ qboolean CL_InterceptCommand( void ) {
 	return VM_Call( cgvm, CG_INCOMING_CONSOLE_COMMAND );
 }
 */
-
 
 /*
 ====================
@@ -1199,7 +1195,6 @@ void CL_SetCGameTime( void ) {
 	}
 	cl.oldFrameServerTime = cl.snap.serverTime;
 
-
 	// get our current view of time
 
 	if ( clc.demoplaying && cl_freezeDemo->integer ) {
@@ -1295,5 +1290,4 @@ void CL_SetCGameTime( void ) {
 			return;		// end of demo
 		}
 	}
-
 }

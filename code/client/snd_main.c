@@ -359,7 +359,6 @@ void S_SoundList( void )
 	}
 }
 
-
 #ifdef USE_VOIP
 /*
 =================
@@ -493,7 +492,6 @@ void S_Music_f( void ) {
 		Com_Printf ("music <musicfile> [loopfile]\n");
 		return;
 	}
-
 }
 
 /*
@@ -508,7 +506,6 @@ void S_StopMusic_f( void )
 
 	si.StopBackgroundTrack();
 }
-
 
 //=============================================================================
 
@@ -536,7 +533,6 @@ void S_Init( void )
 	if( !cv->integer ) {
 		Com_Printf( "Sound disabled.\n" );
 	} else {
-
 		S_CodecInit( );
 
 		Cmd_AddCommand( "play", S_Play_f );
@@ -597,4 +593,3 @@ void S_Shutdown( void )
 
 	S_CodecShutdown( );
 }
-

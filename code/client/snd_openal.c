@@ -124,9 +124,7 @@ static void S_AL_ClearError( qboolean quiet )
 	}
 }
 
-
 //===========================================================================
-
 
 typedef struct alSfx_s
 {
@@ -501,9 +499,7 @@ ALuint S_AL_BufferGet(sfxHandle_t sfx)
 	return knownSfx[sfx].buffer;
 }
 
-
 //===========================================================================
-
 
 typedef struct src_s
 {
@@ -763,9 +759,9 @@ static void S_AL_SrcSetup(srcHandle_t src, sfxHandle_t sfx, alSrcPriority_t prio
 	// Set up OpenAL source
 	if(sfx >= 0)
 	{
-        	// Mark the SFX as used, and grab the raw AL buffer
-        	S_AL_BufferUse(sfx);
-        	qalSourcei(curSource->alSource, AL_BUFFER, S_AL_BufferGet(sfx));
+		// Mark the SFX as used, and grab the raw AL buffer
+		S_AL_BufferUse(sfx);
+		qalSourcei(curSource->alSource, AL_BUFFER, S_AL_BufferGet(sfx));
 	}
 
 	qalSourcef(curSource->alSource, AL_PITCH, 1.0f);
@@ -1499,7 +1495,7 @@ void S_AL_SrcUpdate( void )
 					}
 					else if(!curSfx->loopActiveCnt && curSfx->masterLoopSrc < 0)
 						curSfx->masterLoopSrc = i;
-					
+
 					continue;
 				}
 
@@ -1579,7 +1575,6 @@ void S_AL_SrcUpdate( void )
 					qalSourcei(curSource->alSource, AL_SOURCE_RELATIVE, AL_FALSE);
 					qalSourcef(curSource->alSource, AL_ROLLOFF_FACTOR, s_alRolloff->value);
 				}
-				
 			}
 			else if(curSource->priority == SRCPRI_AMBIENT)
 			{
@@ -1598,15 +1593,15 @@ void S_AL_SrcUpdate( void )
 
 		if(!curSource->isStream)
 		{
-        		// Check if it's done, and flag it
-	        	qalGetSourcei(curSource->alSource, AL_SOURCE_STATE, &state);
-	        	if(state == AL_STOPPED)
-        		{
-	        		curSource->isPlaying = qfalse;
-		        	S_AL_SrcKill(i);
-		        	continue;
-        		}
-                }
+			// Check if it's done, and flag it
+			qalGetSourcei(curSource->alSource, AL_SOURCE_STATE, &state);
+			if(state == AL_STOPPED)
+			{
+				curSource->isPlaying = qfalse;
+				S_AL_SrcKill(i);
+				continue;
+			}
+		}
 
 		// Query relativity of source, don't move if it's true
 		qalGetSourcei(curSource->alSource, AL_SOURCE_RELATIVE, &state);
@@ -1644,7 +1639,6 @@ ALuint S_AL_SrcGet(srcHandle_t src)
 	return srcList[src].alSource;
 }
 
-
 //===========================================================================
 
 static srcHandle_t streamSourceHandles[MAX_RAW_STREAMS];
@@ -1658,55 +1652,55 @@ S_AL_AllocateStreamChannel
 */
 static void S_AL_AllocateStreamChannel(int stream, int entityNum)
 {
-        srcHandle_t cursrc;
-        ALuint alsrc;
-        
+	srcHandle_t cursrc;
+	ALuint alsrc;
+
 	if ((stream < 0) || (stream >= MAX_RAW_STREAMS))
 		return;
 
-        if(entityNum >= 0)
-        {
-                // This is a stream that tracks an entity
-        	// Allocate a streamSource at normal priority
-        	cursrc = S_AL_SrcAlloc(SRCPRI_ENTITY, entityNum, 0);
-        	if(cursrc < 0)
-	        	return;
+	if(entityNum >= 0)
+	{
+		// This is a stream that tracks an entity
+		// Allocate a streamSource at normal priority
+		cursrc = S_AL_SrcAlloc(SRCPRI_ENTITY, entityNum, 0);
+		if(cursrc < 0)
+			return;
 
-        	S_AL_SrcSetup(cursrc, -1, SRCPRI_ENTITY, entityNum, 0, qfalse);
-        	alsrc = S_AL_SrcGet(cursrc);
-        	srcList[cursrc].isTracking = qtrue;
-        	srcList[cursrc].isStream = qtrue;
-        }
-        else
-        {
-                // Unspatialized stream source
+		S_AL_SrcSetup(cursrc, -1, SRCPRI_ENTITY, entityNum, 0, qfalse);
+		alsrc = S_AL_SrcGet(cursrc);
+		srcList[cursrc].isTracking = qtrue;
+		srcList[cursrc].isStream = qtrue;
+	}
+	else
+	{
+		// Unspatialized stream source
 
-        	// Allocate a streamSource at high priority
-        	cursrc = S_AL_SrcAlloc(SRCPRI_STREAM, -2, 0);
-        	if(cursrc < 0)
-	        	return;
+		// Allocate a streamSource at high priority
+		cursrc = S_AL_SrcAlloc(SRCPRI_STREAM, -2, 0);
+		if(cursrc < 0)
+			return;
 
-        	alsrc = S_AL_SrcGet(cursrc);
+		alsrc = S_AL_SrcGet(cursrc);
 
-        	// Lock the streamSource so nobody else can use it, and get the raw streamSource
-        	S_AL_SrcLock(cursrc);
-        
-        	// make sure that after unmuting the S_AL_Gain in S_Update() does not turn
-        	// volume up prematurely for this source
-        	srcList[cursrc].scaleGain = 0.0f;
+		// Lock the streamSource so nobody else can use it, and get the raw streamSource
+		S_AL_SrcLock(cursrc);
 
-        	// Set some streamSource parameters
-        	qalSourcei (alsrc, AL_BUFFER,          0            );
-        	qalSourcei (alsrc, AL_LOOPING,         AL_FALSE     );
-        	qalSource3f(alsrc, AL_POSITION,        0.0, 0.0, 0.0);
-        	qalSource3f(alsrc, AL_VELOCITY,        0.0, 0.0, 0.0);
-        	qalSource3f(alsrc, AL_DIRECTION,       0.0, 0.0, 0.0);
-        	qalSourcef (alsrc, AL_ROLLOFF_FACTOR,  0.0          );
-        	qalSourcei (alsrc, AL_SOURCE_RELATIVE, AL_TRUE      );
-        }
+		// make sure that after unmuting the S_AL_Gain in S_Update() does not turn
+		// volume up prematurely for this source
+		srcList[cursrc].scaleGain = 0.0f;
 
-        streamSourceHandles[stream] = cursrc;
-       	streamSources[stream] = alsrc;
+		// Set some streamSource parameters
+		qalSourcei (alsrc, AL_BUFFER,          0            );
+		qalSourcei (alsrc, AL_LOOPING,         AL_FALSE     );
+		qalSource3f(alsrc, AL_POSITION,        0.0, 0.0, 0.0);
+		qalSource3f(alsrc, AL_VELOCITY,        0.0, 0.0, 0.0);
+		qalSource3f(alsrc, AL_DIRECTION,       0.0, 0.0, 0.0);
+		qalSourcef (alsrc, AL_ROLLOFF_FACTOR,  0.0          );
+		qalSourcei (alsrc, AL_SOURCE_RELATIVE, AL_TRUE      );
+	}
+
+	streamSourceHandles[stream] = cursrc;
+	streamSources[stream] = alsrc;
 }
 
 /*
@@ -1764,9 +1758,9 @@ void S_AL_RawSamples(int stream, int samples, int rate, int width, int channels,
 
 	if(entityNum < 0)
 	{
-        	// Volume
-        	S_AL_Gain (streamSources[stream], volume * s_volume->value * s_alGain->value);
-        }
+		// Volume
+		S_AL_Gain (streamSources[stream], volume * s_volume->value * s_alGain->value);
+	}
 }
 
 /*
@@ -1846,9 +1840,7 @@ void S_AL_StreamDie( int stream )
 	S_AL_FreeStreamChannel(stream);
 }
 
-
 //===========================================================================
-
 
 #define NUM_MUSIC_BUFFERS	4
 #define	MUSIC_BUFFER_SIZE 4096
@@ -2133,9 +2125,7 @@ void S_AL_MusicUpdate( void )
 	S_AL_Gain(musicSource, s_alGain->value * s_musicVolume->value);
 }
 
-
 //===========================================================================
-
 
 // Local state variables
 static ALCdevice *alDevice;
@@ -2342,7 +2332,6 @@ void S_AL_MasterGain( float gain )
 }
 #endif
 
-
 /*
 =================
 S_AL_SoundInfo
@@ -2373,8 +2362,6 @@ static void S_AL_SoundInfo(void)
 	}
 #endif
 }
-
-
 
 /*
 =================
@@ -2467,7 +2454,6 @@ qboolean S_AL_Init( soundInterface_t *si )
 	inputdevice = s_alInputDevice->string;
 	if(inputdevice && !*inputdevice)
 		inputdevice = NULL;
-
 
 	// Device enumeration support
 	enumeration_all_ext = qalcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT");
@@ -2666,4 +2652,3 @@ qboolean S_AL_Init( soundInterface_t *si )
 	return qfalse;
 #endif
 }
-
