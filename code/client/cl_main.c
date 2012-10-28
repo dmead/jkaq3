@@ -3058,8 +3058,6 @@ Borrowed from TurtleArena
 ============
 */
 void CL_DrawLoadingScreen( void ) {
-	qhandle_t hShader;
-
 	re.BeginFrame( STEREO_CENTER );
 
 	// Need to draw extra stuff or screen is completely white for some shaders.
