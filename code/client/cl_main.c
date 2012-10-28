@@ -116,9 +116,7 @@ cvar_t	*cl_trn;
 
 cvar_t	*cl_lanForcePackets;
 
-#ifdef USE_GUID
 cvar_t	*cl_guidServerUniq;
-#endif
 
 cvar_t	*cl_consoleKeys;
 
@@ -1338,7 +1336,6 @@ void CL_ClearState (void) {
 	Com_Memset( &cl, 0, sizeof( cl ) );
 }
 
-#ifdef USE_GUID
 /*
 ====================
 CL_UpdateGUID
@@ -1355,12 +1352,11 @@ static void CL_UpdateGUID( const char *prefix, int prefix_len )
 	FS_FCloseFile( f );
 
 	if( len != QKEY_SIZE ) 
-		Cvar_Set( "cl_guid", "" );
+		Cvar_Set( "ja_guid", "" );
 	else
-		Cvar_Set( "cl_guid", Com_MD5File( QKEY_FILE, QKEY_SIZE,
+		Cvar_Set( "ja_guid", Com_MD5File( QKEY_FILE, QKEY_SIZE,
 			prefix, prefix_len ) );
 }
-#endif
 
 static void CL_OldGame(void)
 {
@@ -1481,9 +1477,7 @@ void CL_Disconnect( qboolean showMainMenu ) {
 		CL_CloseAVI( );
 	}
 
-#ifdef USE_GUID
 	CL_UpdateGUID( NULL, 0 );
-#endif
 
 	if(!noGameRestart)
 		CL_OldGame();
@@ -1678,12 +1672,10 @@ void CL_Connect_f( void ) {
 
 	Com_Printf( "%s resolved to %s\n", clc.servername, serverString);
 
-#ifdef USE_GUID
 	if( cl_guidServerUniq->integer )
 		CL_UpdateGUID( serverString, strlen( serverString ) );
 	else
 		CL_UpdateGUID( NULL, 0 );
-#endif
 
 	// if we aren't playing on a lan, we need to authenticate
 	// with the cd key
@@ -3540,9 +3532,7 @@ void CL_Init( void ) {
 
 	cl_lanForcePackets = Cvar_Get ("cl_lanForcePackets", "1", CVAR_ARCHIVE);
 
-#ifdef USE_GUID
 	cl_guidServerUniq = Cvar_Get ("cl_guidServerUniq", "1", CVAR_ARCHIVE);
-#endif
 
 	// ~ and `, as keys and characters
 	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", "~ ` 0x7e 0x60", CVAR_ARCHIVE);
@@ -3641,10 +3631,8 @@ void CL_Init( void ) {
 	Cvar_Set( "cl_running", "1" );
 
 	CL_GenerateQKey();
-#ifdef USE_GUID
-	Cvar_Get( "cl_guid", "", CVAR_USERINFO | CVAR_ROM );
+	Cvar_Get( "ja_guid", "", CVAR_USERINFO | CVAR_ROM );
 	CL_UpdateGUID( NULL, 0 );
-#endif
 
 	Com_Printf( "----- Client Initialization Complete -----\n" );
 }
