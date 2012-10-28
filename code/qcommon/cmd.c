@@ -37,7 +37,6 @@ int			cmd_wait;
 cmd_t		cmd_text;
 byte		cmd_text_buf[MAX_CMD_BUFFER];
 
-
 //=============================================================================
 
 /*
@@ -58,7 +57,6 @@ void Cmd_Wait_f( void ) {
 		cmd_wait = 1;
 	}
 }
-
 
 /*
 =============================================================================
@@ -101,7 +99,6 @@ void Cbuf_AddText( const char *text ) {
 	cmd_text.cursize += l;
 }
 
-
 /*
 ============
 Cbuf_InsertText
@@ -133,7 +130,6 @@ void Cbuf_InsertText( const char *text ) {
 
 	cmd_text.cursize += len;
 }
-
 
 /*
 ============
@@ -243,12 +239,10 @@ void Cbuf_Execute (void)
 			memmove (text, text+i, cmd_text.cursize);
 		}
 
-// execute the command line
-
+		// execute the command line
 		Cmd_ExecuteString (line);		
 	}
 }
-
 
 /*
 ==============================================================================
@@ -257,7 +251,6 @@ void Cbuf_Execute (void)
 
 ==============================================================================
 */
-
 
 /*
 ===============
@@ -294,7 +287,6 @@ void Cmd_Exec_f( void ) {
 	FS_FreeFile (f.v);
 }
 
-
 /*
 ===============
 Cmd_Vstr_f
@@ -314,7 +306,6 @@ void Cmd_Vstr_f( void ) {
 	Cbuf_InsertText( va("%s\n", v ) );
 }
 
-
 /*
 ===============
 Cmd_Echo_f
@@ -326,7 +317,6 @@ void Cmd_Echo_f (void)
 {
 	Com_Printf ("%s\n", Cmd_Args());
 }
-
 
 /*
 =============================================================================
@@ -343,7 +333,6 @@ typedef struct cmd_function_s
 	xcommand_t				function;
 	completionFunc_t	complete;
 } cmd_function_t;
-
 
 static	int			cmd_argc;
 static	char		*cmd_argv[MAX_STRING_TOKENS];		// points into cmd_tokenized
@@ -384,7 +373,6 @@ they can't have pointers returned to them
 void	Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength ) {
 	Q_strncpyz( buffer, Cmd_Argv( arg ), bufferLength );
 }
-
 
 /*
 ============
@@ -594,7 +582,6 @@ static void Cmd_TokenizeString2( const char *text_in, qboolean ignoreQuotes ) {
 			return;		// all tokens parsed
 		}
 	}
-	
 }
 
 /*
@@ -747,7 +734,6 @@ void Cmd_CompleteArgument( const char *command, char *args, int argNum ) {
 		}
 	}
 }
-
 
 /*
 ============

@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-
 #include "q_shared.h"
 #include "qcommon.h"
 #include "unzip.h"
@@ -118,7 +117,6 @@ cd path + BASEGAME's zip file
 cd path + BASEGAME's directory
 
 server download, to be written to home path + current game's directory
-
 
 The filesystem can be safely shutdown and reinitialized with different
 basedir / cddir / game combinations, but all other subsystems that rely on it
@@ -337,7 +335,6 @@ qboolean FS_PakIsPure( pack_t *pack ) {
 	}
 	return qtrue;
 }
-
 
 /*
 =================
@@ -635,7 +632,6 @@ qboolean FS_SV_FileExists( const char *file )
 	return FS_FileInPathExists(testpath);
 }
 
-
 /*
 ===========
 FS_SV_FOpenFileWrite
@@ -746,7 +742,6 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp)
 	return -1;
 }
 
-
 /*
 ===========
 FS_SV_Rename
@@ -776,8 +771,6 @@ void FS_SV_Rename( const char *from, const char *to ) {
 
 	rename(from_ospath, to_ospath);
 }
-
-
 
 /*
 ===========
@@ -1705,7 +1698,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin ) {
 	}
 }
 
-
 /*
 ======================================================================================
 
@@ -1852,7 +1844,7 @@ long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void *
 	{
 		// look for it in the filesystem or pack files
 		len = FS_FOpenFileRead(qpath, &h, qfalse);
-        }
+	}
 	else
 	{
 		// look for it in a specific search path only
@@ -1968,8 +1960,6 @@ void FS_WriteFile( const char *qpath, const void *buffer, int size ) {
 
 	FS_FCloseFile( f );
 }
-
-
 
 /*
 ==========================================================================
