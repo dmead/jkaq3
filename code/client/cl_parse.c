@@ -45,7 +45,6 @@ void SHOWNET( msg_t *msg, char *s) {
 	}
 }
 
-
 /*
 =========================================================================
 
@@ -168,7 +167,6 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[newnum], qfalse );
 			continue;
 		}
-
 	}
 
 	// any remaining entities in the old frame are copied over
@@ -190,7 +188,6 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 		}
 	}
 }
-
 
 /*
 ================
@@ -324,7 +321,6 @@ void CL_ParseSnapshot( msg_t *msg ) {
 
 	cl.newSnapshots = qtrue;
 }
-
 
 //=====================================================================
 
@@ -576,7 +572,6 @@ void CL_ParseGamestate( msg_t *msg ) {
 	// make sure the game starts
 	Cvar_Set( "cl_paused", "0" );
 }
-
 
 //=====================================================================
 
@@ -854,7 +849,6 @@ void CL_ParseVoip ( msg_t *msg ) {
 	clc.voipIncomingSequence[sender] = sequence + frames;
 }
 #endif
-
 
 /*
 =====================

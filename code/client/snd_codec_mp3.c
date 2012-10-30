@@ -91,7 +91,6 @@ int S_MP3_ReadData(snd_stream_t *stream, struct mad_stream *madstream, byte *enc
 	if(leftover > 0)
 		memmove(encbuf, madstream->this_frame, leftover);
 
-
 	// Fill the buffer right to the end
 	
 	retval = FS_Read(&encbuf[leftover], encbufsize - leftover, stream->file);
@@ -106,7 +105,6 @@ int S_MP3_ReadData(snd_stream_t *stream, struct mad_stream *madstream, byte *enc
 
 	return retval;
 }
-
 
 /*
 =================
@@ -342,7 +340,6 @@ signed int S_MP3_Scale(mad_fixed_t sample)
 	return sample >> n_bits_to_loose;
 }
 
-
 /*
 =================
 S_MP3_PCMCopy
@@ -397,7 +394,6 @@ int S_MP3_PCMCopy(byte *buf, struct mad_pcm *pcm, int bufofs,
 
 	return sampleofs;
 }
-
 
 /*
 =================

@@ -48,7 +48,6 @@ void SCR_DrawNamedPic( float x, float y, float width, float height, const char *
 	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-
 /*
 ================
 SCR_AdjustFrom640
@@ -100,7 +99,6 @@ void SCR_FillRect( float x, float y, float width, float height, const float *col
 	re.SetColor( NULL );
 }
 
-
 /*
 ================
 SCR_DrawPic
@@ -112,8 +110,6 @@ void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader
 	SCR_AdjustFrom640( &x, &y, &width, &height );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
-
-
 
 /*
 ** SCR_DrawChar
@@ -188,7 +184,6 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 					   cls.charSetShader );
 }
 
-
 /*
 ==================
 SCR_DrawBigString[Color]
@@ -221,7 +216,6 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 		s++;
 	}
 
-
 	// draw the colored text
 	s = string;
 	xx = x;
@@ -243,7 +237,6 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	re.SetColor( NULL );
 }
 
-
 void SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape ) {
 	float	color[4];
 
@@ -255,7 +248,6 @@ void SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noCol
 void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape ) {
 	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qtrue, noColorEscape );
 }
-
 
 /*
 ==================
@@ -294,8 +286,6 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 	re.SetColor( NULL );
 }
 
-
-
 /*
 ** SCR_Strlen -- skips color escape codes
 */
@@ -322,7 +312,6 @@ int	SCR_GetBigStringWidth( const char *str ) {
 	return SCR_Strlen( str ) * BIGCHAR_WIDTH;
 }
 
-
 //===============================================================================
 
 /*
@@ -346,7 +335,6 @@ void SCR_DrawDemoRecording( void ) {
 
 	SCR_DrawStringExt( 320 - strlen( string ) * 4, 20, 8, string, ColorForIndex(ColorIndex(COLOR_WHITE)), qtrue, qfalse );
 }
-
 
 #ifdef USE_VOIP
 /*
@@ -386,9 +374,6 @@ void SCR_DrawVoipMeter( void ) {
 	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, ColorForIndex(ColorIndex(COLOR_WHITE)), qtrue, qfalse );
 }
 #endif
-
-
-
 
 /*
 ===============================================================================
@@ -462,7 +447,6 @@ void SCR_Init( void ) {
 
 	scr_initialized = qtrue;
 }
-
 
 //=======================================================
 
@@ -592,4 +576,3 @@ void SCR_UpdateScreen( void ) {
 	
 	recursive = 0;
 }
-

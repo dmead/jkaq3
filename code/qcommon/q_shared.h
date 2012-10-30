@@ -52,7 +52,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Heartbeat for dpmaster protocol. You shouldn't change this unless you know what you're doing
 #define HEARTBEAT_FOR_MASTER		"DarkPlaces"
 #else
-// Heartbeat for jk3 protocol. You shouldn't change this unless you know what you're doing
+// Heartbeat for JA protocol. You shouldn't change this unless you know what you're doing
 #define HEARTBEAT_FOR_MASTER		"QuakeArena-1"
 #endif
 

@@ -456,13 +456,11 @@ void CL_ConsolePrint( char *txt ) {
 			if ( txt[l] <= ' ') {
 				break;
 			}
-
 		}
 
 		// word wrap
 		if (l != con.linewidth && (con.x + l >= con.linewidth) ) {
 			Con_Linefeed(skipnotify);
-
 		}
 
 		txt++;
@@ -484,7 +482,6 @@ void CL_ConsolePrint( char *txt ) {
 			break;
 		}
 	}
-
 
 	// mark time for transparent overlay
 	if (con.current >= 0) {
@@ -778,7 +775,6 @@ void Con_RunConsole (void) {
 		con.displayFrac -= con_speed->value*cls.realFrametime*0.001;
 		if (con.finalFrac > con.displayFrac)
 			con.displayFrac = con.finalFrac;
-
 	}
 	else if (con.finalFrac > con.displayFrac)
 	{
@@ -786,7 +782,6 @@ void Con_RunConsole (void) {
 		if (con.finalFrac < con.displayFrac)
 			con.displayFrac = con.finalFrac;
 	}
-
 }
 
 void Con_PageUp( void ) {

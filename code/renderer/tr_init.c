@@ -995,6 +995,27 @@ void GL_SetDefaultState( void )
 	qglDisable( GL_BLEND );
 }
 
+/*
+================
+R_PrintLongString
+
+Workaround for ri.Printf's 1024 characters buffer limit.
+================
+*/
+void R_PrintLongString(const char *string) {
+	char buffer[1024];
+	const char *p;
+	int size = strlen(string);
+
+	p = string;
+	while(size > 0)
+	{
+		Q_strncpyz(buffer, p, sizeof (buffer) );
+		ri.Printf( PRINT_ALL, "%s", buffer );
+		p += 1023;
+		size -= 1023;
+	}
+}
 
 /*
 ================
@@ -1017,25 +1038,9 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
 	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
 	ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-	{
-		char *p, *token;
-
-		p = extensions_string;
-
-		ri.Printf( PRINT_ALL, "GL_EXTENSIONS: " );
-
-		while ( 1 ) {	
-			token = COM_ParseExt( &p, qfalse );
-
-			if ( !*token ) {
-				break;
-			}
-
-			ri.Printf( PRINT_ALL, "%s ", token );
-		}
-
-		ri.Printf( PRINT_ALL, "\n" );
-	}
+	ri.Printf( PRINT_ALL, "GL_EXTENSIONS: " );
+	R_PrintLongString( glConfig.extensions_string );
+	ri.Printf( PRINT_ALL, "\n" );
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.maxActiveTextures );
 	ri.Printf( PRINT_ALL, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );

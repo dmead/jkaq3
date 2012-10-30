@@ -1136,14 +1136,15 @@ static void SV_Status_f( void ) {
 	Com_Printf ("\n");
 }
 
+#define EC "\x19"
+
 /*
 ==================
 SV_ConSay_f
 ==================
 */
 static void SV_ConSay_f(void) {
-	char	*p;
-	char	text[1024];
+	char	text[MAX_STRING_CHARS];
 
 	// make sure server is running
 	if ( !com_sv_running->integer ) {
@@ -1155,17 +1156,31 @@ static void SV_ConSay_f(void) {
 		return;
 	}
 
-	strcpy (text, "console: ");
-	p = Cmd_Args();
-
-	if ( *p == '"' ) {
-		p++;
-		p[strlen(p)-1] = 0;
-	}
-
-	strcat(text, p);
+	Com_sprintf(text, sizeof(text), "console"EC": %s", Cmd_Args());
 
 	SV_SendServerCommand(NULL, "chat \"%s\"", text);
+}
+
+/*
+==================
+SV_ConChat_f
+==================
+*/
+static void SV_ConChat_f(void) {
+	char	*p;
+	char	text[MAX_STRING_CHARS];
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
+	if ( Cmd_Argc () < 2 ) {
+		return;
+	}
+
+	SV_SendServerCommand(NULL, "chat \"%s\"", Cmd_Args());
 }
 
 /*
@@ -1173,9 +1188,11 @@ static void SV_ConSay_f(void) {
 SV_ConTell_f
 ==================
 */
+char *SV_ExpandNewlines( char *in );
 static void SV_ConTell_f(void) {
 	char	*p;
-	char	text[1024];
+	char	prefix[17];
+	char	text[MAX_STRING_CHARS];
 	client_t	*cl;
 
 	// make sure server is running
@@ -1194,19 +1211,41 @@ static void SV_ConTell_f(void) {
 		return;
 	}
 
-	strcpy (text, "console_tell: ");
+	Com_sprintf(prefix, sizeof(prefix), EC"[console"EC"]"EC": %c%c", Q_COLOR_ESCAPE, COLOR_MAGENTA);
 	p = Cmd_ArgsFrom(2);
+	Q_strncpyz(text, p, sizeof(text));
 
-	if ( *p == '"' ) {
-		p++;
-		p[strlen(p)-1] = 0;
-	}
-
-	strcat(text, p);
-
-	SV_SendServerCommand(cl, "chat \"%s\"", text);
+	SV_SendServerCommand(cl, "chat \"%s%s\"", prefix, text);
+	Com_Printf ("tell: console to %s^7: %s\n", cl->name, SV_ExpandNewlines(text));
 }
 
+static void SV_ConTellChat_f(void) {
+	char	*p;
+	char	text[MAX_STRING_CHARS];
+	client_t	*cl;
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
+	if ( Cmd_Argc() < 3 ) {
+		Com_Printf ("Usage: svtell <client number> <text>\n");
+		return;
+	}
+
+	cl = SV_GetPlayerByNum();
+	if ( !cl ) {
+		return;
+	}
+
+	p = Cmd_ArgsFrom(2);
+	Q_strncpyz(text, p, sizeof(text));
+
+	SV_SendServerCommand(cl, "chat \"%s\"", text);
+	Com_Printf ("svtell: console to %s^7: %s\n", cl->name, SV_ExpandNewlines(text));
+}
 
 /*
 ==================
@@ -1219,7 +1258,6 @@ void SV_Heartbeat_f( void ) {
 	svs.nextHeartbeatTime = -9999999;
 }
 
-
 /*
 ===========
 SV_Serverinfo_f
@@ -1231,7 +1269,6 @@ static void SV_Serverinfo_f( void ) {
 	Com_Printf ("Server info settings:\n");
 	Info_Print ( Cvar_InfoString( CVAR_SERVERINFO ) );
 }
-
 
 /*
 ===========
@@ -1351,7 +1388,6 @@ static void SV_DumpUser_f( void ) {
 	Info_Print( cl->userinfo );
 }
 
-
 /*
 =================
 SV_KillServer
@@ -1439,6 +1475,10 @@ void SV_AddOperatorCommands( void ) {
 	if( com_dedicated->integer ) {
 		Cmd_AddCommand ("say", SV_ConSay_f);
 		Cmd_AddCommand ("tell", SV_ConTell_f);
+		Cmd_SetCommandCompletionFunc( "tell", SV_CompletePlayerID );
+		Cmd_AddCommand ("svsay", SV_ConChat_f);
+		Cmd_AddCommand ("svtell", SV_ConTellChat_f);
+		Cmd_SetCommandCompletionFunc( "svtell", SV_CompletePlayerID );
 	}
 	
 	Cmd_AddCommand("rehashbans", SV_RehashBans_f);

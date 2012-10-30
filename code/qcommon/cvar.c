@@ -1113,8 +1113,6 @@ void Cvar_Unset_f(void)
 		Com_Printf("Error: %s: Variable %s is not user created.\n", Cmd_Argv(0), cv->name);
 }
 
-
-
 /*
 ============
 Cvar_Restart
@@ -1149,7 +1147,6 @@ void Cvar_Restart(qboolean unsetVM)
 		curvar = curvar->next;
 	}
 }
-
 
 /*
 ============
@@ -1206,8 +1203,6 @@ char *Cvar_InfoString_Big(int bit)
 	return info;
 }
 
-
-
 /*
 =====================
 Cvar_InfoStringBuffer
@@ -1263,7 +1258,6 @@ void Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultVal
 	vmCvar->modificationCount = -1;
 	Cvar_Update( vmCvar );
 }
-
 
 /*
 =====================

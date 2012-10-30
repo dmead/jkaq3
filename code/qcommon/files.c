@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-
 #include "q_shared.h"
 #include "qcommon.h"
 #include "unzip.h"
@@ -118,7 +117,6 @@ cd path + BASEGAME's zip file
 cd path + BASEGAME's directory
 
 server download, to be written to home path + current game's directory
-
 
 The filesystem can be safely shutdown and reinitialized with different
 basedir / cddir / game combinations, but all other subsystems that rely on it
@@ -337,7 +335,6 @@ qboolean FS_PakIsPure( pack_t *pack ) {
 	}
 	return qtrue;
 }
-
 
 /*
 =================
@@ -635,7 +632,6 @@ qboolean FS_SV_FileExists( const char *file )
 	return FS_FileInPathExists(testpath);
 }
 
-
 /*
 ===========
 FS_SV_FOpenFileWrite
@@ -746,7 +742,6 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp)
 	return -1;
 }
 
-
 /*
 ===========
 FS_SV_Rename
@@ -776,8 +771,6 @@ void FS_SV_Rename( const char *from, const char *to ) {
 
 	rename(from_ospath, to_ospath);
 }
-
-
 
 /*
 ===========
@@ -1086,6 +1079,15 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 	if(filename == NULL)
 		Com_Error(ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed");
 
+	if(!filename[0])
+	{
+		if(file == NULL)
+			return qfalse;
+
+		*file = 0;
+		return -1;
+	}
+
 	// qpaths are not supposed to have a leading slash
 	if(filename[0] == '/' || filename[0] == '\\')
 		filename++;
@@ -1331,6 +1333,18 @@ long FS_FOpenFileRead(const char *filename, fileHandle_t *file, qboolean uniqueF
 
 	if(!fs_searchpaths)
 		Com_Error(ERR_FATAL, "Filesystem call made without initialization");
+
+	if(filename == NULL)
+		Com_Error(ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed");
+
+	if(!filename[0])
+	{
+		if(file == NULL)
+			return qfalse;
+
+		*file = 0;
+		return -1;
+	}
 
 	for(search = fs_searchpaths; search; search = search->next)
 	{
@@ -1684,7 +1698,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin ) {
 	}
 }
 
-
 /*
 ======================================================================================
 
@@ -1831,7 +1844,7 @@ long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void *
 	{
 		// look for it in the filesystem or pack files
 		len = FS_FOpenFileRead(qpath, &h, qfalse);
-        }
+	}
 	else
 	{
 		// look for it in a specific search path only
@@ -1947,8 +1960,6 @@ void FS_WriteFile( const char *qpath, const void *buffer, int size ) {
 
 	FS_FCloseFile( f );
 }
-
-
 
 /*
 ==========================================================================
@@ -2974,7 +2985,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring ) {
 		// Ok, see if we have this pak file
 		havepak = qfalse;
 
-		// never autodownload any of the jk3 paks
+		// never autodownload any of the JA paks
 		if(FS_idPak(fs_serverReferencedPakNames[i], BASEGAME, NUM_RV_PAKS))
 		{
 			continue;
@@ -3239,7 +3250,7 @@ Check whether any of the original rv pak files are present,
 and start up in standalone mode, if there are none and a
 different com_basegame was set.
 Note: If you're building a game that doesn't depend on the
-JK3 media assets0.pk3, you'll want to remove this by defining
+JA media assets0.pk3, you'll want to remove this by defining
 STANDALONE in q_shared.h
 ===================
 */
@@ -3270,7 +3281,7 @@ static void FS_CheckPak0( void )
 						"**************************************************\n"
 						"WARNING: " BASEGAME "/assets0.pk3 is present but its checksum (%u)\n"
 						"is not correct. Please re-copy assets0.pk3 from your\n"
-						"legitimate JK3 CDROM.\n"
+						"legitimate JA CDROM.\n"
 						"**************************************************\n\n\n",
 						curpack->checksum );
 				}
@@ -3357,7 +3368,7 @@ static void FS_CheckPak0( void )
 		{
 			Q_strcat(errorText, sizeof(errorText),
 				"\"assets0.pk3\" is missing. Please copy it "
-				"from your legitimate JK3 CDROM. ");
+				"from your legitimate JA CDROM. ");
 		}
 
 		if((foundPak & 0x04) != 0x04)
@@ -3368,7 +3379,7 @@ static void FS_CheckPak0( void )
 		}
 
 		Q_strcat(errorText, sizeof(errorText),
-			va("Also check that your jamp2 executable is in "
+			va("Also check that your iojamp executable is in "
 			"the correct place and that every file "
 			"in the \"%s\" directory is present and readable", BASEGAME));
 
@@ -3381,7 +3392,7 @@ static void FS_CheckPak0( void )
 
 		Com_sprintf(errorText, sizeof(errorText),
 			"\"bonus.pk3\" is missing. Please re-install it "
-			"from the Jedi Academy Bonus Maps download. ", PATH_SEP);
+			"from the Jedi Academy Bonus Maps download. ");
 
 		Com_Error(ERR_FATAL, "%s", errorText);
 	}
@@ -3780,7 +3791,7 @@ void FS_Restart( int checksumFeed ) {
 		if (lastValidBase[0]) {
 			FS_PureServerSetLoadedPaks("", "");
 			Cvar_Set("fs_basepath", lastValidBase);
-			Cvar_Set("fs_gamedirvar", lastValidGame);
+			Cvar_Set("fs_game", lastValidGame);
 			lastValidBase[0] = '\0';
 			lastValidGame[0] = '\0';
 			FS_Restart(checksumFeed);

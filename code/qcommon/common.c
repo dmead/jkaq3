@@ -48,7 +48,6 @@ char	*com_argv[MAX_NUM_ARGVS+1];
 
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
-
 FILE *debuglogfile;
 static fileHandle_t pipefile;
 static fileHandle_t logfile;
@@ -164,7 +163,6 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 	char		msg[MAXPRINTMSG];
 	static qboolean opening_qconsole = qfalse;
 
-
 	va_start (argptr,fmt);
 	Q_vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
@@ -190,8 +188,8 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 
 	// logfile
 	if ( com_logfile && com_logfile->integer ) {
-    // TTimo: only open the qconsole.log if the filesystem is in an initialized state
-    //   also, avoid recursing in the qconsole.log opening (i.e. if fs_debug is on)
+	// TTimo: only open the qconsole.log if the filesystem is in an initialized state
+	//   also, avoid recursing in the qconsole.log opening (i.e. if fs_debug is on)
 		if ( !logfile && FS_Initialized() && !opening_qconsole) {
 			struct tm *newtime;
 			time_t aclock;
@@ -227,7 +225,6 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 		}
 	}
 }
-
 
 /*
 ================
@@ -345,7 +342,6 @@ void QDECL Com_Error( int code, const char *fmt, ... ) {
 	Sys_Error ("%s", com_errorMessage);
 }
 
-
 /*
 =============
 Com_Quit_f
@@ -371,8 +367,6 @@ void Com_Quit_f( void ) {
 	}
 	Sys_Quit ();
 }
-
-
 
 /*
 ============================================================================
@@ -425,7 +419,6 @@ void Com_ParseCommandLine( char *commandLine ) {
     }
 }
 
-
 /*
 ===================
 Com_SafeMode
@@ -447,7 +440,6 @@ qboolean Com_SafeMode( void ) {
 	}
 	return qfalse;
 }
-
 
 /*
 ===============
@@ -481,7 +473,6 @@ void Com_StartupVariable( const char *match ) {
 		}
 	}
 }
-
 
 /*
 =================
@@ -517,7 +508,6 @@ qboolean Com_AddStartupCommands( void ) {
 
 	return added;
 }
-
 
 //============================================================================
 
@@ -731,7 +721,6 @@ int Com_RealTime(qtime_t *qtime) {
 	return t;
 }
 
-
 /*
 ==============================================================================
 
@@ -895,7 +884,6 @@ void Z_Free( void *ptr ) {
 	}
 }
 
-
 /*
 ================
 Z_FreeTags
@@ -924,7 +912,6 @@ void Z_FreeTags( int tag ) {
 		zone->rover = zone->rover->next;
 	} while ( zone->rover != &zone->blocklist );
 }
-
 
 /*
 ================
@@ -1226,7 +1213,6 @@ Goals:
 ==============================================================================
 */
 
-
 #define	HUNK_MAGIC	0x89537892
 #define	HUNK_FREE_MAGIC	0x89537893
 
@@ -1261,7 +1247,6 @@ static	int		s_hunkTotal;
 
 static	int		s_zoneTotal;
 static	int		s_smallZoneTotal;
-
 
 /*
 =================
@@ -1402,8 +1387,6 @@ void Com_TouchMemory( void ) {
 	Com_Printf( "Com_TouchMemory: %i msec\n", end - start );
 }
 
-
-
 /*
 =================
 Com_InitZoneMemory
@@ -1443,7 +1426,6 @@ void Com_InitZoneMemory( void ) {
 		Com_Error( ERR_FATAL, "Zone data failed to allocate %i megs", s_zoneTotal / (1024*1024) );
 	}
 	Z_ClearZone( mainzone, s_zoneTotal );
-
 }
 
 /*
@@ -1818,7 +1800,6 @@ void *Hunk_AllocateTempMemory( int size ) {
 	return buf;
 }
 
-
 /*
 ==================
 Hunk_FreeTempMemory
@@ -1827,16 +1808,15 @@ Hunk_FreeTempMemory
 void Hunk_FreeTempMemory( void *buf ) {
 	hunkHeader_t	*hdr;
 
-	  // free with Z_Free if the hunk has not been initialized
-	  // this allows the config and product id files ( journal files too ) to be loaded
-	  // by the file system without redunant routines in the file system utilizing different 
-	  // memory systems
+	// free with Z_Free if the hunk has not been initialized
+	// this allows the config and product id files ( journal files too ) to be loaded
+	// by the file system without redunant routines in the file system utilizing different 
+	// memory systems
 	if ( s_hunkData == NULL )
 	{
 		Z_Free(buf);
 		return;
 	}
-
 
 	hdr = ( (hunkHeader_t *)buf ) - 1;
 	if ( hdr->magic != HUNK_MAGIC ) {
@@ -1861,7 +1841,6 @@ void Hunk_FreeTempMemory( void *buf ) {
 		}
 	}
 }
-
 
 /*
 =================
@@ -2067,22 +2046,20 @@ sysEvent_t	Com_GetRealEvent( void ) {
 	return ev;
 }
 
-
 /*
 =================
 Com_InitPushEvent
 =================
 */
 void Com_InitPushEvent( void ) {
-  // clear the static buffer array
-  // this requires SE_NONE to be accepted as a valid but NOP event
-  memset( com_pushedEvents, 0, sizeof(com_pushedEvents) );
-  // reset counters while we are at it
-  // beware: GetEvent might still return an SE_NONE from the buffer
-  com_pushedEventsHead = 0;
-  com_pushedEventsTail = 0;
+	// clear the static buffer array
+	// this requires SE_NONE to be accepted as a valid but NOP event
+	memset( com_pushedEvents, 0, sizeof(com_pushedEvents) );
+	// reset counters while we are at it
+	// beware: GetEvent might still return an SE_NONE from the buffer
+	com_pushedEventsHead = 0;
+	com_pushedEventsTail = 0;
 }
-
 
 /*
 =================
@@ -2188,7 +2165,6 @@ int Com_EventLoop( void ) {
 			return ev.evTime;
 		}
 
-
 		switch(ev.evType)
 		{
 			case SE_KEY:
@@ -2261,7 +2237,6 @@ static void Com_Error_f (void) {
 	}
 }
 
-
 /*
 =============
 Com_Freeze_f
@@ -2327,7 +2302,7 @@ void Com_Setenv_f(void)
 			Com_Printf("%s=%s\n", arg1, env);
 		else
 			Com_Printf("%s undefined\n", arg1);
-        }
+	}
 }
 
 /*
@@ -2782,7 +2757,6 @@ void Com_ReadFromPipe( void )
 	}
 }
 
-
 //==================================================================
 
 void Com_WriteConfigToFile( const char *filename ) {
@@ -2799,7 +2773,6 @@ void Com_WriteConfigToFile( const char *filename ) {
 	Cvar_WriteVariables (f);
 	FS_FCloseFile( f );
 }
-
 
 /*
 ===============
@@ -2822,7 +2795,6 @@ void Com_WriteConfiguration( void ) {
 
 	Com_WriteConfigToFile( Q3CONFIG_CFG );
 }
-
 
 /*
 ===============
@@ -2922,17 +2894,15 @@ Com_Frame
 =================
 */
 void Com_Frame( void ) {
-
 	int		msec, minMsec;
 	int		timeVal, timeValSV;
 	static int	lastTime = 0, bias = 0;
- 
+
 	int		timeBeforeFirstEvents;
 	int		timeBeforeServer;
 	int		timeBeforeEvents;
 	int		timeBeforeClient;
 	int		timeAfter;
-  
 
 	if ( setjmp (abortframe) ) {
 		return;			// an ERR_DROP was thrown
@@ -3057,7 +3027,6 @@ void Com_Frame( void ) {
 	Com_EventLoop();
 	Cbuf_Execute ();
 
-
 	//
 	// client side
 	//
@@ -3141,7 +3110,6 @@ void Com_Shutdown (void) {
 		FS_FCloseFile( pipefile );
 		FS_HomeRemove( com_pipefile->string );
 	}
-
 }
 
 /*
@@ -3156,7 +3124,7 @@ Field_Clear
 ==================
 */
 void Field_Clear( field_t *edit ) {
-  memset(edit->buffer, 0, MAX_EDIT_LINE);
+	memset(edit->buffer, 0, MAX_EDIT_LINE);
 	edit->cursor = 0;
 	edit->scroll = 0;
 }
@@ -3460,7 +3428,6 @@ void Com_RandomBytes( byte *string, int len )
 	for( i = 0; i < len; i++ )
 		string[i] = (unsigned char)( rand() % 255 );
 }
-
 
 /*
 ==================

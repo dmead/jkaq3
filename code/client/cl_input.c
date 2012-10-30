@@ -46,7 +46,6 @@ at the same time.
 ===============================================================================
 */
 
-
 kbutton_t	in_left, in_right, in_forward, in_back;
 kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
 kbutton_t	in_strafe, in_speed;
@@ -151,8 +150,6 @@ void IN_KeyUp( kbutton_t *b ) {
 	b->active = qfalse;
 }
 
-
-
 /*
 ===============
 CL_KeyState
@@ -193,8 +190,6 @@ float CL_KeyState( kbutton_t *key ) {
 
 	return val;
 }
-
-
 
 void IN_UpDown(void) {IN_KeyDown(&in_up);}
 void IN_UpUp(void) {IN_KeyUp(&in_up);}
@@ -334,7 +329,6 @@ cvar_t	*cl_run;
 
 cvar_t	*cl_anglespeedkey;
 
-
 /*
 ================
 CL_AdjustAngles
@@ -394,7 +388,6 @@ void CL_KeyMove( usercmd_t *cmd ) {
 
 	side += movespeed * CL_KeyState (&in_moveright);
 	side -= movespeed * CL_KeyState (&in_moveleft);
-
 
 	up += movespeed * CL_KeyState (&in_up);
 	up -= movespeed * CL_KeyState (&in_down);
@@ -563,7 +556,6 @@ void CL_MouseMove(usercmd_t *cmd)
 		cmd->forwardmove = ClampChar(cmd->forwardmove - m_forward->value * my);
 }
 
-
 /*
 ==============
 CL_CmdButtons
@@ -595,7 +587,6 @@ void CL_CmdButtons( usercmd_t *cmd ) {
 	}
 }
 
-
 /*
 ==============
 CL_FinishMove
@@ -619,7 +610,6 @@ void CL_FinishMove( usercmd_t *cmd ) {
 		cmd->angles[i] = ANGLE2SHORT(cl.viewangles[i]);
 	}
 }
-
 
 /*
 =================
@@ -671,7 +661,6 @@ usercmd_t CL_CreateCmd( void ) {
 	return cmd;
 }
 
-
 /*
 =================
 CL_CreateNewCommands
@@ -695,7 +684,6 @@ void CL_CreateNewCommands( void ) {
 		frame_msec = 200;
 	}
 	old_com_frameTime = com_frameTime;
-
 
 	// generate a command for this frame
 	cl.cmdNumber++;
@@ -1102,7 +1090,6 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("automap_button", IN_AutoMapButton);
 	Cmd_AddCommand ("useGivenForce", IN_UseGivenForce);
 	
-
 	for ( gc=gencmds ; gc->name ; gc++ ) {
 		Cmd_AddCommand (gc->name, gc->func);
 	}

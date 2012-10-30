@@ -26,15 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_image.c
 #include "tr_local.h"
 
-#ifdef USE_LOCAL_HEADERS
-  #include "../png/png.h"
-  #include "../png/pnginfo.h"
-  #include "../png/pngstruct.h"
-#else
-  #include <png.h>
-  #include <pnginfo.h>
-  #include <pngstruct.h>
-#endif
+#include <png.h>
+#include <pnginfo.h>
+#include <pngstruct.h>
 
 /*
 =========================================================

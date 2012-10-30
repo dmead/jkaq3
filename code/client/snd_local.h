@@ -74,6 +74,9 @@ typedef struct {
 
 #define MAX_DOPPLER_SCALE 50.0f //arbitrary
 
+// Ensiform: Changing from 48x48 to 96x96 because JA cg_thirdPersonRange default is 80 rather than Q3's 40
+#define THIRD_PERSON_THRESHOLD_SQ (96.0f*96.0f)
+
 typedef struct loopSound_s {
 	vec3_t		origin;
 	vec3_t		velocity;
@@ -102,6 +105,7 @@ typedef struct
 	qboolean	fixed_origin;	// use origin instead of fetching entnum's origin
 	sfx_t		*thesfx;		// sfx structure
 	qboolean	doppler;
+	qboolean	fullVolume;
 } channel_t;
 
 

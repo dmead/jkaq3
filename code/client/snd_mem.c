@@ -102,8 +102,8 @@ void SND_setup(void) {
 
 void SND_shutdown(void)
 {
-		free(sfxScratchBuffer);
-		free(buffer);
+	free(sfxScratchBuffer);
+	free(buffer);
 }
 
 /*

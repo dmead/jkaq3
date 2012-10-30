@@ -41,7 +41,6 @@ snd_stream_t	*s_backgroundStream = NULL;
 static char		s_backgroundLoop[MAX_QPATH];
 //static char		s_backgroundMusic[MAX_QPATH]; //TTimo: unused
 
-
 // =======================================================================
 // Internal sound data & structures
 // =======================================================================
@@ -114,7 +113,6 @@ void S_Base_SoundInfo(void) {
 	Com_Printf("----------------------\n" );
 }
 
-
 #ifdef USE_VOIP
 static
 void S_Base_StartCapture( void )
@@ -148,8 +146,6 @@ void S_Base_MasterGain( float val )
 }
 #endif
 
-
-
 /*
 =================
 S_Base_SoundList
@@ -178,8 +174,6 @@ void S_Base_SoundList( void ) {
 	Com_Printf ("Total resident: %i\n", total);
 	S_DisplayFreeMemory();
 }
-
-
 
 void S_ChannelFree(channel_t *v) {
 	v->thesfx = NULL;
@@ -214,8 +208,6 @@ void S_ChannelSetup( void ) {
 	freelist = p + MAX_CHANNELS - 1;
 	Com_DPrintf("Channel memory manager started\n");
 }
-
-
 
 // =======================================================================
 // Load a sound
@@ -315,7 +307,6 @@ void S_DefaultSound( sfx_t *sfx ) {
 	sfx->soundLength = 512;
 	sfx->soundData = SND_malloc();
 	sfx->soundData->next = NULL;
-
 
 	for ( i = 0 ; i < sfx->soundLength ; i++ ) {
 		sfx->soundData->sndChunk[i] = i;
@@ -499,19 +490,58 @@ void S_Base_MuteSound(int entityNum, int entchannel) {
 // =======================================================================
 
 /*
+=================
+S_Base_HearingThroughEntity
+
+Also see S_AL_HearingThroughEntity
+=================
+*/
+static qboolean S_Base_HearingThroughEntity( int entityNum, vec3_t origin )
+{
+	float	distanceSq;
+	vec3_t	sorigin;
+
+	if (origin)
+		VectorCopy(origin, sorigin);
+	else
+		VectorCopy(loopSounds[entityNum].origin, sorigin);
+
+	if( listener_number == entityNum )
+	{
+		// FIXME: <tim@ngus.net> 28/02/06 This is an outrageous hack to detect
+		// whether or not the player is rendering in third person or not. We can't
+		// ask the renderer because the renderer has no notion of entities and we
+		// can't ask cgame since that would involve changing the API and hence mod
+		// compatibility. I don't think there is any way around this, but I'll leave
+		// the FIXME just in case anyone has a bright idea.
+		distanceSq = DistanceSquared(
+				sorigin,
+				listener_origin );
+
+		if( distanceSq > THIRD_PERSON_THRESHOLD_SQ )
+			return qfalse; //we're the player, but third person
+		else
+			return qtrue;  //we're the player
+	}
+	else
+		return qfalse; //not the player
+}
+
+/*
 ====================
-S_StartSound
+S_Base_StartSoundEx
 
 Validates the parms and ques the sound up
-if pos is NULL, the sound will be dynamically sourced from the entity
+if origin is NULL, the sound will be dynamically sourced from the entity
 Entchannel 0 will never override a playing sound
 ====================
 */
-void S_Base_StartSound(vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle ) {
+void S_Base_StartSoundEx(vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle, qboolean localSound ) {
 	channel_t	*ch;
 	sfx_t		*sfx;
-  int i, oldest, chosen, time;
-  int	inplay, allowed;
+	int i, oldest, chosen, time;
+	int	inplay, allowed;
+	qboolean	fullVolume;
 
 	if ( !s_soundStarted || s_soundMuted ) {
 		return;
@@ -544,6 +574,11 @@ void S_Base_StartSound(vec3_t origin, int entityNum, int entchannel, sfxHandle_t
 	allowed = 4;
 	if (entityNum == listener_number) {
 		allowed = 8;
+	}
+
+	fullVolume = qfalse;
+	if (localSound || S_Base_HearingThroughEntity(entityNum, origin)) {
+		fullVolume = qtrue;
 	}
 
 	ch = s_channels;
@@ -621,8 +656,19 @@ void S_Base_StartSound(vec3_t origin, int entityNum, int entchannel, sfxHandle_t
 	ch->leftvol = ch->master_vol;		// these will get calced at next spatialize
 	ch->rightvol = ch->master_vol;		// unless the game isn't running
 	ch->doppler = qfalse;
+	ch->fullVolume = fullVolume;
 }
 
+/*
+====================
+S_StartSound
+
+if origin is NULL, the sound will be dynamically sourced from the entity
+====================
+*/
+void S_Base_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxHandle ) {
+	S_Base_StartSoundEx( origin, entityNum, entchannel, sfxHandle, qfalse );
+}
 
 /*
 ==================
@@ -639,9 +685,8 @@ void S_Base_StartLocalSound( sfxHandle_t sfxHandle, int channelNum ) {
 		return;
 	}
 
-	S_Base_StartSound (NULL, listener_number, channelNum, sfxHandle );
+	S_Base_StartSoundEx(NULL, listener_number, channelNum, sfxHandle, qtrue );
 }
-
 
 /*
 ==================
@@ -823,8 +868,6 @@ void S_Base_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_
 	loopSounds[entityNum].doppler = qfalse;
 }
 
-
-
 /*
 ==================
 S_AddLoopSounds
@@ -840,7 +883,6 @@ void S_AddLoopSounds (void) {
 	channel_t	*ch;
 	loopSound_t	*loop, *loop2;
 	static int	loopFrame;
-
 
 	numLoopChannels = 0;
 
@@ -899,6 +941,7 @@ void S_AddLoopSounds (void) {
 		ch->doppler = loop->doppler;
 		ch->dopplerScale = loop->dopplerScale;
 		ch->oldDopplerScale = loop->oldDopplerScale;
+		ch->fullVolume = qfalse;
 		numLoopChannels++;
 		if (numLoopChannels == MAX_CHANNELS) {
 			return;
@@ -1069,7 +1112,6 @@ void S_Base_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
 	VectorCopy( origin, loopSounds[entityNum].origin );
 }
 
-
 /*
 ============
 S_Respatialize
@@ -1098,8 +1140,8 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 		if ( !ch->thesfx ) {
 			continue;
 		}
-		// anything coming from the view entity will always be full volume
-		if (ch->entnum == listener_number) {
+		// local and first person sounds will always be full volume
+		if (ch->fullVolume) {
 			ch->leftvol = ch->master_vol;
 			ch->rightvol = ch->master_vol;
 		} else {
@@ -1116,7 +1158,6 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 	// add loopsounds
 	S_AddLoopSounds ();
 }
-
 
 /*
 ========================
@@ -1244,7 +1285,6 @@ void S_GetSoundtime(void)
 	}
 }
 
-
 void S_Update_(void) {
 	unsigned        endtime;
 	int				samps;
@@ -1295,8 +1335,6 @@ void S_Update_(void) {
 	if (endtime - s_soundtime > samps)
 		endtime = s_soundtime + samps;
 
-
-
 	SNDDMA_BeginPainting ();
 
 	S_PaintChannels (endtime);
@@ -1305,8 +1343,6 @@ void S_Update_(void) {
 
 	lastTime = thisTime;
 }
-
-
 
 /*
 ===============================================================================
@@ -1371,7 +1407,7 @@ void S_Base_StartBackgroundTrack( const char *intro, const char *loop ){
 	}
 
 #if 0
-	/* JKA uses mp3s which doesn't have 22k stereo music files */
+	/* JA uses mp3s which doesn't have 22k stereo music files */
 	if(s_backgroundStream->info.channels != 2 || s_backgroundStream->info.rate != 22050) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: music file %s is not 22k stereo\n", intro );
 	}
@@ -1451,10 +1487,8 @@ void S_UpdateBackgroundTrack( void ) {
 				return;
 			}
 		}
-
 	}
 }
-
 
 /*
 ======================

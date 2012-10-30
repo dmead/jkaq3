@@ -270,6 +270,8 @@ extern int demo_protocols[];
 #define MASTER_SERVER_NAME	"masterjk3.ravensoft.com"
 #endif
 
+#define JKHUB_MASTER_SERVER_NAME	"master.jkhub.org"
+
 #define	PORT_MASTER			29060
 #define	PORT_UPDATE			29061
 #define	PORT_SERVER			29070
@@ -586,7 +588,7 @@ issues.
 #define FS_GENERAL_REF	0x01
 #define FS_UI_REF		0x02
 #define FS_CGAME_REF	0x04
-// number of jk3 paks that will never be autodownloaded from base
+// number of JA paks that will never be autodownloaded from base
 #define NUM_RV_PAKS		4
 
 #define	MAX_FILE_HANDLES	64

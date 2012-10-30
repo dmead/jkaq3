@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "snd_public.h"
 #include "../cgame/cg_public.h"
 #include "../game/bg_public.h"
+#include "fx_local.h"
 
 #ifdef USE_CURL
 #include "cl_curl.h"
@@ -39,7 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "speex/speex_preprocess.h"
 #endif
 
-// file full of random crap that gets used to create cl_guid
+// file full of random crap that gets used to create ja_guid
 #define QKEY_FILE "jakey"
 #define QKEY_SIZE 2048
 
@@ -314,9 +315,11 @@ typedef struct {
 	int			maxPing;
 	int			ping;
 	qboolean	visible;
-	int			punkbuster;
 	int			g_humanplayers;
 	int			g_needpass;
+	int			fdisable;
+	int			wdisable;
+	int			truejedi;
 } serverInfo_t;
 
 typedef struct {
@@ -328,6 +331,8 @@ typedef struct {
 	qboolean	soundRegistered;
 	qboolean	uiStarted;
 	qboolean	cgameStarted;
+
+	qboolean	fxStarted;
 
 	int			framecount;
 	int			frametime;			// msec since last frame
@@ -362,6 +367,7 @@ typedef struct {
 	// rendering info
 	glconfig_t	glconfig;
 	glconfig2_t	glconfig2;
+	qboolean	drawnLoadingScreen;
 	qhandle_t	charSetShader;
 	qhandle_t	whiteShader;
 	qhandle_t	consoleShader;

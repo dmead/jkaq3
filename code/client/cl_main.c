@@ -116,9 +116,7 @@ cvar_t	*cl_trn;
 
 cvar_t	*cl_lanForcePackets;
 
-#ifdef USE_GUID
 cvar_t	*cl_guidServerUniq;
-#endif
 
 cvar_t	*cl_consoleKeys;
 
@@ -208,7 +206,6 @@ void CL_UpdateMumble(void)
 }
 #endif
 
-
 #ifdef USE_VOIP
 static
 void CL_UpdateVoipIgnore(const char *idstr, qboolean ignore)
@@ -292,7 +289,6 @@ void CL_Voip_f( void )
 		           "       voip gain <playerID#> [value]\n");
 	}
 }
-
 
 static
 void CL_VoipNewGeneration(void)
@@ -636,7 +632,6 @@ void CL_WriteDemoMessage ( msg_t *msg, int headerBytes ) {
 	FS_Write ( msg->data + headerBytes, len, clc.demofile );
 }
 
-
 /*
 ====================
 CL_StopRecording_f
@@ -723,7 +718,7 @@ void CL_Record_f( void ) {
 		return;
 	}
 
-  // sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
+	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) ) {
 		Com_Printf (S_COLOR_YELLOW "WARNING: You should set 'g_synchronousClients 1' for smoother demo recording\n");
 	}
@@ -1163,7 +1158,6 @@ void CL_PlayDemo_f( void ) {
 	clc.firstDemoFrameSkipped = qfalse;
 }
 
-
 /*
 ====================
 CL_StartDemoLoop
@@ -1201,7 +1195,6 @@ void CL_NextDemo( void ) {
 	Cbuf_Execute();
 }
 
-
 //======================================================================
 
 /*
@@ -1226,6 +1219,8 @@ void CL_ShutdownAll(qboolean shutdownRef)
 	CL_ShutdownCGame();
 	// shutdown UI
 	CL_ShutdownUI();
+	// shutdown the fx
+	FX_Shutdown();
 
 	// shutdown the renderer
 	if(shutdownRef)
@@ -1236,6 +1231,7 @@ void CL_ShutdownAll(qboolean shutdownRef)
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
 	cls.rendererStarted = qfalse;
+	cls.fxStarted = qfalse;
 	cls.soundRegistered = qfalse;
 }
 
@@ -1340,7 +1336,6 @@ void CL_ClearState (void) {
 	Com_Memset( &cl, 0, sizeof( cl ) );
 }
 
-#ifdef USE_GUID
 /*
 ====================
 CL_UpdateGUID
@@ -1357,12 +1352,11 @@ static void CL_UpdateGUID( const char *prefix, int prefix_len )
 	FS_FCloseFile( f );
 
 	if( len != QKEY_SIZE ) 
-		Cvar_Set( "cl_guid", "" );
+		Cvar_Set( "ja_guid", "" );
 	else
-		Cvar_Set( "cl_guid", Com_MD5File( QKEY_FILE, QKEY_SIZE,
+		Cvar_Set( "ja_guid", Com_MD5File( QKEY_FILE, QKEY_SIZE,
 			prefix, prefix_len ) );
 }
-#endif
 
 static void CL_OldGame(void)
 {
@@ -1483,16 +1477,13 @@ void CL_Disconnect( qboolean showMainMenu ) {
 		CL_CloseAVI( );
 	}
 
-#ifdef USE_GUID
 	CL_UpdateGUID( NULL, 0 );
-#endif
 
 	if(!noGameRestart)
 		CL_OldGame();
 	else
 		noGameRestart = qfalse;
 }
-
 
 /*
 ===================
@@ -1599,7 +1590,6 @@ void CL_Disconnect_f( void ) {
 	}
 }
 
-
 /*
 ================
 CL_Reconnect_f
@@ -1682,12 +1672,10 @@ void CL_Connect_f( void ) {
 
 	Com_Printf( "%s resolved to %s\n", clc.servername, serverString);
 
-#ifdef USE_GUID
 	if( cl_guidServerUniq->integer )
 		CL_UpdateGUID( serverString, strlen( serverString ) );
 	else
 		CL_UpdateGUID( NULL, 0 );
-#endif
 
 	// if we aren't playing on a lan, we need to authenticate
 	// with the cd key
@@ -1844,6 +1832,8 @@ void CL_Vid_Restart_f( void ) {
 		CL_ShutdownUI();
 		// shutdown the CGame
 		CL_ShutdownCGame();
+		// shutdown the fx
+		FX_Shutdown();
 		// shutdown the renderer and clear the renderer interface
 		CL_ShutdownRef();
 		// client is no longer pure untill new checksums are sent
@@ -1853,6 +1843,7 @@ void CL_Vid_Restart_f( void ) {
 		// reinitialize the filesystem if the game directory or checksum has changed
 
 		cls.rendererStarted = qfalse;
+		cls.fxStarted = qfalse;
 		cls.uiStarted = qfalse;
 		cls.cgameStarted = qfalse;
 		cls.soundRegistered = qfalse;
@@ -3002,7 +2993,6 @@ void CL_Frame ( int msec ) {
 	cls.framecount++;
 }
 
-
 //============================================================================
 
 /*
@@ -3029,8 +3019,6 @@ static __attribute__ ((format (printf, 2, 3))) void QDECL CL_RefPrintf( int prin
 	}
 }
 
-
-
 /*
 ============
 CL_ShutdownRef
@@ -3054,6 +3042,13 @@ Borrowed from TurtleArena
 void CL_DrawLoadingScreen( void ) {
 	re.BeginFrame( STEREO_CENTER );
 
+	// Need to draw extra stuff or screen is completely white for some shaders.
+	re.SetColor( ColorForIndex(ColorIndex(COLOR_BLACK)) );
+	re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
+	re.SetColor( NULL );
+
+	// get loading shader
+	cls.splashShader = re.RegisterShaderNoMip( "splash" );
 	SCR_DrawPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, cls.splashShader );
 
 	if( com_speeds->integer ) {
@@ -3072,17 +3067,17 @@ void CL_InitRenderer( void ) {
 	// this sets up the renderer and calls R_Init
 	re.BeginRegistration( &cls.glconfig, &cls.glconfig2 );
 
-	cls.splashShader = re.RegisterShaderNoMip( "splash" );
+	cls.whiteShader = re.RegisterShader( "white" );
 
-	// Draw loading screen the first time the game starts.
+	// draw loading screen when the game is starting up
 	/* Borrowed from TurtleArena */
-	if( !com_fullyInitialized ) {
+	if (!cls.drawnLoadingScreen) {
 		CL_DrawLoadingScreen();
+		cls.drawnLoadingScreen = qtrue;
 	}
 
 	// load character sets
 	cls.charSetShader = re.RegisterShaderNoMip( "gfx/2d/charsgrid_med" );
-	cls.whiteShader = re.RegisterShader( "white" );
 	cls.consoleShader = re.RegisterShader( "console" );
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;
@@ -3108,6 +3103,11 @@ void CL_StartHunkUsers( qboolean rendererOnly ) {
 	if ( !cls.rendererStarted ) {
 		cls.rendererStarted = qtrue;
 		CL_InitRenderer();
+	}
+
+	if ( !cls.fxStarted ) {
+		cls.fxStarted = qtrue;
+		FX_Init();
 	}
 
 	if ( rendererOnly ) {
@@ -3422,6 +3422,7 @@ void CL_Init( void ) {
 		CL_ClearState();
 		clc.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
 		cls.oldGameSet = qfalse;
+		cls.drawnLoadingScreen = qfalse;
 	}
 
 	cls.realtime = 0;
@@ -3531,9 +3532,7 @@ void CL_Init( void ) {
 
 	cl_lanForcePackets = Cvar_Get ("cl_lanForcePackets", "1", CVAR_ARCHIVE);
 
-#ifdef USE_GUID
 	cl_guidServerUniq = Cvar_Get ("cl_guidServerUniq", "1", CVAR_ARCHIVE);
-#endif
 
 	// ~ and `, as keys and characters
 	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", "~ ` 0x7e 0x60", CVAR_ARCHIVE);
@@ -3588,7 +3587,6 @@ void CL_Init( void ) {
 	}
 #endif
 
-
 	// cgame might not be initialized before menu is used
 	Cvar_Get ("cg_viewsize", "100", CVAR_ARCHIVE );
 	// Make sure cg_stereoSeparation is zero as that variable is deprecated and should not be used anymore.
@@ -3633,14 +3631,11 @@ void CL_Init( void ) {
 	Cvar_Set( "cl_running", "1" );
 
 	CL_GenerateQKey();
-#ifdef USE_GUID
-	Cvar_Get( "cl_guid", "", CVAR_USERINFO | CVAR_ROM );
+	Cvar_Get( "ja_guid", "", CVAR_USERINFO | CVAR_ROM );
 	CL_UpdateGUID( NULL, 0 );
-#endif
 
 	Com_Printf( "----- Client Initialization Complete -----\n" );
 }
-
 
 /*
 ===============
@@ -3708,7 +3703,6 @@ void CL_Shutdown(char *finalmsg, qboolean disconnect, qboolean quit)
 	Key_SetCatcher( 0 );
 
 	Com_Printf( "-----------------------\n" );
-
 }
 
 static void CL_SetServerInfo(serverInfo_t *server, const char *info, int ping) {
@@ -3723,9 +3717,11 @@ static void CL_SetServerInfo(serverInfo_t *server, const char *info, int ping) {
 			server->netType = atoi(Info_ValueForKey(info, "nettype"));
 			server->minPing = atoi(Info_ValueForKey(info, "minping"));
 			server->maxPing = atoi(Info_ValueForKey(info, "maxping"));
-			server->punkbuster = atoi(Info_ValueForKey(info, "punkbuster"));
 			server->g_humanplayers = atoi(Info_ValueForKey(info, "g_humanplayers"));
-			server->g_needpass = atoi(Info_ValueForKey(info, "g_needpass"));
+			server->g_needpass = atoi(Info_ValueForKey(info, "needpass"));
+			server->fdisable = atoi(Info_ValueForKey(info, "fdisable"));
+			server->wdisable = atoi(Info_ValueForKey(info, "wdisable"));
+			server->truejedi = atoi(Info_ValueForKey(info, "truejedi"));
 		}
 		server->ping = ping;
 	}
@@ -3751,7 +3747,6 @@ static void CL_SetServerInfoByAddress(netadr_t from, const char *info, int ping)
 			CL_SetServerInfo(&cls.favoriteServers[i], info, ping);
 		}
 	}
-
 }
 
 /*
@@ -3868,10 +3863,12 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	cls.localServers[i].game[0] = '\0';
 	cls.localServers[i].gameType = 0;
 	cls.localServers[i].netType = from.type;
-	cls.localServers[i].punkbuster = 0;
 	cls.localServers[i].g_humanplayers = 0;
 	cls.localServers[i].g_needpass = 0;
-									 
+	cls.localServers[i].fdisable = 0;
+	cls.localServers[i].wdisable = 0;
+	cls.localServers[i].truejedi = 0;
+
 	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
 	if (strlen(info)) {
 		if (info[strlen(info)-1] != '\n') {
