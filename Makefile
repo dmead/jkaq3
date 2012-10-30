@@ -1481,6 +1481,23 @@ Q3OBJ = \
   $(B)/client/l_script.o \
   $(B)/client/l_struct.o \
   \
+  $(B)/client/fx_load.o \
+  $(B)/client/fx_main.o \
+  $(B)/client/fx_primitive.o \
+  $(B)/client/fx_primitive_camerashake.o \
+  $(B)/client/fx_primitive_cylinder.o \
+  $(B)/client/fx_primitive_decal.o \
+  $(B)/client/fx_primitive_electricity.o \
+  $(B)/client/fx_primitive_emitter.o \
+  $(B)/client/fx_primitive_flash.o \
+  $(B)/client/fx_primitive_fxrunner.o \
+  $(B)/client/fx_primitive_light.o \
+  $(B)/client/fx_primitive_line.o \
+  $(B)/client/fx_primitive_orparticle.o \
+  $(B)/client/fx_primitive_particle.o \
+  $(B)/client/fx_primitive_sound.o \
+  $(B)/client/fx_primitive_tail.o \
+  \
   $(B)/client/sdl_input.o \
   $(B)/client/sdl_snd.o \
   \
