@@ -978,19 +978,16 @@ int Key_GetKey( const char *binding ) {
 Key_Unbind_f
 ===================
 */
-void Key_Unbind_f (void)
-{
+void Key_Unbind_f( void ) {
 	int		b;
 
-	if (Cmd_Argc() != 2)
-	{
+	if (Cmd_Argc() != 2) {
 		Com_Printf ("unbind <key> : remove commands from a key\n");
 		return;
 	}
 	
 	b = Key_StringToKeynum (Cmd_Argv(1));
-	if (b==-1)
-	{
+	if (b==-1) {
 		Com_Printf ("\"%s\" isn't a valid key\n", Cmd_Argv(1));
 		return;
 	}
@@ -1003,8 +1000,7 @@ void Key_Unbind_f (void)
 Key_Unbindall_f
 ===================
 */
-void Key_Unbindall_f (void)
-{
+void Key_Unbindall_f( void ) {
 	int		i;
 	
 	for (i=0 ; i < MAX_KEYS; i++)
@@ -1012,33 +1008,28 @@ void Key_Unbindall_f (void)
 			Key_SetBinding (i, "");
 }
 
-
 /*
 ===================
 Key_Bind_f
 ===================
 */
-void Key_Bind_f (void)
-{
+void Key_Bind_f( void ) {
 	int			i, c, b;
-	char		cmd[1024];
+	char		cmd[MAX_STRING_CHARS];
 	
 	c = Cmd_Argc();
 
-	if (c < 2)
-	{
+	if (c < 2) {
 		Com_Printf ("bind <key> [command] : attach a command to a key\n");
 		return;
 	}
 	b = Key_StringToKeynum (Cmd_Argv(1));
-	if (b==-1)
-	{
+	if (b==-1) {
 		Com_Printf ("\"%s\" isn't a valid key\n", Cmd_Argv(1));
 		return;
 	}
 
-	if (c == 2)
-	{
+	if (c == 2) {
 		if (keys[b].binding)
 			Com_Printf ("\"%s\" = \"%s\"\n", Cmd_Argv(1), keys[b].binding );
 		else
@@ -1046,10 +1037,9 @@ void Key_Bind_f (void)
 		return;
 	}
 	
-// copy the rest of the command line
+	// copy the rest of the command line
 	cmd[0] = 0;		// start out with a null string
-	for (i=2 ; i< c ; i++)
-	{
+	for (i=2 ; i< c ; i++) {
 		strcat (cmd, Cmd_Argv(i));
 		if (i != (c-1))
 			strcat (cmd, " ");
