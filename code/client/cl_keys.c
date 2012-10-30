@@ -1062,13 +1062,18 @@ void Key_WriteBindings( fileHandle_t f ) {
 
 	for (i=0 ; i<MAX_KEYS ; i++) {
 		if (keys[i].binding && keys[i].binding[0] ) {
-			FS_Printf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding);
+			const char *name = Key_KeynumToString(i);
 
+			// handle the escape character nicely
+			if (!strcmp(name, "\\")) {
+				FS_Printf (f, "bind \"\\\" \"%s\"\n", keys[i].binding);
+			}
+			else {
+				FS_Printf (f, "bind \"%s\" \"%s\"\n", name, keys[i].binding);
+			}
 		}
-
 	}
 }
-
 
 /*
 ============
