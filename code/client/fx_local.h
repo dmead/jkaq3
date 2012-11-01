@@ -590,6 +590,8 @@ extern qboolean fx_init;
 extern refdef_t *fx_refDef;
 extern int fx_time;
 
+#define MAX_FX_CULL 8192
+
 void FX_Init( void );
 void FX_Shutdown( void );
 

@@ -27,8 +27,17 @@ qboolean fx_init = qfalse;
 refdef_t *fx_refDef = NULL;
 int fx_time = 0;
 
+cvar_t	*fx_countScale;
+cvar_t	*fx_nearCull;
+cvar_t	*fx_debug;
+
 void FX_Init(void)
 {
+	fx_countScale = Cvar_Get("fx_countScale", "1", CVAR_ARCHIVE);
+	fx_nearCull = Cvar_Get("fx_nearCull", "16", CVAR_ARCHIVE);
+	Cvar_CheckRange( fx_nearCull, 0, MAX_FX_CULL, qtrue );
+	fx_debug = Cvar_Get("fx_debug", "0", 0);
+
 	// Set up memory for files
 	FX_InitFileMemory(1024);
 	fx_refDef = NULL;

@@ -321,9 +321,6 @@
     <ClInclude Include="..\..\code\zlib\trees.h">
       <Filter>code\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\renderer\tr_fx.h">
-      <Filter>code\renderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\client\fx_local.h">
       <Filter>code\client\fx</Filter>
     </ClInclude>
@@ -1030,15 +1027,6 @@
     </ClCompile>
     <ClCompile Include="..\..\code\zlib\compress.c">
       <Filter>code\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_fx_load.c">
-      <Filter>code\renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_fx_primitives.c">
-      <Filter>code\renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_fx.c">
-      <Filter>code\renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\client\fx_load.c">
       <Filter>code\client\fx</Filter>
