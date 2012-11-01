@@ -3052,7 +3052,7 @@ void CL_DrawLoadingScreen( void ) {
 	re.SetColor( NULL );
 
 	// get loading shader
-	cls.splashShader = re.RegisterShaderNoMip( "splash" );
+	cls.splashShader = re.RegisterShaderNoMip( "menu/splash" );
 	SCR_DrawPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, cls.splashShader );
 
 	if( com_speeds->integer ) {
