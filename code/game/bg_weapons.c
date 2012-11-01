@@ -2,7 +2,7 @@
 //
 // bg_weapons.c -- part of bg_pmove functionality
 
-#include "../qcommon/q_shared.h"
+#include "../game/q_shared.h"
 #include "../game/bg_public.h"
 #include "../game/bg_local.h"
 

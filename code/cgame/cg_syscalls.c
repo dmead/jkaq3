@@ -6,7 +6,7 @@
 
 static intptr_t (QDECL *syscall)( intptr_t arg, ... ) = (intptr_t (QDECL *)( intptr_t, ...))-1;
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 Q_EXPORT void dllEntry( intptr_t (QDECL  *syscallptr)( intptr_t arg,... ) ) {
 	syscall = syscallptr;
 }
@@ -1121,4 +1121,4 @@ void trap_WE_AddWeatherZone( const vec3_t mins, const vec3_t maxs )
 Ghoul2 Insert End
 */
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"

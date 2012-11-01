@@ -3,8 +3,8 @@
 #ifndef __UI_LOCAL_H__
 #define __UI_LOCAL_H__
 
-#include "../qcommon/q_shared.h"
-#include "../renderer/tr_types.h"
+#include "../game/q_shared.h"
+#include "../cgame/tr_types.h"
 #include "ui_public.h"
 #include "keycodes.h"
 #include "../game/bg_public.h"

@@ -28,7 +28,7 @@ extern qboolean G_CanBeEnemy(gentity_t *self, gentity_t *enemy); //w_saber.c
 
 extern qboolean BG_UnrestrainedPitchRoll( playerState_t *ps, Vehicle_t *pVeh );
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 
 extern bgEntity_t *pm_entSelf;
 extern bgEntity_t *pm_entVeh;
@@ -1067,5 +1067,5 @@ void PM_StepSlideMove( qboolean gravity ) {
 	}
 }
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
