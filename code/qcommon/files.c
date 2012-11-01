@@ -2343,7 +2343,6 @@ void FS_FreeFileList( char **list ) {
 	Z_Free( list );
 }
 
-
 /*
 ================
 FS_GetFileList
@@ -2552,9 +2551,6 @@ int	FS_GetModList( char *listbuf, int bufsize ) {
 
 	return nMods;
 }
-
-
-
 
 //============================================================================
 
@@ -2821,9 +2817,7 @@ void FS_Which_f( void ) {
 	return;
 }
 
-
 //===========================================================================
-
 
 static int QDECL paksort( const void *a, const void *b ) {
 	char	*aa, *bb;
@@ -3333,7 +3327,6 @@ static void FS_CheckPak0( void )
 						"**************************************************\n\n\n",
 						curpack->pakFilename, BASEGAME, PATH_SEP, index);
 
-
 					foundPak |= 0x80000000;
 				}
 			}
@@ -3495,7 +3488,6 @@ const char *FS_ReferencedPakChecksums( void ) {
 
 	info[0] = 0;
 
-
 	for ( search = fs_searchpaths ; search ; search = search->next ) {
 		// is the element a pak file?
 		if ( search->pack ) {
@@ -3606,7 +3598,6 @@ void FS_ClearPakReferences( int flags ) {
 		}
 	}
 }
-
 
 /*
 =====================
@@ -3765,7 +3756,6 @@ FS_Restart
 ================
 */
 void FS_Restart( int checksumFeed ) {
-
 	// free anything we currently have loaded
 	FS_Shutdown(qfalse);
 
