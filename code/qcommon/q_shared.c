@@ -58,7 +58,7 @@ const char *GetStringForID( stringID_table_t *table, int id ) {
 	return NULL;
 }
 
-static unsigned long holdrand = 0x89abcdef;
+static uint32_t holdrand = 0x89abcdef;
 
 int irand(int min, int max)
 {
