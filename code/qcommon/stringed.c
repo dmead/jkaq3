@@ -483,6 +483,8 @@ char *SE_GetString( const char *compare ) {
 
 	str = FindString( compare );
 
+	index ^= 1;
+
 	if( str && str->value && str->value[0] ) {
 		Q_strncpyz( text[index], str->value, sizeof(text[0]) );
 		return text[index];
