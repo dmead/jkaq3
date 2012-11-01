@@ -274,14 +274,40 @@ RE_StretchPic
 void RE_StretchPic ( float x, float y, float w, float h, 
 					  float s1, float t1, float s2, float t2, qhandle_t hShader ) {
 	stretchPicCommand_t	*cmd;
+	float tmp;
 
-  if (!tr.registered) {
-    return;
-  }
+	if (!tr.registered) {
+		return;
+	}
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 	if ( !cmd ) {
 		return;
 	}
+
+	// flip image horizontally
+	if (w < 0) {
+		// flip texture coords
+		tmp = s1;
+		s1 = s2;
+		s2 = tmp;
+
+		// draw shader left of x
+		w = fabs(w);
+		x -= w;
+	}
+
+	// flip image vertically
+	if (h < 0) {
+		// flip texture coords
+		tmp = t2;
+		t2 = t1;
+		t1 = tmp;
+
+		// draw shader above y
+		h = fabs(h);
+		y -= h;
+	}
+
 	cmd->commandId = RC_STRETCH_PIC;
 	cmd->shader = R_GetShaderByHandle( hShader );
 	cmd->x = x;

@@ -77,12 +77,12 @@ extern vec3_t playerMaxs;
 extern cvar_t	*g_speederControlScheme;
 
 #ifdef _JK2MP
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 #endif
 extern void PM_SetAnim(pmove_t	*pm,int setAnimParts,int anim,int setAnimFlags, int blendTime);
 extern int PM_AnimLength( int index, animNumber_t anim );
 #ifdef _JK2MP
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 #endif
 
 #ifndef	_JK2MP
@@ -155,7 +155,7 @@ static bool Update( Vehicle_t *pVeh, const usercmd_t *pUcmd )
 #endif //QAGAME
 
 #ifdef _JK2MP
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 #endif
 
 //MP RULE - ALL PROCESSMOVECOMMANDS FUNCTIONS MUST BE BG-COMPATIBLE!!!
@@ -888,7 +888,7 @@ void G_SetAnimalVehicleFunctions( vehicleInfo_t *pVehInfo )
 
 // Following is only in game, not in namespace
 #ifdef _JK2MP
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 #endif
 
 #ifdef QAGAME
@@ -896,7 +896,7 @@ extern void G_AllocateVehicleObject(Vehicle_t **pVeh);
 #endif
 
 #ifdef _JK2MP
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 #endif
 
 // Create/Allocate a new Animal Vehicle (initializing it as well).
@@ -926,7 +926,7 @@ void G_CreateAnimalNPC( Vehicle_t **pVeh, const char *strAnimalType )
 
 #ifdef _JK2MP
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 //get rid of all the crazy defs we added for this file
 #undef currentAngles

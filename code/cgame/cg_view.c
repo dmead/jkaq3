@@ -4,7 +4,7 @@
 // for a 3D rendering
 #include "cg_local.h"
 
-#include "bg_saga.h"
+#include "../game/bg_saga.h"
 
 #if !defined(CL_LIGHT_H_INC)
 	#include "cg_lights.h"
@@ -2170,9 +2170,9 @@ CG_EmplacedView
 Keep view reasonably constrained in relation to gun -rww
 =================
 */
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 int BG_EmplacedView(vec3_t baseAngles, vec3_t angles, float *newYaw, float constraint);
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 void CG_EmplacedView(vec3_t angles)
 {
@@ -2426,10 +2426,10 @@ Generates and draws a game scene and status information at the given time.
 static qboolean cg_rangedFogging = qfalse; //so we know if we should go back to normal fog
 float cg_linearFogOverride = 0.0f; //designer-specified override for linear fogging style
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 extern void BG_VehicleTurnRateForSpeed( Vehicle_t *pVeh, float speed, float *mPitchOverride, float *mYawOverride );
 extern qboolean PM_InKnockDown( playerState_t *ps );
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 extern qboolean cgQueueLoad;
 extern void CG_ActualLoadDeferredPlayers( void );
