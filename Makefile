@@ -1520,9 +1520,6 @@ Q3ROBJ = \
   $(B)/renderer/tr_curve.o \
   $(B)/renderer/tr_flares.o \
   $(B)/renderer/tr_font.o \
-  $(B)/renderer/tr_fx.o \
-  $(B)/renderer/tr_fx_load.o \
-  $(B)/renderer/tr_fx_primitives.o \
   $(B)/renderer/tr_image.o \
   $(B)/renderer/tr_image_png.o \
   $(B)/renderer/tr_image_jpg.o \
