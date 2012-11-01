@@ -589,15 +589,19 @@ void Con_DrawNotify (void)
 	// draw the chat line
 	if ( Key_GetCatcher( ) & KEYCATCH_MESSAGE )
 	{
+		const char *say = SE_GetString("MP_SVGAME_SAY");
+		const char *say_team = SE_GetString("MP_SVGAME_SAY_TEAM");
+		int saylen = strlen(say) + 1;
+		int teamlen = strlen(say_team) + 1;
 		if (chat_team)
 		{
-			SCR_DrawBigString (8, v, SE_GetString("MP_SVGAME_SAY_TEAM"), 1.0f, qfalse );
-			skip = 11;
+			SCR_DrawBigString (8, v, say_team, 1.0f, qfalse );
+			skip = teamlen;
 		}
 		else
 		{
-			SCR_DrawBigString (8, v, SE_GetString("MP_SVGAME_SAY"), 1.0f, qfalse );
-			skip = 5;
+			SCR_DrawBigString (8, v, say, 1.0f, qfalse );
+			skip = saylen;
 		}
 
 		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, v,
