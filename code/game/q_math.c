@@ -1442,7 +1442,7 @@ float flrand(float min, float max)
 {
 	float	result;
 
-	holdrand = (holdrand * 214013L) + 2531011L;
+	holdrand = (holdrand * 214013) + 2531011;
 	result = (float)(holdrand >> 17);						// 0 - 32767 range
 	result = ((result * (max - min)) / 32768.0F) + min;
 
@@ -1462,7 +1462,7 @@ int irand(int min, int max)
 	assert((max - min) < 32768);
 
 	max++;
-	holdrand = (holdrand * 214013L) + 2531011L;
+	holdrand = (holdrand * 214013) + 2531011;
 	result = holdrand >> 17;
 	result = ((result * (max - min)) >> 15) + min;
 	return(result);
