@@ -3747,8 +3747,10 @@ void FS_InitFilesystem( void ) {
 
 	Q_strncpyz(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
 	Q_strncpyz(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
-}
 
+	MSG_LoadEntitystateOverrides();
+	MSG_LoadPlayerstateOverrides();
+}
 
 /*
 ================
@@ -3801,6 +3803,8 @@ void FS_Restart( int checksumFeed ) {
 	Q_strncpyz(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
 	Q_strncpyz(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
 
+	MSG_LoadEntitystateOverrides();
+	MSG_LoadPlayerstateOverrides();
 }
 
 /*
