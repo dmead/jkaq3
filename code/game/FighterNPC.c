@@ -84,7 +84,7 @@ extern qboolean BG_UnrestrainedPitchRoll( playerState_t *ps, Vehicle_t *pVeh );
 
 #ifdef _JK2MP
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 
 extern void BG_SetAnim(playerState_t *ps, animation_t *animations, int setAnimParts,int anim,int setAnimFlags, int blendTime);
 extern int BG_GetTime(void);
@@ -1983,7 +1983,7 @@ void G_SetFighterVehicleFunctions( vehicleInfo_t *pVehInfo )
 
 // Following is only in game, not in namespace
 #ifdef _JK2MP
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 #endif
 
 #ifdef QAGAME
@@ -1991,7 +1991,7 @@ extern void G_AllocateVehicleObject(Vehicle_t **pVeh);
 #endif
 
 #ifdef _JK2MP
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 #endif
 
 // Create/Allocate a new Animal Vehicle (initializing it as well).
@@ -2019,7 +2019,7 @@ void G_CreateFighterNPC( Vehicle_t **pVeh, const char *strType )
 
 #ifdef _JK2MP
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 //get rid of all the crazy defs we added for this file
 #undef currentAngles

@@ -7,7 +7,7 @@
 #endif
 
 #ifdef _JK2MP
-	#include "../qcommon/q_shared.h"
+	#include "../game/q_shared.h"
 	#include "../game/bg_public.h"
 	#include "../game/bg_vehicles.h"
 	#include "../game/bg_weapons.h"

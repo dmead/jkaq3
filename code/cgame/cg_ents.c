@@ -6,8 +6,8 @@
 /*
 Ghoul2 Insert Start
 */
-#include "..\game\q_shared.h"
-#include "..\ghoul2\g2.h"
+#include "../game/q_shared.h"
+#include "../ghoul2/G2.h"
 /*
 Ghoul2 Insert end
 */
@@ -826,9 +826,9 @@ CG_General
 */
 void CG_G2ServerBoneAngles(centity_t *cent);
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 extern qboolean BG_GetRootSurfNameWithVariant( void *ghoul2, const char *rootSurfName, char *returnSurfName, int returnSize );
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 static void CG_General( centity_t *cent ) {
 	refEntity_t			ent;

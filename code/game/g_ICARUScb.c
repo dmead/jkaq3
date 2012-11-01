@@ -11,11 +11,11 @@
 #include "../icarus/Q3_Registers.h"
 #include "g_nav.h"
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 qboolean BG_SabersOff( playerState_t *ps );
 extern stringID_table_t WPTable[];
 extern stringID_table_t BSTable[];
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 
 //This is a hack I guess. It's because we can't include the file this enum is in
@@ -27,7 +27,6 @@ extern stringID_table_t BSTable[];
 // so that we only get the C version of the includes (no full Icarus) in that
 // scenario, but I think we'll just try to leave this out instead.
 #ifndef _XBOX
-#ifndef __linux__
 enum
 {
 	TK_EOF = -1,
@@ -42,7 +41,6 @@ enum
 	TK_IDENTIFIER,
 	TK_USERDEF,
 };
-#endif
 #endif
 
 #include "../icarus/interpreter.h"

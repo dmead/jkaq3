@@ -21,7 +21,7 @@ extern qboolean TryGrapple(gentity_t *ent); //g_cmds.c
 extern void trap_FX_PlayEffect( const char *file, vec3_t org, vec3_t fwd, int vol, int rad );
 #endif
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 extern qboolean BG_FullBodyTauntAnim( int anim );
 extern float PM_WalkableGroundDistance(void);
 extern qboolean PM_GroundSlideOkay( float zNormal );
@@ -705,7 +705,7 @@ void BG_VehicleTurnRateForSpeed( Vehicle_t *pVeh, float speed, float *mPitchOver
 	}
 }
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 // Following couple things don't belong in the DLL namespace!
 #ifdef QAGAME
@@ -713,7 +713,7 @@ typedef struct gentity_s gentity_t;
 gentity_t *G_PlayEffectID(const int fxID, vec3_t org, vec3_t ang);
 #endif
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 
 static void PM_GroundTraceMissed( void );
 void PM_HoverTrace( void )
@@ -7778,7 +7778,7 @@ static void PM_DropTimers( void ) {
 // which includes files that are also compiled in SP. We do need to make
 // sure we only get one copy in the linker, though.
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
 
 #if !defined(_XBOX) || defined(QAGAME)
 extern	vmCvar_t	bg_fighterAltControl;
@@ -7801,7 +7801,7 @@ qboolean BG_UnrestrainedPitchRoll( playerState_t *ps, Vehicle_t *pVeh )
 extern qboolean BG_UnrestrainedPitchRoll( playerState_t *ps, Vehicle_t *pVeh );
 #endif
 
-#include "../namespace_begin.h"
+//#include "../namespace_begin.h"
 
 /*
 ================
@@ -11211,4 +11211,4 @@ void Pmove (pmove_t *pmove) {
 	}
 }
 
-#include "../namespace_end.h"
+//#include "../namespace_end.h"
