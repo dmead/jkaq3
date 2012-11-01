@@ -2210,9 +2210,10 @@ typedef struct qtime_s {
 // server browser sources
 // TTimo: AS_MPLAYER is no longer used
 #define AS_LOCAL			0
-#define AS_MPLAYER		1
-#define AS_GLOBAL			2
-#define AS_FAVORITES	3
+#define AS_GLOBAL			1
+#define AS_FAVORITES		2
+
+#define AS_MPLAYER			3 // (Obsolete)
 
 
 // cinematic states
