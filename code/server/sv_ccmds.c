@@ -581,6 +581,12 @@ static void SV_RehashBans_f(void)
 	fileHandle_t readfrom;
 	char *textbuf, *curpos, *maskpos, *newlinepos, *endpos;
 	char filepath[MAX_QPATH];
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
 	
 	serverBansCount = 0;
 	
@@ -652,7 +658,7 @@ static void SV_RehashBans_f(void)
 
 /*
 ==================
-SV_WriteBans_f
+SV_WriteBans
 
 Save bans to file.
 ==================
@@ -769,6 +775,12 @@ static void SV_AddBanToList(qboolean isexception)
 	netadr_t ip;
 	int index, argc, mask;
 	serverBan_t *curban;
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
 	
 	argc = Cmd_Argc();
 	
@@ -799,14 +811,8 @@ static void SV_AddBanToList(qboolean isexception)
 	else
 	{
 		client_t *cl;
-		
-		// client num.
-		if(!com_sv_running->integer)
-		{
-			Com_Printf("Server is not running.\n");
-			return;
-		}
-		
+
+		// client num.		
 		cl = SV_GetPlayerByNum();
 
 		if(!cl)
@@ -910,7 +916,13 @@ static void SV_DelBanFromList(qboolean isexception)
 	int index, count = 0, todel, mask;
 	netadr_t ip;
 	char *banstring;
-	
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
 	if(Cmd_Argc() != 2)
 	{
 		Com_Printf ("Usage: %s (ip[/subnet] | num)\n", Cmd_Argv(0));
@@ -995,7 +1007,13 @@ static void SV_ListBans_f(void)
 {
 	int index, count;
 	serverBan_t *ban;
-	
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
 	// List all bans
 	for(index = count = 0; index < serverBansCount; index++)
 	{
@@ -1032,6 +1050,12 @@ Delete all bans and exceptions.
 
 static void SV_FlushBans_f(void)
 {
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
 	serverBansCount = 0;
 	
 	// empty the ban file.
@@ -1167,9 +1191,6 @@ SV_ConChat_f
 ==================
 */
 static void SV_ConChat_f(void) {
-	char	*p;
-	char	text[MAX_STRING_CHARS];
-
 	// make sure server is running
 	if ( !com_sv_running->integer ) {
 		Com_Printf( "Server is not running.\n" );
@@ -1266,6 +1287,12 @@ Examine the serverinfo string
 ===========
 */
 static void SV_Serverinfo_f( void ) {
+	// make sure server is running
+	if( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
 	Com_Printf ("Server info settings:\n");
 	Info_Print ( Cvar_InfoString( CVAR_SERVERINFO ) );
 }
@@ -1274,10 +1301,16 @@ static void SV_Serverinfo_f( void ) {
 ===========
 SV_Systeminfo_f
 
-Examine or change the serverinfo string
+Examine the systeminfo string
 ===========
 */
 static void SV_Systeminfo_f( void ) {
+	// make sure server is running
+	if( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
 	Com_Printf ("System info settings:\n");
 	Info_Print ( Cvar_InfoString_Big( CVAR_SYSTEMINFO ) );
 }
@@ -1326,6 +1359,12 @@ static void SV_ForceToggle_f( void ) {
 		"Disabled",
 		"Enabled"
 	};
+
+	// make sure server is running
+	if( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
 
 	if ( Cmd_Argc() != 2 ) {
 		for(i = 0; i < NUM_FORCE_POWERS; i++ ) {

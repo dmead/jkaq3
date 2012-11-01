@@ -1485,7 +1485,9 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.RegisterSkin = RE_RegisterSkin;
 	re.RegisterShader = RE_RegisterShader;
 	re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
+#if 0
 	re.RegisterEffect = CFxScheduler_RegisterEffect;
+#endif
 	re.ShaderNameFromIndex = RE_ShaderNameFromIndex;
 	re.LoadWorld = RE_LoadWorldMap;
 	re.SetWorldVisData = RE_SetWorldVisData;
@@ -1506,6 +1508,7 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.AddAdditiveLightToScene = RE_AddAdditiveLightToScene;
 	re.RenderScene = RE_RenderScene;
 
+#if 0
 	// FX System
 	re.PlayEffect = CFxScheduler_PlayEffect;
 	re.PlayEffectID = CFxScheduler_PlayEffectID;
@@ -1514,6 +1517,7 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.RunFX = CFxScheduler_RunSchedulerLoop;
 	re.InitFX = CFxScheduler_Init;
 	re.ShutdownFX = CFxScheduler_Cleanup;
+#endif
 
 	re.SetColor = RE_SetColor;
 	re.DrawStretchPic = RE_StretchPic;

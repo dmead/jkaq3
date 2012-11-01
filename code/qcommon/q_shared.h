@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define BASEGAME			"base"
   #define CLIENT_WINDOW_TITLE     	"Jedi Knight(r): Jedi Academy (MP)"
   #define CLIENT_WINDOW_MIN_TITLE 	"jamp"
-  #define HOMEPATH_NAME_UNIX		".jkamp"
+  #define HOMEPATH_NAME_UNIX		".jamp"
   #define HOMEPATH_NAME_WIN		"JediAcademyMP"
   #define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
   #define GAMENAME_FOR_MASTER		"JediAcademy"	// must NOT contain whitespace
@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define BASEGAME			"base"
   #define CLIENT_WINDOW_TITLE     	"iojamp"
   #define CLIENT_WINDOW_MIN_TITLE 	"iojamp"
-  #define HOMEPATH_NAME_UNIX		".jkamp"
+  #define HOMEPATH_NAME_UNIX		".jamp"
   #define HOMEPATH_NAME_WIN		"JediAcademyMP"
   #define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
   #define GAMENAME_FOR_MASTER		"JediAcademy"	// must NOT contain whitespace

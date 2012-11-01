@@ -992,11 +992,31 @@ netField_t entityStateFields [] =
 	{ NETF( userVec2[2] ),                   1  }
 };
 
-
 // if (int)f == f and (int)f + ( 1<<(FLOAT_INT_BITS-1) ) < ( 1 << FLOAT_INT_BITS )
 // the float will be sent with FLOAT_INT_BITS, otherwise all 32 bits will be sent
 #define	FLOAT_INT_BITS	13
 #define	FLOAT_INT_BIAS	(1<<(FLOAT_INT_BITS-1))
+
+#define NETF_OVERRIDES "ext_data/Mp/netf_overrides.txt"
+void MSG_LoadEntitystateOverrides( void ) {
+#if 0
+	union {
+		char	*c;
+		void	*v;
+	} f;
+	char *text_p, *token;
+	int len;
+
+	len = FS_ReadFile( NETF_OVERRIDES, &f.v );
+
+	if( len <= 0 || !f.c ) {
+		Com_Printf( S_COLOR_RED "ERROR: Couldn't load entity netfield overrides from \"%s\"\n", NETF_OVERRIDES );
+		return;
+	}
+
+	text_p = f.c;
+#endif
+}
 
 /*
 ==================
@@ -1614,6 +1634,27 @@ netField_t pilotStateFields [] =
 	{ PSF( userVec2[1] ),                               1  },
 	{ PSF( userVec2[2] ),                               1  },
 };
+
+#define PSF_OVERRIDES "ext_data/Mp/psf_overrides.txt"
+void MSG_LoadPlayerstateOverrides( void ) {
+#if 0
+	union {
+		char	*c;
+		void	*v;
+	} f;
+	char *text_p, *token;
+	int len;
+
+	len = FS_ReadFile( PSF_OVERRIDES, &f.v );
+
+	if( len <= 0 || !f.c ) {
+		Com_Printf( S_COLOR_RED "ERROR: Couldn't load playerstate netfield overrides from \"%s\"\n", PSF_OVERRIDES );
+		return;
+	}
+
+	text_p = f.c;
+#endif
+}
 
 /*
 =============
