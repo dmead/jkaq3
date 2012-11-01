@@ -2509,6 +2509,7 @@ void CL_PrintPacket( netadr_t from, msg_t *msg ) {
 	len = strlen( s );
 
 	if( len > 3 && s[0] == '@' && s[1] == '@' && s[2] == '@' ) {
+		Q_strncpyz( clc.serverMessage, SE_GetString(va("MP_SVGAME_%s", s+3)), sizeof( clc.serverMessage ) );
 		//Com_sprintf(reference, sizeof(reference), "MP_SVGAME_%s", s+3);
 		//s = SE_GetString( reference );
 		//if(*reference)
@@ -3051,7 +3052,7 @@ void CL_DrawLoadingScreen( void ) {
 	re.SetColor( NULL );
 
 	// get loading shader
-	cls.splashShader = re.RegisterShaderNoMip( "splash" );
+	cls.splashShader = re.RegisterShaderNoMip( "menu/splash" );
 	SCR_DrawPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, cls.splashShader );
 
 	if( com_speeds->integer ) {

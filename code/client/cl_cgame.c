@@ -267,6 +267,30 @@ void CL_ConfigstringModified( void ) {
 
 /*
 ===================
+CL_DisconnectCommand
+===================
+*/
+void CL_DisconnectCommand( int argc ) {
+	char *msg;
+	int len;
+	const char *disco = SE_GetString("MP_SVGAME_SERVER_DISCONNECTED");
+
+	if ( argc >= 2 ) {
+		msg = Cmd_Argv( 1 );
+		len = strlen( msg );
+		if( len > 3 && msg[0] == '@' && msg[1] == '@' && msg[2] == '@' ) {
+			msg = SE_GetString(va("MP_SVGAME_%s", msg+3));
+		}
+
+		Com_Error( ERR_SERVERDISCONNECT, "%s: %s", disco, msg );
+	}
+	else {
+		Com_Error( ERR_SERVERDISCONNECT, "%s", disco );
+	}
+}
+
+/*
+===================
 CL_GetServerCommand
 
 Set up argc/argv for the given command
@@ -275,7 +299,6 @@ Set up argc/argv for the given command
 qboolean CL_GetServerCommand( int serverCommandNumber ) {
 	char	*s;
 	char	*cmd;
-	char	*msg;
 	static char bigConfigString[BIG_INFO_STRING];
 	int argc;
 
@@ -307,13 +330,7 @@ rescan:
 	if ( !strcmp( cmd, "disconnect" ) ) {
 		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
-		if ( argc >= 2 ) {
-			msg = Cmd_Argv( 1 );
-			Com_Error( ERR_SERVERDISCONNECT, "%s - %s", SE_GetString("MP_SVGAME_SERVER_DISCONNECTED"), msg );
-		}
-		else {
-			Com_Error( ERR_SERVERDISCONNECT, "%s", SE_GetString("MP_SVGAME_SERVER_DISCONNECTED") );
-		}
+		CL_DisconnectCommand( argc );
 	}
 
 	if ( !strcmp( cmd, "bcs0" ) ) {

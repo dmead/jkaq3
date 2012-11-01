@@ -584,7 +584,6 @@ static void SV_RehashBans_f(void)
 
 	// make sure server is running
 	if ( !com_sv_running->integer ) {
-		Com_Printf( "Server is not running.\n" );
 		return;
 	}
 	
