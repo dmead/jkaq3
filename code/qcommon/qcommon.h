@@ -275,6 +275,7 @@ extern int demo_protocols[];
 #endif
 
 #define JKHUB_MASTER_SERVER_NAME	"master.jkhub.org"
+#define JKHUB_UPDATE_SERVER_NAME	"master.jkhub.org:29060"
 
 #define	PORT_MASTER			29060
 #define	PORT_UPDATE			29061

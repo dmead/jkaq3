@@ -57,6 +57,7 @@ cvar_t	*cl_debugMove;
 cvar_t	*cl_noprint;
 #ifdef UPDATE_SERVER_NAME
 cvar_t	*cl_motd;
+cvar_t	*cl_motdServer[MAX_MASTER_SERVERS];
 #endif
 
 cvar_t	*rcon_client_password;
@@ -1527,21 +1528,44 @@ CL_RequestMotd
 */
 void CL_RequestMotd( void ) {
 #ifdef UPDATE_SERVER_NAME
-	char		info[MAX_INFO_STRING];
+	netadr_t	to;
+	int			i, motdNum;
+	char		command[MAX_STRING_CHARS], info[MAX_INFO_STRING];
+	char		*motdaddress;
 
 	if ( !cl_motd->integer ) {
 		return;
 	}
-	Com_Printf( "Resolving %s\n", UPDATE_SERVER_NAME );
-	if ( !NET_StringToAdr( UPDATE_SERVER_NAME, &cls.updateServer, NA_IP ) ) {
-		Com_Printf( "Couldn't resolve address\n" );
+
+	motdNum = cl_motd->integer;
+
+	if (motdNum < 1 || motdNum > MAX_MASTER_SERVERS) {
+		Com_Printf("CL_RequestMotd: Invalid motd server num. Valid values are 1-%d>\n", MAX_MASTER_SERVERS);
 		return;
 	}
-	cls.updateServer.port = BigShort( PORT_UPDATE );
-	Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", UPDATE_SERVER_NAME,
-		cls.updateServer.ip[0], cls.updateServer.ip[1],
-		cls.updateServer.ip[2], cls.updateServer.ip[3],
-		BigShort( cls.updateServer.port ) );
+
+	Com_sprintf(command, sizeof(command), "cl_motdServer%d", motdNum);
+	motdaddress = Cvar_VariableString(command);
+
+	if(!*motdaddress)
+	{
+		Com_Printf( "CL_RequestMotd: Error: No motd server address given.\n");
+		return;	
+	}
+
+	i = NET_StringToAdr(motdaddress, &to, NA_UNSPEC);
+
+	if(!i)
+	{
+		Com_Printf( "CL_RequestMotd: Error: could not resolve address of master %s\n", motdaddress);
+		return;	
+	}
+	else if(i == 2)
+		to.port = BigShort(PORT_UPDATE);
+
+	Com_Printf("Requesting motd from update %s...\n", motdaddress);
+
+	cls.updateServer = to;
 	
 	info[0] = 0;
 
@@ -3417,6 +3441,7 @@ CL_Init
 ====================
 */
 void CL_Init( void ) {
+	int index;
 	Com_Printf( "----- Client Initialization -----\n" );
 
 	Con_Init ();
@@ -3438,7 +3463,11 @@ void CL_Init( void ) {
 	//
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
 #ifdef UPDATE_SERVER_NAME
-	cl_motd = Cvar_Get ("cl_motd", "1", 0);
+	cl_motd = Cvar_Get ("cl_motd", "1", CVAR_ARCHIVE);
+	cl_motdServer[0] = Cvar_Get("cl_motdServer1", UPDATE_SERVER_NAME, 0);
+	cl_motdServer[1] = Cvar_Get("cl_motdServer2", JKHUB_MASTER_SERVER_NAME, 0);
+	for(index = 2; index < MAX_MASTER_SERVERS; index++)
+		cl_motdServer[index] = Cvar_Get(va("cl_motdServer%d", index + 1), "", CVAR_ARCHIVE);
 #endif
 
 	cl_timeout = Cvar_Get ("cl_timeout", "200", 0);
