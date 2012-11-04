@@ -3465,7 +3465,7 @@ void CL_Init( void ) {
 #ifdef UPDATE_SERVER_NAME
 	cl_motd = Cvar_Get ("cl_motd", "1", CVAR_ARCHIVE);
 	cl_motdServer[0] = Cvar_Get("cl_motdServer1", UPDATE_SERVER_NAME, 0);
-	cl_motdServer[1] = Cvar_Get("cl_motdServer2", JKHUB_MASTER_SERVER_NAME, 0);
+	cl_motdServer[1] = Cvar_Get("cl_motdServer2", JKHUB_UPDATE_SERVER_NAME, 0);
 	for(index = 2; index < MAX_MASTER_SERVERS; index++)
 		cl_motdServer[index] = Cvar_Get(va("cl_motdServer%d", index + 1), "", CVAR_ARCHIVE);
 #endif
