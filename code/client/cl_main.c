@@ -1540,7 +1540,7 @@ void CL_RequestMotd( void ) {
 	motdNum = cl_motd->integer;
 
 	if (motdNum < 1 || motdNum > MAX_MASTER_SERVERS) {
-		Com_Printf("CL_RequestMotd: Invalid motd server num. Valid values are 1-%d>\n", MAX_MASTER_SERVERS);
+		Com_Printf("CL_RequestMotd: Invalid motd server num. Valid values are 1-%d\n", MAX_MASTER_SERVERS);
 		return;
 	}
 
@@ -1557,7 +1557,7 @@ void CL_RequestMotd( void ) {
 
 	if(!i)
 	{
-		Com_Printf( "CL_RequestMotd: Error: could not resolve address of master %s\n", motdaddress);
+		Com_Printf( "CL_RequestMotd: Error: could not resolve address of motd server %s\n", motdaddress);
 		return;	
 	}
 	else if(i == 2)
