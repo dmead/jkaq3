@@ -594,6 +594,7 @@ void CL_AddReliableCommand(const char *cmd, qboolean isDisconnectCmd)
 CL_ChangeReliableCommand
 ======================
 */
+#if 0 // unused (part of old anti-tamper code)
 void CL_ChangeReliableCommand( void ) {
 	int index, l;
 
@@ -605,6 +606,7 @@ void CL_ChangeReliableCommand( void ) {
 	clc.reliableCommands[ index ][ l ] = '\n';
 	clc.reliableCommands[ index ][ l+1 ] = '\0';
 }
+#endif
 
 /*
 =======================================================================
