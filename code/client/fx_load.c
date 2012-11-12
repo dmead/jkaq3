@@ -146,7 +146,11 @@ fxHandle_t FX_RegisterEffect( const char *name )
 		Com_Error( ERR_FATAL, "RE_RegisterEffect: NULL" );
 	}
 
-	if( !name[0] || name[0] == '\n' || name[0] == '\r' || name[0] == '\t' ) {
+	if( !name[0] ) {
+		return 0;
+	}
+
+	if( name[0] == '\n' || name[0] == '\r' || name[0] == '\t' ) {
 		Com_Error( ERR_FATAL, "RE_RegisterEffect: called with empty name" );
 	}
 
