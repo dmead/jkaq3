@@ -267,6 +267,8 @@ void RE_Font_PaintChar( float x, float y, float width, float height, float scale
 }
 
 static vec4_t dropShadow = {0.2f, 0.2f, 0.2f, 1};
+
+// This function needs work to print chars 100% properly
 void RE_Font_DrawString( int ox, int oy, const char *text, const float *rgba, const int setIndex, int iCharLimit, const float scale ) {
 	qhandle_t fontIndex = setIndex;
 	qhandle_t shader;
