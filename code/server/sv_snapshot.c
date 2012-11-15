@@ -581,10 +581,6 @@ static void SV_WriteVoipToClient(client_t *cl, msg_t *msg)
 }
 #endif
 
-static void SV_WriteMapChangeToClient(client_t *cl, msg_t *msg) {
-
-}
-
 /*
 =======================
 SV_SendMessageToClient

@@ -699,7 +699,7 @@ void SV_Init (void)
 	sv_padPackets = Cvar_Get ("sv_padPackets", "0", 0);
 	sv_killserver = Cvar_Get ("sv_killserver", "0", 0);
 	sv_mapChecksum = Cvar_Get ("sv_mapChecksum", "", CVAR_ROM);
-	sv_lanForceRate = Cvar_Get ("sv_lanForceRate", "1", CVAR_ARCHIVE );
+	sv_lanForceRate = Cvar_Get ("sv_lanForceRate", "1", CVAR_ARCHIVE);
 	sv_banFile = Cvar_Get("sv_banFile", "serverbans.dat", CVAR_ARCHIVE);
 
 	// initialize bot cvars so they are listed and can be set before loading the botlib
@@ -711,7 +711,6 @@ void SV_Init (void)
 	// Load saved bans
 	Cbuf_AddText("rehashbans\n");
 }
-
 
 /*
 ==================
@@ -744,7 +743,6 @@ void SV_FinalMessage( char *message ) {
 	}
 }
 
-
 /*
 ==================
 SV_MapChange
@@ -775,7 +773,6 @@ void SV_MapChange( void ) {
 		}
 	}
 }
-
 
 /*
 ================
@@ -832,4 +829,3 @@ void SV_Shutdown( char *finalmsg ) {
 	if( sv_killserver->integer != 2 )
 		CL_Disconnect( qfalse );
 }
-

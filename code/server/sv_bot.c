@@ -38,7 +38,6 @@ int bot_maxdebugpolys;
 extern botlib_export_t	*botlib_export;
 int	bot_enable;
 
-
 /*
 ==================
 SV_BotAllocateClient
@@ -559,7 +558,6 @@ void SV_BotInitBotLib(void) {
 	assert(botlib_export); 	// somehow we end up with a zero import.
 }
 
-
 //
 //  * * * BOT AI CODE IS BELOW THIS POINT * * *
 //
@@ -630,4 +628,3 @@ int SV_BotGetSnapshotEntity( int client, int sequence ) {
 	}
 	return svs.snapshotEntities[(frame->first_entity + sequence) % svs.numSnapshotEntities].number;
 }
-
