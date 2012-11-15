@@ -476,13 +476,13 @@ void RE_RenderScene( const refdef_t *fd ) {
 	}
 
 	/* playing with more shadows */
-	if(!( fd->rdflags & RDF_NOWORLDMODEL ) && r_shadows->integer == 4)
+	if(glRefConfig.framebufferObject && !( fd->rdflags & RDF_NOWORLDMODEL ) && r_shadows->integer == 4)
 	{
 		R_RenderPshadowMaps(fd);
 	}
 
 	// playing with even more shadows
-	if(!( fd->rdflags & RDF_NOWORLDMODEL ) && (r_forceSun->integer || tr.sunShadows))
+	if(glRefConfig.framebufferObject && !( fd->rdflags & RDF_NOWORLDMODEL ) && (r_forceSun->integer || tr.sunShadows))
 	{
 		R_RenderSunShadowMaps(fd, 0);
 		R_RenderSunShadowMaps(fd, 1);
@@ -506,11 +506,6 @@ void RE_RenderScene( const refdef_t *fd ) {
 	parms.fovY = tr.refdef.fov_y;
 	
 	parms.stereoFrame = tr.refdef.stereoFrame;
-
-	if (glRefConfig.framebufferObject)
-	{
-		parms.targetFbo = tr.renderFbo;
-	}
 
 	VectorCopy( fd->vieworg, parms.or.origin );
 	VectorCopy( fd->viewaxis[0], parms.or.axis[0] );

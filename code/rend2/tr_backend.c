@@ -482,9 +482,17 @@ void RB_BeginDrawingView (void) {
 	if (glRefConfig.framebufferObject)
 	{
 		// FIXME: HUGE HACK: render to the screen fbo if we've already postprocessed the frame and aren't drawing more world
-		if (backEnd.viewParms.targetFbo == tr.renderFbo && backEnd.framePostProcessed && (backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+		// drawing more world check is in case of double renders, such as skyportals
+		if (backEnd.viewParms.targetFbo == NULL)
 		{
-			FBO_Bind(tr.screenScratchFbo);
+			if (backEnd.framePostProcessed && (backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+			{
+				FBO_Bind(tr.screenScratchFbo);
+			}
+			else
+			{
+				FBO_Bind(tr.renderFbo);
+			}
 		}
 		else
 		{
@@ -815,7 +823,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	}
 #endif
 
-	FBO_Bind(fbo);
+	if (glRefConfig.framebufferObject)
+		FBO_Bind(fbo);
 
 	// go back to the world modelview matrix
 
@@ -948,7 +957,7 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	}
 
 	// FIXME: HUGE hack
-	if (glRefConfig.framebufferObject && !glState.currentFBO)
+	if (glRefConfig.framebufferObject)
 	{
 		if (backEnd.framePostProcessed)
 		{
@@ -965,6 +974,8 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	tess.firstIndex = 0;
+	tess.minIndex = 0;
+	tess.maxIndex = 0;
 
 	tess.xyz[tess.numVertexes][0] = x;
 	tess.xyz[tess.numVertexes][1] = y;
@@ -1012,6 +1023,8 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.indexes[tess.numIndexes++] = 0;
 	tess.indexes[tess.numIndexes++] = 2;
 	tess.indexes[tess.numIndexes++] = 3;
+	tess.minIndex = 0;
+	tess.maxIndex = 3;
 
 	// FIXME: A lot of this can probably be removed for speed, and refactored into a more convenient function
 	RB_UpdateVBOs(ATTR_POSITION | ATTR_TEXCOORD);
@@ -1026,7 +1039,7 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	VectorSet4(color, 1, 1, 1, 1);
 	GLSL_SetUniformVec4(sp, TEXTURECOLOR_UNIFORM_COLOR, color);
 
-	R_DrawElementsVBO(tess.numIndexes, tess.firstIndex);
+	R_DrawElementsVBO(tess.numIndexes, tess.firstIndex, tess.minIndex, tess.maxIndex);
 	
 	//R_BindNullVBO();
 	//R_BindNullIBO();
@@ -1034,6 +1047,8 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	tess.firstIndex = 0;
+	tess.minIndex = 0;
+	tess.maxIndex = 0;
 }
 
 void RE_UploadCinematic (int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty) {
@@ -1091,7 +1106,7 @@ const void *RB_StretchPic ( const void *data ) {
 	cmd = (const stretchPicCommand_t *)data;
 
 	// FIXME: HUGE hack
-	if (glRefConfig.framebufferObject && !glState.currentFBO)
+	if (glRefConfig.framebufferObject)
 	{
 		if (backEnd.framePostProcessed)
 		{
@@ -1193,12 +1208,12 @@ const void	*RB_DrawSurfs( const void *data ) {
 	// clear the z buffer, set the modelview, etc
 	RB_BeginDrawingView ();
 
-	if ((backEnd.viewParms.flags & VPF_DEPTHCLAMP) && glRefConfig.depthClamp)
+	if (glRefConfig.framebufferObject && (backEnd.viewParms.flags & VPF_DEPTHCLAMP) && glRefConfig.depthClamp)
 	{
 		qglEnable(GL_DEPTH_CLAMP);
 	}
 
-	if (!(backEnd.refdef.rdflags & RDF_NOWORLDMODEL) && (r_depthPrepass->integer || (backEnd.viewParms.flags & VPF_DEPTHSHADOW)))
+	if (glRefConfig.framebufferObject && !(backEnd.refdef.rdflags & RDF_NOWORLDMODEL) && (r_depthPrepass->integer || (backEnd.viewParms.flags & VPF_DEPTHSHADOW)))
 	{
 		FBO_t *oldFbo = glState.currentFBO;
 
@@ -1416,7 +1431,7 @@ const void	*RB_DrawSurfs( const void *data ) {
 		SetViewportAndScissor();
 	}
 
-	if ((backEnd.viewParms.flags & VPF_DEPTHCLAMP) && glRefConfig.depthClamp)
+	if (glRefConfig.framebufferObject && (backEnd.viewParms.flags & VPF_DEPTHCLAMP) && glRefConfig.depthClamp)
 	{
 		qglDisable(GL_DEPTH_CLAMP);
 	}
@@ -1435,8 +1450,8 @@ const void	*RB_DrawSurfs( const void *data ) {
 		RB_RenderFlares();
 	}
 
-	if (glRefConfig.framebufferObject)
-		FBO_Bind(NULL);
+	//if (glRefConfig.framebufferObject)
+		//FBO_Bind(NULL);
 
 	return (const void *)(cmd + 1);
 }
@@ -1452,6 +1467,9 @@ const void	*RB_DrawBuffer( const void *data ) {
 	const drawBufferCommand_t	*cmd;
 
 	cmd = (const drawBufferCommand_t *)data;
+
+	if (glRefConfig.framebufferObject)
+		FBO_Bind(NULL);
 
 	qglDrawBuffer( cmd->buffer );
 
@@ -1564,14 +1582,18 @@ const void *RB_ClearDepth(const void *data)
 	if (r_showImages->integer)
 		RB_ShowImages();
 
-	if (backEnd.framePostProcessed && (backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+	if (glRefConfig.framebufferObject)
 	{
-		FBO_Bind(tr.screenScratchFbo);
+		if (backEnd.framePostProcessed)
+		{
+			FBO_Bind(tr.screenScratchFbo);
+		}
+		else
+		{
+			FBO_Bind(tr.renderFbo);
+		}
 	}
-	else
-	{
-		FBO_Bind(tr.renderFbo);
-	}
+
 	qglClear(GL_DEPTH_BUFFER_BIT);
 
 	// if we're doing MSAA, clear the depth texture for the resolve buffer
