@@ -473,7 +473,22 @@ S_AL_RegisterSound
 static
 sfxHandle_t S_AL_RegisterSound( const char *sample, qboolean compressed )
 {
-	sfxHandle_t sfx = S_AL_BufferFind(sample);
+	sfxHandle_t sfx;
+
+	if ( !sample ) {
+		Com_Error (ERR_FATAL, "S_RegisterSound: NULL");
+	}
+	if ( !sample[0] ) {
+		Com_Error (ERR_FATAL, "S_RegisterSound: empty name");
+	}
+
+	if ( strlen( sample ) >= MAX_QPATH ) {
+		Com_Printf( "Sound name too long: %s\n", sample );
+		//Com_Error (ERR_FATAL, "Sound name too long: %s", sample );
+		return 0;
+	}
+
+	sfx = S_AL_BufferFind(sample);
 
 	if((!knownSfx[sfx].inMemory) && (!knownSfx[sfx].isDefault))
 		S_AL_BufferLoad(sfx, s_alPrecache->integer);
