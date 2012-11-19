@@ -920,10 +920,11 @@ default values.
 #define CVAR_CHEAT		0x0200	// can not be changed if cheats are disabled
 #define CVAR_NORESTART		0x0400	// do not clear when a cvar_restart is issued
 
-#define CVAR_SERVER_CREATED	0x0800	// cvar was created by a server the client connected to.
-#define CVAR_VM_CREATED		0x1000	// cvar was created exclusively in one of the VMs.
-#define CVAR_PROTECTED		0x2000	// prevent modifying this var from VMs or the server
-#define CVAR_INTERNAL		0x4000	// cvar won't be displayed, ever (for passwords and such)
+#define CVAR_INTERNAL		0x0800	// cvar won't be displayed, ever (for passwords and such)
+#define	CVAR_PARENTAL		0x1000	// lets cvar system know that parental stuff needs to be updated
+#define CVAR_SERVER_CREATED	0x2000	// cvar was created by a server the client connected to.
+#define CVAR_VM_CREATED		0x4000	// cvar was created exclusively in one of the VMs.
+#define CVAR_PROTECTED		0x8000	// prevent modifying this var from VMs or the server
 // These flags are only returned by the Cvar_Flags() function
 #define CVAR_MODIFIED		0x40000000	// Cvar was modified
 #define CVAR_NONEXISTENT	0x80000000	// Cvar doesn't exist.
