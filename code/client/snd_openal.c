@@ -476,15 +476,16 @@ sfxHandle_t S_AL_RegisterSound( const char *sample, qboolean compressed )
 	sfxHandle_t sfx;
 
 	if ( !sample ) {
-		Com_Error (ERR_FATAL, "S_RegisterSound: NULL");
+		Com_Error( ERR_FATAL, "Sound name is NULL" );
 	}
+
 	if ( !sample[0] ) {
-		Com_Error (ERR_FATAL, "S_RegisterSound: empty name");
+		Com_Printf( S_COLOR_YELLOW "WARNING: S_RegisterSound: empty name\n" );
+		return 0;
 	}
 
 	if ( strlen( sample ) >= MAX_QPATH ) {
-		Com_Printf( "Sound name too long: %s\n", sample );
-		//Com_Error (ERR_FATAL, "Sound name too long: %s", sample );
+		Com_Printf( S_COLOR_YELLOW "WARNING: Sound name too long: %s\n", sample );
 		return 0;
 	}
 
