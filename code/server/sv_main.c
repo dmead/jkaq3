@@ -47,6 +47,7 @@ cvar_t	*sv_padPackets;			// add nop bytes to messages
 cvar_t	*sv_killserver;			// menu system can set to 1 to shut server down
 cvar_t	*sv_mapname;
 cvar_t	*sv_mapChecksum;
+cvar_t	*sv_cheats;
 cvar_t	*sv_serverid;
 cvar_t	*sv_minRate;
 cvar_t	*sv_maxRate;
