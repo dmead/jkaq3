@@ -470,7 +470,7 @@ void S_Base_MuteSound(int entityNum, int entchannel) {
 		return;
 	}
 
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES ) {
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES ) {
 		Com_Error( ERR_DROP, "S_MuteSound: bad entitynum %i", entityNum );
 	}
 
@@ -547,7 +547,7 @@ void S_Base_StartSoundEx(vec3_t origin, int entityNum, int entchannel, sfxHandle
 		return;
 	}
 
-	if ( !origin && ( entityNum < 0 || entityNum > MAX_GENTITIES ) ) {
+	if ( !origin && ( entityNum < 0 || entityNum >= MAX_GENTITIES ) ) {
 		Com_Error( ERR_DROP, "S_StartSound: bad entitynum %i", entityNum );
 	}
 
@@ -1106,7 +1106,7 @@ let the sound system know where an entity currently is
 ======================
 */
 void S_Base_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES ) {
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES ) {
 		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}
 	VectorCopy( origin, loopSounds[entityNum].origin );

@@ -1131,7 +1131,7 @@ void S_AL_UpdateEntityPosition( int entityNum, const vec3_t origin )
 
 	VectorCopy( origin, sanOrigin );
 	S_AL_SanitiseVector( sanOrigin );
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES )
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
 		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	VectorCopy( sanOrigin, entityList[entityNum].origin );
 }
@@ -1145,7 +1145,7 @@ Necessary for i.g. Western Quake3 mod which is buggy.
 */
 static qboolean S_AL_CheckInput(int entityNum, sfxHandle_t sfx)
 {
-	if (entityNum < 0 || entityNum > MAX_GENTITIES)
+	if (entityNum < 0 || entityNum >= MAX_GENTITIES)
 		Com_Error(ERR_DROP, "ERROR: S_AL_CheckInput: bad entitynum %i", entityNum);
 
 	if (sfx < 0 || sfx >= numSfx)
@@ -1194,7 +1194,7 @@ static void S_AL_MuteSound( int entnum, int entchannel )
 {
 	int i;
 
-	if (entnum < 0 || entnum > MAX_GENTITIES)
+	if (entnum < 0 || entnum >= MAX_GENTITIES)
 		Com_Error(ERR_DROP, "S_MuteSound: bad entitynum %i", entnum);
 
 	for(i = 0; i < srcCount; i++)
@@ -1236,7 +1236,7 @@ static void S_AL_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandl
 	}
 	else
 	{
-		if (entnum < 0 || entnum > MAX_GENTITIES)
+		if (entnum < 0 || entnum >= MAX_GENTITIES)
 			Com_Error(ERR_DROP, "S_StartSound: bad entitynum %i", entnum);
 
 		if (sfx < 0 || sfx >= numSfx)
@@ -1313,7 +1313,7 @@ static void S_AL_SrcLoop( alSrcPriority_t priority, sfxHandle_t sfx,
 	src_t		*curSource;
 	vec3_t		sorigin, svelocity;
 
-	if (entityNum < 0 || entityNum > MAX_GENTITIES)
+	if (entityNum < 0 || entityNum >= MAX_GENTITIES)
 		Com_Error(ERR_DROP, "S_Add%sLoopingSound: bad entitynum %i", (priority == SRCPRI_AMBIENT) ? "Real" : "", entityNum);
 
 	if (sfx < 0 || sfx >= numSfx)
