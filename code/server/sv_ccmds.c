@@ -219,6 +219,11 @@ static void SV_Map_f( void ) {
 		return;
 	}
 
+	if ( strchr(map, '\\') ) {
+		Com_Printf ("Can't have mapnames with a \\\n");
+		return;
+	}
+
 	// make sure the level exists before trying to change, so that
 	// a typo at the server console won't end the game
 	Com_sprintf (expanded, sizeof(expanded), "maps/%s.bsp", map);
