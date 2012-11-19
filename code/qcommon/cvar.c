@@ -475,8 +475,6 @@ Prints the value, default, and latched string of the given variable
 ============
 */
 void Cvar_Print( cvar_t *v ) {
-	if( ( v->flags & CVAR_INTERNAL ) )
-		return;
 	Com_Printf ("\"%s\" is:\"%s" S_COLOR_WHITE "\"",
 			v->name, v->string );
 
@@ -987,7 +985,7 @@ void Cvar_List_f( void ) {
 	for (var = cvar_vars ; var ; var = var->next, i++)
 	{
 		// JKA: Don't list internal cvars
-		if(!var->name || (match && !Com_Filter(match, var->name, qfalse)) || var->flags & CVAR_INTERNAL)
+		if(!var->name || (match && !Com_Filter(match, var->name, qfalse)) || (var->flags & CVAR_INTERNAL))
 			continue;
 
 		if (var->flags & CVAR_SERVERINFO) {
