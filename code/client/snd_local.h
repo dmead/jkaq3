@@ -75,7 +75,7 @@ typedef struct {
 #define MAX_DOPPLER_SCALE 50.0f //arbitrary
 
 // Ensiform: Changing from 48x48 to 128x128 because JA cg_thirdPersonRange default is 80 rather than Q3's 40
-#define THIRD_PERSON_THRESHOLD_SQ (128.0f*128.0f)
+#define THIRD_PERSON_THRESHOLD_SQ (160.0f*160.0f)
 
 typedef struct loopSound_s {
 	vec3_t		origin;
