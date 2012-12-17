@@ -3075,11 +3075,11 @@ Borrowed from TurtleArena
 ============
 */
 void CL_DrawLoadingScreen( void ) {
+	// XXX
+	int in_anaglyphMode = Cvar_VariableIntegerValue("r_anaglyphMode");
 	// get loading shader
 	cls.splashShader = re.RegisterShaderNoMip( "menu/splash" );
 
-	// XXX
-	int in_anaglyphMode = Cvar_VariableIntegerValue("r_anaglyphMode");
 	// if running in stereo, we need to draw the frame twice
 	if ( cls.glconfig.stereoEnabled || in_anaglyphMode) {
 		CL_DrawLoadingScreenFrame( STEREO_LEFT );
