@@ -3051,22 +3051,42 @@ void CL_ShutdownRef( void ) {
 
 /*
 ============
+CL_DrawLoadingScreenFrame
+
+Borrowed from TurtleArena
+============
+*/
+void CL_DrawLoadingScreenFrame( stereoFrame_t stereoFrame ) {
+	re.BeginFrame( stereoFrame );
+
+	// Need to draw extra stuff or screen is completely white for some shaders.
+	re.SetColor( ColorForIndex( ColorIndex( COLOR_BLACK ) ) );
+	re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
+	re.SetColor( NULL );
+
+	SCR_DrawPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, cls.splashShader );
+}
+
+/*
+============
 CL_DrawLoadingScreen
 
 Borrowed from TurtleArena
 ============
 */
 void CL_DrawLoadingScreen( void ) {
-	re.BeginFrame( STEREO_CENTER );
-
-	// Need to draw extra stuff or screen is completely white for some shaders.
-	re.SetColor( ColorForIndex(ColorIndex(COLOR_BLACK)) );
-	re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
-	re.SetColor( NULL );
-
 	// get loading shader
 	cls.splashShader = re.RegisterShaderNoMip( "menu/splash" );
-	SCR_DrawPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, cls.splashShader );
+
+	// XXX
+	int in_anaglyphMode = Cvar_VariableIntegerValue("r_anaglyphMode");
+	// if running in stereo, we need to draw the frame twice
+	if ( cls.glconfig.stereoEnabled || in_anaglyphMode) {
+		CL_DrawLoadingScreenFrame( STEREO_LEFT );
+		CL_DrawLoadingScreenFrame( STEREO_RIGHT );
+	} else {
+		CL_DrawLoadingScreenFrame( STEREO_CENTER );
+	}
 
 	if( com_speeds->integer ) {
 		re.EndFrame( &time_frontend, &time_backend );
