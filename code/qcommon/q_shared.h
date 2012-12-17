@@ -48,13 +48,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define LEGACY_PROTOCOL
 #endif
 
-#ifdef DPMASTER
 // Heartbeat for dpmaster protocol. You shouldn't change this unless you know what you're doing
-#define HEARTBEAT_FOR_MASTER		"DarkPlaces"
-#else
+#define HEARTBEAT_FOR_MASTER_DP		"DarkPlaces"
 // Heartbeat for JA protocol. You shouldn't change this unless you know what you're doing
 #define HEARTBEAT_FOR_MASTER		"QuakeArena-1"
-#endif
 
 #ifndef PRODUCT_VERSION
   #define PRODUCT_VERSION "2.0"

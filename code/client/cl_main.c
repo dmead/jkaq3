@@ -4126,6 +4126,7 @@ void CL_GlobalServers_f( void ) {
 	netadr_t	to;
 	int			count, i, masterNum;
 	char		command[1024], *masteraddress;
+	qboolean	dpmaster = qtrue;
 	
 	if ((count = Cmd_Argc()) < 3 || (masterNum = atoi(Cmd_Argv(1))) < 0 || masterNum > MAX_MASTER_SERVERS - 1)
 	{
@@ -4160,6 +4161,10 @@ void CL_GlobalServers_f( void ) {
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;
 
+	if(!Q_stricmp(masteraddress, MASTER_SERVER_NAME) || !Q_stricmp(masteraddress, JKHUB_MASTER_SERVER_NAME)) {
+		dpmaster = qfalse;
+	}
+
 	// Use the extended query for IPv6 masters
 	if (to.type == NA_IP6 || to.type == NA_MULTICAST6)
 	{
@@ -4177,14 +4182,14 @@ void CL_GlobalServers_f( void ) {
 		}
 	}
 	else
-#ifdef DPMASTER
-		Com_sprintf(command, sizeof(command), "getservers %s %s",
-			com_gamename->string, Cmd_Argv(2));
-#else
-		// Jedi Academy master only wants this, no gamename
-		Com_sprintf(command, sizeof(command), "getservers %s",
-			Cmd_Argv(2));
-#endif
+	{
+		if(dpmaster)
+			Com_sprintf(command, sizeof(command), "getserversExt %s %s ipv4",
+				com_gamename->string, Cmd_Argv(2));
+		else
+			Com_sprintf(command, sizeof(command), "getservers %s",
+				Cmd_Argv(2));
+	}
 
 	for (i=3; i < count; i++)
 	{

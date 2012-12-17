@@ -244,6 +244,7 @@ void SV_MasterHeartbeat(const char *message)
 	int			i;
 	int			res;
 	int			netenabled;
+	qboolean	dpmaster = qtrue;
 
 	netenabled = Cvar_VariableIntegerValue("net_enabled");
 
@@ -315,16 +316,29 @@ void SV_MasterHeartbeat(const char *message)
 			}
 		}
 
+		dpmaster = qtrue;
 
-		Com_Printf ("Sending heartbeat to %s\n", sv_master[i]->string );
+		if(!Q_stricmp(sv_master[i]->string, MASTER_SERVER_NAME) || !Q_stricmp(sv_master[i]->string, JKHUB_MASTER_SERVER_NAME)) {
+			dpmaster = qfalse;
+		}
+
+		Com_Printf ("Sending heartbeat to %s (%s)\n", sv_master[i]->string, dpmaster ? "DP" : "Legacy" );
 
 		// this command should be changed if the server info / status format
 		// ever incompatably changes
 
-		if(adr[i][0].type != NA_BAD)
-			NET_OutOfBandPrint( NS_SERVER, adr[i][0], "heartbeat %s\n", message);
-		if(adr[i][1].type != NA_BAD)
-			NET_OutOfBandPrint( NS_SERVER, adr[i][1], "heartbeat %s\n", message);
+		if(dpmaster) {
+			if(adr[i][0].type != NA_BAD)
+				NET_OutOfBandPrint( NS_SERVER, adr[i][0], "heartbeat %s\n", HEARTBEAT_FOR_MASTER_DP);
+			if(adr[i][1].type != NA_BAD)
+				NET_OutOfBandPrint( NS_SERVER, adr[i][1], "heartbeat %s\n", HEARTBEAT_FOR_MASTER_DP);
+		}
+		else {
+			if(adr[i][0].type != NA_BAD)
+				NET_OutOfBandPrint( NS_SERVER, adr[i][0], "heartbeat %s\n", message);
+			if(adr[i][1].type != NA_BAD)
+				NET_OutOfBandPrint( NS_SERVER, adr[i][1], "heartbeat %s\n", message);
+		}
 	}
 }
 

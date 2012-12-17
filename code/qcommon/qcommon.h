@@ -277,6 +277,8 @@ extern int demo_protocols[];
 #define JKHUB_MASTER_SERVER_NAME	"master.jkhub.org"
 #define JKHUB_UPDATE_SERVER_NAME	"master.jkhub.org:29060"
 
+#define IOQ3_MASTER_SERVER_NAME		"master.ioquake3.org:27950"
+
 #define	PORT_MASTER			29060
 #define	PORT_UPDATE			29061
 #define	PORT_SERVER			29070
