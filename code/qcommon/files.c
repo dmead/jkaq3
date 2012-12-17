@@ -206,7 +206,7 @@ typedef struct fileInPack_s {
 } fileInPack_t;
 
 typedef struct {
-        char			pakPathname[MAX_OSPATH];	// c:\quake3\baseq3
+	char			pakPathname[MAX_OSPATH];	// c:\quake3\baseq3
 	char			pakFilename[MAX_OSPATH];	// c:\quake3\baseq3\pak0.pk3
 	char			pakBasename[MAX_OSPATH];	// pak0
 	char			pakGamename[MAX_OSPATH];	// baseq3

@@ -17,7 +17,7 @@ void QDECL Com_Error( int level, const char *error, ... ) {
 	char		text[1024];
 
 	va_start (argptr, error);
-	vsprintf(text, error, argptr);
+	Q_vsnprintf(text, sizeof( text ), error, argptr );
 	va_end (argptr);
 
 	trap_Error( text );
@@ -28,7 +28,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf(text, msg, argptr);
+	Q_vsnprintf(text, sizeof(text), msg, argptr );
 	va_end (argptr);
 
 	trap_Print( text );
@@ -60,7 +60,6 @@ void UI_StartDemoLoop( void ) {
 	trap_Cmd_ExecuteText( EXEC_APPEND, "d1\n" );
 }
 
-
 char *UI_Argv( int arg ) {
 	static char	buffer[MAX_STRING_CHARS];
 
@@ -69,7 +68,6 @@ char *UI_Argv( int arg ) {
 	return buffer;
 }
 
-
 char *UI_Cvar_VariableString( const char *var_name ) {
 	static char	buffer[MAX_STRING_CHARS];
 
@@ -77,8 +75,6 @@ char *UI_Cvar_VariableString( const char *var_name ) {
 
 	return buffer;
 }
-
-
 
 void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	trap_Cvar_Set("ui_scoreAccuracy",     va("%i%%", newInfo->accuracy));
@@ -96,7 +92,7 @@ void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	trap_Cvar_Set("ui_scoreShutoutBonus",	va("%i", newInfo->shutoutBonus));
 	trap_Cvar_Set("ui_scoreTime",					va("%02i:%02i", newInfo->time / 60, newInfo->time % 60));
 	trap_Cvar_Set("ui_scoreCaptures",		va("%i", newInfo->captures));
-  if (postGame) {
+	if (postGame) {
 		trap_Cvar_Set("ui_scoreAccuracy2",     va("%i%%", newInfo->accuracy));
 		trap_Cvar_Set("ui_scoreImpressives2",	va("%i", newInfo->impressives));
 		trap_Cvar_Set("ui_scoreExcellents2", 	va("%i", newInfo->excellents));
