@@ -49,9 +49,6 @@ typedef struct {
 	qhandle_t (*RegisterSkin)( const char *name );
 	qhandle_t (*RegisterShader)( const char *name );
 	qhandle_t (*RegisterShaderNoMip)( const char *name );
-#if 0
-	qhandle_t (*RegisterEffect)( const char *name );	// effects code -- eez
-#endif
 	void	(*ShaderNameFromIndex)( char *name, qhandle_t hShader );
 	void	(*LoadWorld)( const char *name );
 
@@ -72,17 +69,6 @@ typedef struct {
 	void	(*AddLightToScene)( const vec3_t org, float intensity, float r, float g, float b );
 	void	(*AddAdditiveLightToScene)( const vec3_t org, float intensity, float r, float g, float b );
 	void	(*RenderScene)( const refdef_t *fd );
-
-#if 0
-	// FX System Add
-	void	(*PlayEffectID)( int id, vec3_t org, vec3_t fwd );
-	void	(*PlayEffect)( const char *file, vec3_t org, vec3_t fwd );
-
-	void	(*FX_AdjustTime)(const int time);
-	void	(*RunFX)(void);
-	void	(*InitFX)(refdef_t *rd);
-	void	(*ShutdownFX)(void);
-#endif
 
 	void	(*SetColor)( const float *rgba );	// NULL = 1,1,1,1
 	void	(*DrawStretchPic) ( float x, float y, float w, float h, 
