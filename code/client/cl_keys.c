@@ -519,9 +519,9 @@ void Field_CharEvent( field_t *edit, int ch ) {
 	int		len;
 
 	// Someone is trying to enter in an alt code
-	if( keys[A_ALT].down && isdigit(ch) ) {
+/*	if( keys[A_ALT].down && isdigit(ch) ) {
 		return;
-	}
+	}*/
 
 	if ( ch == 'v' - 'a' + 1 ) {	// ctrl-v is paste
 		Field_Paste( edit );
