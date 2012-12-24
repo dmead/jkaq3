@@ -249,7 +249,7 @@ void CL_cURL_BeginDownload( const char *localName, const char *remoteURL )
 		qcurl_easy_setopt(clc.downloadCURL, CURLOPT_VERBOSE, 1);
 	qcurl_easy_setopt(clc.downloadCURL, CURLOPT_URL, clc.downloadURL);
 	qcurl_easy_setopt(clc.downloadCURL, CURLOPT_TRANSFERTEXT, 0);
-	qcurl_easy_setopt(clc.downloadCURL, CURLOPT_REFERER, va("ioQ3://%s",
+	qcurl_easy_setopt(clc.downloadCURL, CURLOPT_REFERER, va("ioJAMP://%s",
 		NET_AdrToString(clc.serverAddress)));
 	qcurl_easy_setopt(clc.downloadCURL, CURLOPT_USERAGENT, va("%s %s",
 		Q3_VERSION, qcurl_version()));
