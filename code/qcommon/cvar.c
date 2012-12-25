@@ -633,7 +633,7 @@ void Cvar_Set( const char *var_name, const char *value) {
 Cvar_SetSafe
 ============
 */
-void Cvar_SetSafe( const char *var_name, const char *value )
+cvar_t *Cvar_Set2Safe( const char *var_name, const char *value, qboolean force )
 {
 	int flags = Cvar_Flags( var_name );
 
@@ -645,9 +645,19 @@ void Cvar_SetSafe( const char *var_name, const char *value )
 		else
 			Com_Error( ERR_DROP, "Restricted source tried to "
 				"modify \"%s\"", var_name );
-		return;
+		return NULL;
 	}
-	Cvar_Set( var_name, value );
+	return Cvar_Set2( var_name, value, force );
+}
+
+/*
+============
+Cvar_SetSafe
+============
+*/
+void Cvar_SetSafe( const char *var_name, const char *value )
+{
+	Cvar_Set2Safe( var_name, value, qtrue );
 }
 
 /*
@@ -676,6 +686,22 @@ void Cvar_SetValue( const char *var_name, float value) {
 
 /*
 ============
+Cvar_SetValue2
+============
+*/
+void Cvar_SetValue2( const char *var_name, float value, qboolean force )
+{
+	char	val[32];
+
+	if( Q_isintegral( value ) )
+		Com_sprintf( val, sizeof(val), "%i", (int)value );
+	else
+		Com_sprintf( val, sizeof(val), "%f", value );
+	Cvar_Set2( var_name, val, force );
+}
+
+/*
+============
 Cvar_SetValueSafe
 ============
 */
@@ -692,18 +718,18 @@ void Cvar_SetValueSafe( const char *var_name, float value )
 
 /*
 ============
-Cvar_SetValue
+Cvar_SetValue2Safe
 ============
 */
-void Cvar_SetValue2( const char *var_name, float value) {
+void Cvar_SetValue2Safe( const char *var_name, float value, qboolean force )
+{
 	char	val[32];
 
-	if ( value == (int)value ) {
-		Com_sprintf (val, sizeof(val), "%i",(int)value);
-	} else {
-		Com_sprintf (val, sizeof(val), "%f",value);
-	}
-	Cvar_Set2 (var_name, val, qfalse);
+	if( Q_isintegral( value ) )
+		Com_sprintf( val, sizeof(val), "%i", (int)value );
+	else
+		Com_sprintf( val, sizeof(val), "%f", value );
+	Cvar_Set2Safe( var_name, val, force );
 }
 
 /*
@@ -778,7 +804,7 @@ qboolean Cvar_Command( void ) {
 
 	if( !strcmp( Cmd_Argv(1), "!" ) ) {
 		// Swap the value if our command has ! in it (bind p "cg_thirdPeson !")
-		Cvar_SetValue2( v->name, !v->value );
+		Cvar_SetValue2( v->name, !v->value, qfalse );
 		return qtrue;
 	}
 
@@ -786,7 +812,6 @@ qboolean Cvar_Command( void ) {
 	Cvar_Set2 (v->name, Cmd_Args(), qfalse);
 	return qtrue;
 }
-
 
 /*
 ============
