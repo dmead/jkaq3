@@ -444,6 +444,10 @@ extern	cvar_t	*cl_autoRecordDemo;
 
 extern	cvar_t	*cl_consoleKeys;
 
+extern	cvar_t	*cl_rate;
+
+extern	cvar_t	*cl_drawRadar;
+
 #ifdef USE_MUMBLE
 extern	cvar_t	*cl_useMumble;
 extern	cvar_t	*cl_mumbleScale;

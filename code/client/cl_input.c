@@ -271,15 +271,15 @@ void IN_CenterView (void) {
 void IN_VoiceChat (void) {
 	if ( !( Key_GetCatcher( ) & KEYCATCH_UI ) ) {
 		if ( clc.state == CA_ACTIVE && !clc.demoplaying ) {
-			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_VOICECHAT );
+			if ( uivm ) {
+				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_VOICECHAT );
+			}
 		}
 	}
 }
 
-void Cvar_SetValue2( const char *var_name, float value);
 void IN_AutoMapToggle (void) {
-	cvar_t *cv = Cvar_Get("cg_drawRadar", "1", CVAR_ARCHIVE);
-	Cvar_SetValue2(cv->name, !cv->value);
+	Cvar_SetValue2Safe( cl_drawRadar->name, !cl_drawRadar->value, qfalse );
 }
 void IN_AutoMapButton (void) { }
 void IN_UseGivenForce (void) { }
